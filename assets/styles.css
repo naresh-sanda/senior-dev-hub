@@ -1108,3 +1108,58 @@ body.portal-body {
     color: #4f46e5;
     font-weight: 600;
 }
+
+
+/* =========================================
+   MOBILE RESPONSIVENESS FIXES
+   ========================================= */
+@media (max-width: 900px) {
+    /* Allow the body to scroll naturally on mobile */
+    body {
+        display: block !important;
+        overflow-y: auto !important;
+        height: auto !important;
+    }
+    body.portal-body {
+        overflow-y: auto !important;
+    }
+    
+    /* App container becomes a block instead of flex */
+    .app-container {
+        display: block !important;
+        overflow: visible !important;
+        height: auto !important;
+    }
+
+    /* Make sidebar sit on top of the content */
+    .sidebar {
+        width: 100% !important;
+        height: auto !important;
+        position: relative !important;
+        border-right: none !important;
+        border-bottom: 2px solid #e0e7ff !important;
+    }
+
+    /* Restrict Table of Contents height so users can scroll past it */
+    .toc-nav {
+        max-height: 250px !important;
+        overflow-y: auto !important;
+    }
+
+    /* Ensure main content takes full width and natural height */
+    .main-content {
+        padding: 20px 15px !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    /* Tighter padding for mobile portal pages */
+    .portal-content {
+        padding: 20px 15px !important;
+    }
+    
+    .portal-header h1 {
+        font-size: 2.5em !important;
+    }
+}
+
