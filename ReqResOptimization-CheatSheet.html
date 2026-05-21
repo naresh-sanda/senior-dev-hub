@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request/Response Optimization - Cheat Sheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta property="og:title" content="Request/Response Optimization - Cheat Sheet">
+    <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="assets/ns_logo.png">
+</head>
+<body>
+
+    <header class="global-navbar">
+        <a href="index.html" class="brand-logo">
+            <img src="assets/ns_logo.png" alt="NS Logo" class="brand-image" >
+            <div>Naresh Sanda</div>
+        </a>
+        <div class="header-subtitle">Senior Developer Hub</div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search topics...">
+                <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
+            </div>
+            <nav class="toc-nav" id="tocNav">
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#pagination">1. Offset vs Cursor Pagination</a></li>
+                    <li><a href="#gzip">2. Payload Compression (GZIP/Brotli)</a></li>
+                    <li><a href="#etag">3. HTTP Caching Headers (ETag)</a></li>
+                    
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <div class="header">
+                <h1>Request/Response Optimization</h1>
+                <p class="author">Author: Naresh Kumar Sanda</p>
+                <p style="color: var(--text-muted);">Pagination, GZIP, and ETag Caching.</p>
+            </div>
+
+            
+            <div class="section" id="pagination">
+                <h2 class="section-title">1. Offset vs Cursor Pagination</h2>
+                <table><thead><tr><th>Type</th><th>SQL Example</th><th>Pros/Cons</th></tr></thead><tbody><tr><td><strong>Offset (Bad)</strong></td><td><code>LIMIT 10 OFFSET 1000000</code></td><td>MySQL literally counts 1,000,000 rows just to throw them away. Extremely slow on deep pages.</td></tr><tr><td><strong>Cursor/Keyset (Good)</strong></td><td><code>WHERE id > 1000000 LIMIT 10</code></td><td>Uses the B-Tree index to instantly jump to the 1,000,000th record. Lightning fast.</td></tr></tbody></table>
+            </div>
+        
+            <div class="section" id="gzip">
+                <h2 class="section-title">2. Payload Compression (GZIP/Brotli)</h2>
+                <p>JSON text compresses incredibly well (often 70-80% smaller). Enabling compression drastically reduces network transit time, especially on mobile.</p><div class="code-block yaml"><pre># Spring Boot Application.yml
+server:
+  compression:
+    enabled: true
+    mime-types: application/json,text/html</pre></div>
+            </div>
+        
+            <div class="section" id="etag">
+                <h2 class="section-title">3. HTTP Caching Headers (ETag)</h2>
+                <div class="highlight-box"><strong>The Problem:</strong> A client requests a 2MB JSON list of products every time they open the app, even though the products rarely change.</div><p><strong>The ETag Solution:</strong> The server sends an <code>ETag</code> header (a hash of the data). Next time, the client sends <code>If-None-Match: [hash]</code>. The server checks the hash. If the data hasn't changed, the server returns <code>304 Not Modified</code> with an empty body, saving 2MB of bandwidth!</p>
+            </div>
+        
+
+        
+        
+                
+        </main>
+    </div>
+
+    <script src="assets/scripts.js"></script>
+
+    <footer class="global-footer">
+        <div class="footer-brand">
+            <img src="assets/ns_logo.png" alt="NS Logo">
+            Naresh Sanda
+        </div>
+        <div>&copy; 2026 Senior Developer Hub. All rights reserved.</div>
+    </footer>
+</body>
+</html>

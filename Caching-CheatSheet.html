@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caching Strategies - Cheat Sheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta property="og:title" content="Caching Strategies - Cheat Sheet">
+    <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="assets/ns_logo.png">
+</head>
+<body>
+
+    <header class="global-navbar">
+        <a href="index.html" class="brand-logo">
+            <img src="assets/ns_logo.png" alt="NS Logo" class="brand-image" >
+            <div>Naresh Sanda</div>
+        </a>
+        <div class="header-subtitle">Senior Developer Hub</div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search topics...">
+                <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
+            </div>
+            <nav class="toc-nav" id="tocNav">
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#redis">1. Redis vs Memcached</a></li>
+                    <li><a href="#patterns">2. Caching Patterns</a></li>
+                    <li><a href="#eviction">3. Cache Eviction (LRU/LFU)</a></li>
+                    
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <div class="header">
+                <h1>Caching Strategies</h1>
+                <p class="author">Author: Naresh Kumar Sanda</p>
+                <p style="color: var(--text-muted);">Redis, Memcached, Write-through vs Write-back, and Eviction policies.</p>
+            </div>
+
+            
+            <div class="section" id="redis">
+                <h2 class="section-title">1. Redis vs Memcached</h2>
+                <table><thead><tr><th>Feature</th><th>Redis</th><th>Memcached</th></tr></thead><tbody><tr><td>Data Structures</td><td>Strings, Hashes, Lists, Sets</td><td>Strings only</td></tr><tr><td>Persistence</td><td>Yes (RDB snapshots, AOF)</td><td>No (In-memory only)</td></tr><tr><td>Use Case</td><td>Leaderboards, Pub/Sub, Complex Caching</td><td>Simple HTML/Session caching</td></tr></tbody></table>
+            </div>
+        
+            <div class="section" id="patterns">
+                <h2 class="section-title">2. Caching Patterns</h2>
+                <ul><li><strong>Cache Aside:</strong> App checks cache. If miss, reads from DB and updates cache. (Best for read-heavy).</li><li><strong>Write-Through:</strong> App writes data to BOTH Cache and DB simultaneously. (Slower writes, fast reads).</li><li><strong>Write-Back:</strong> App writes to Cache ONLY. Cache asynchronously writes to DB later. (Extremely fast, but risk of data loss on crash).</li></ul>
+            </div>
+        
+            <div class="section" id="eviction">
+                <h2 class="section-title">3. Cache Eviction (LRU/LFU)</h2>
+                <div class="important-box"><strong>LRU (Least Recently Used):</strong> Evicts items that haven't been accessed in the longest time.<br><strong>LFU (Least Frequently Used):</strong> Evicts items that are accessed the least often over time.</div>
+            </div>
+        
+
+        
+        
+                
+        </main>
+    </div>
+
+    <script src="assets/scripts.js"></script>
+
+    <footer class="global-footer">
+        <div class="footer-brand">
+            <img src="assets/ns_logo.png" alt="NS Logo">
+            Naresh Sanda
+        </div>
+        <div>&copy; 2026 Senior Developer Hub. All rights reserved.</div>
+    </footer>
+</body>
+</html>

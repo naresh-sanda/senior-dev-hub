@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React.js Deep Dive - Cheat Sheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta property="og:title" content="React.js Deep Dive - Cheat Sheet">
+    <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="assets/ns_logo.png">
+</head>
+<body>
+
+    <header class="global-navbar">
+        <a href="index.html" class="brand-logo">
+            <img src="assets/ns_logo.png" alt="NS Logo" class="brand-image" >
+            <div>Naresh Sanda</div>
+        </a>
+        <div class="header-subtitle">Senior Developer Hub</div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search topics...">
+                <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
+            </div>
+            <nav class="toc-nav" id="tocNav">
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#render">1. How React Renders (The Virtual DOM)</a></li>
+                    <li><a href="#hooks">2. The Big 3 Hooks (useState, useEffect, useContext)</a></li>
+                    <li><a href="#context">3. State Management (Context API vs Redux)</a></li>
+                    <li><a href="#memo">4. Performance Optimization (useMemo & useCallback)</a></li>
+                    <li><a href="#customhooks">5. Writing Custom Hooks</a></li>
+                    
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <div class="header">
+                <h1>React.js Deep Dive</h1>
+                <p class="author">Author: Naresh Kumar Sanda</p>
+                <p style="color: var(--text-muted);">Hooks, State Management, and Rendering Optimization.</p>
+            </div>
+
+            
+            <div class="section" id="render">
+                <h2 class="section-title">1. How React Renders (The Virtual DOM)</h2>
+                
+                    <p>React maintains a lightweight copy of the real DOM called the <strong>Virtual DOM</strong>. When state changes, React builds a NEW Virtual DOM, compares it to the old one (<strong>Reconciliation / Diffing</strong>), and updates only the specific real DOM nodes that changed. This makes UI updates incredibly fast.</p>
+            </div>
+        
+            <div class="section" id="hooks">
+                <h2 class="section-title">2. The Big 3 Hooks (useState, useEffect, useContext)</h2>
+                
+                    <div class="highlight-box"><strong>useEffect:</strong> Manages side effects (API calls, subscriptions, manual DOM changes). The dependency array <code>[]</code> dictates when it runs.</div>
+                    <div class="code-block javascript"><pre>import { useState, useEffect } from 'react';
+
+const UserData = ({ userId }) => {
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        // Runs on mount AND whenever 'userId' changes
+        fetch(`/api/users/${userId}`)
+            .then(res => res.json())
+            .then(data => setUser(data));
+            
+        // Cleanup function (runs on unmount or before next effect)
+        return () => { console.log("Cleaning up"); }; 
+    }, [userId]); // Dependency Array
+    
+    if (!user) return &lt;p&gt;Loading...&lt;/p&gt;;
+    return &lt;h1&gt;{user.name}&lt;/h1&gt;;
+};</pre></div>
+            </div>
+        
+            <div class="section" id="context">
+                <h2 class="section-title">3. State Management (Context API vs Redux)</h2>
+                
+                    <p><strong>Prop Drilling Problem:</strong> Passing a 'theme' or 'user' prop down through 10 layers of components just so the bottom component can read it.</p>
+                    <p><strong>Context API Solution:</strong> Creates a global teleportation tube for data. The top component uses <code>&lt;Provider&gt;</code> to broadcast data, and any deeply nested component uses <code>useContext()</code> to grab it instantly.</p>
+                    <p><em>Note: For extremely complex, high-frequency state changes, use Redux or Zustand instead of Context to prevent full app re-renders.</em></p>
+            </div>
+        
+            <div class="section" id="memo">
+                <h2 class="section-title">4. Performance Optimization (useMemo & useCallback)</h2>
+                
+                    <div class="important-box">When a parent component re-renders, ALL of its children re-render by default. If a child does heavy calculation, this is a massive performance hit.</div>
+                    <ul>
+                        <li><code>React.memo(Component)</code>: Caches the component. It only re-renders if its Props change.</li>
+                        <li><code>useMemo(() => computeValue(), [deps])</code>: Caches the RESULT of an expensive calculation so it isn't recalculated on every render.</li>
+                        <li><code>useCallback(fn, [deps])</code>: Caches a FUNCTION reference. Useful when passing callback functions as props to <code>React.memo</code> children, preventing unnecessary re-renders.</li>
+                    </ul>
+            </div>
+        
+            <div class="section" id="customhooks">
+                <h2 class="section-title">5. Writing Custom Hooks</h2>
+                
+                    <p>Custom hooks allow you to extract reusable logic (like fetching data or managing a form) into a standard JS function.</p>
+                    <div class="code-block javascript"><pre>// Reusable Custom Hook
+function useWindowWidth() {
+    const [width, setWidth] = useState(window.innerWidth);
+    
+    useEffect(() => {
+        const handleResize = () => setWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+    
+    return width;
+}
+
+// Usage in Component
+const MyComponent = () => {
+    const width = useWindowWidth();
+    return &lt;p&gt;Window is {width}px wide!&lt;/p&gt;;
+};</pre></div>
+            </div>
+        
+
+        
+        
+                
+        </main>
+    </div>
+
+    <script src="assets/scripts.js"></script>
+
+    <footer class="global-footer">
+        <div class="footer-brand">
+            <img src="assets/ns_logo.png" alt="NS Logo">
+            Naresh Sanda
+        </div>
+        <div>&copy; 2026 Senior Developer Hub. All rights reserved.</div>
+    </footer>
+</body>
+</html>

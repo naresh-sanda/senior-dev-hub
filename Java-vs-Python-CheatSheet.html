@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java vs Python — Detailed Cheat Sheet for Java Developers</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+
+
+
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta property="og:title" content="Java vs Python — Detailed Cheat Sheet for Java Developers">
+    <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="assets/ns_logo.png">
+</head>
+<body>
+
+    <header class="global-navbar">
+        <a href="index.html" class="brand-logo">
+            <img src="assets/ns_logo.png" alt="NS Logo" class="brand-image" >
+            <div>Naresh Sanda</div>
+        </a>
+        <div class="header-subtitle">Senior Developer Hub</div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search topics...">
+                <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-python); font-weight:bold; font-size:13px;">← Back to Portal</a>
+            </div>
+            <nav class="toc-nav" id="tocNav">
+                
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#mindset">1. Java vs Python Mindset</a></li>
+                    <li><a href="#surprises">1B. Top Surprises for Java Devs</a></li>
+                    <li><a href="#hello">2. Hello World</a></li>
+                    <li><a href="#variables">3. Variables & Data Types</a></li>
+                    <li><a href="#conversion">4. Type Conversion</a></li>
+                    <li><a href="#input">5. Input Handling</a></li>
+                    <li><a href="#operators">6. Operators</a></li>
+                    <li><a href="#conditionals">7. Conditional Statements</a></li>
+                    <li><a href="#loops">8. Loops</a></li>
+                    <li><a href="#functions">9. Functions/Methods</a></li>
+                    <li><a href="#collections">10. Collections Overview</a></li>
+                    <li><a href="#arrays">11. Arrays vs Lists</a></li>
+                    <li><a href="#list-ops">12. List Operations</a></li>
+                    <li><a href="#tuples">13. Tuples</a></li>
+                    <li><a href="#sets">14. Sets</a></li>
+                    <li><a href="#maps">15. Maps/Dictionaries</a></li>
+                    <li><a href="#strings">16. String Handling</a></li>
+                    <li><a href="#formatting">17. String Formatting</a></li>
+                    <li><a href="#exceptions">18. Exception Handling</a></li>
+                    <li><a href="#classes">19. Classes & Objects</a></li>
+                    <li><a href="#access">20. Access Modifiers</a></li>
+                    <li><a href="#inheritance">21. Inheritance</a></li>
+                    <li><a href="#interfaces">22. Interfaces vs Abstract Classes</a></li>
+                    <li><a href="#constructors">23. Constructors</a></li>
+                    <li><a href="#static">24. Static Methods</a></li>
+                    <li><a href="#lambda">25. Lambda Expressions</a></li>
+                    <li><a href="#pythonic">26. Pythonic vs Java-style Code</a></li>
+                    <li><a href="#comprehensions">27. List Comprehensions</a></li>
+                    <li><a href="#generators">28. Generators</a></li>
+                    <li><a href="#files">29. File Handling</a></li>
+                    <li><a href="#json">30. JSON Handling</a></li>
+                    <li><a href="#datetime">31. Date & Time</a></li>
+                    <li><a href="#threading">32. Multithreading</a></li>
+                    <li><a href="#async">33. Async Programming</a></li>
+                    <li><a href="#database">34. Database Access</a></li>
+                    <li><a href="#rest">35. REST APIs</a></li>
+                    <li><a href="#deps">36. Dependency Management</a></li>
+                    <li><a href="#venv">37. Virtual Environments</a></li>
+                    <li><a href="#packages">38. Important Python Packages</a></li>
+                    <li><a href="#logging">39. Logging</a></li>
+                    <li><a href="#testing">40. Unit Testing</a></li>
+                    <li><a href="#decorators">41. Decorators</a></li>
+                    <li><a href="#context">42. Context Managers</a></li>
+                    <li><a href="#structure">43. Packaging Structure</a></li>
+                    <li><a href="#keywords">44. Python Keywords</a></li>
+                    <li><a href="#datascience">45. Data Science Ecosystem</a></li>
+                    <li><a href="#fastapi">46. FastAPI Example</a></li>
+                    <li><a href="#realproject">46B. Real Project Mapping</a></li>
+                    <li><a href="#dataeng">47. Data Engineering</a></li>
+                    <li><a href="#pyspark">48. PySpark vs Java Spark</a></li>
+                    <li><a href="#ai-ml">48B. AI & Machine Learning</a></li>
+                    <li><a href="#memory">49. Memory Model</a></li>
+                    <li><a href="#naming">50. Naming Conventions</a></li>
+                    <li><a href="#interview">51. Interview Questions</a></li>
+                    <li><a href="#multiprocessing">52. Multiprocessing</a></li>
+                    <li><a href="#gil">53. GIL</a></li>
+                    <li><a href="#pip">54. Pip Commands</a></li>
+                    <li><a href="#builtin">55. Built-in Functions</a></li>
+                    <li><a href="#enumerate">56. Enumerate & Zip</a></li>
+                    <li><a href="#slicing">57. Slicing</a></li>
+                    <li><a href="#copying">58. Copying Objects</a></li>
+                    <li><a href="#dataclasses">59. Dataclasses</a></li>
+                    <li><a href="#typehints">60. Type Hints</a></li>
+                    <li><a href="#setup">61. Project Setup</a></li>
+                    <li><a href="#learning">62. Learning Path</a></li>
+                    <li><a href="#mental">63. Mental Mapping</a></li>
+                    <li><a href="#mistakes">64. Common Mistakes</a></li>
+                    <li><a href="#libraries">65. High-Value Libraries</a></li>
+                    <li><a href="#performance">66. Performance Reality</a></li>
+                    <li><a href="#quickmap">67. Quick Mapping Table</a></li>
+                    <li><a href="#tools">68. Recommended Tools</a></li>
+                    <li><a href="#memory">69. Memory Tricks</a></li>
+                    <li><a href="#career">70. Career Combination</a></li>
+                    <li><a href="#projects">71. Practice Projects</a></li>
+                    <li><a href="#advice">72. Final Advice</a></li>
+                </ul>
+            
+            </nav>
+        </aside>
+        <main class="main-content" id="mainContent">
+            
+    <!-- Print Header (visible only when printing) -->
+    
+
+    <!-- Print Footer (visible only when printing) -->
+    
+
+    
+        <div class="header">
+            <h1>Java → Python Transition Handbook</h1>
+            <p class="author">Author: Naresh Kumar Sanda</p>
+            <p class="audience">Audience: Senior Java Developers transitioning to Python</p>
+        </div>
+
+        
+            <!-- Table of Contents -->
+            <!-- Section 1 -->
+            
+            <div class="section" id="mindset">
+                <h2 class="section-title">1. Java Mindset vs Python Mindset</h2>
+                <div class="important-box">
+                    <strong>The Biggest Mistake:</strong> Many Java developers struggle because they try to write "Java in Python" (heavy class hierarchies, getters/setters, verbose patterns).
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Java Thinking</th>
+                            <th>Python Thinking</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Heavy OOP (Everything is a Class)</td><td>Mix of Procedural + Functional + OOP</td></tr>
+                        <tr><td>Verbose classes & boilerplate</td><td>Lightweight modules & standalone functions</td></tr>
+                        <tr><td>Strong typing everywhere</td><td>Duck typing ("If it walks like a duck...")</td></tr>
+                        <tr><td>Explicit Interfaces</td><td>Protocols / Abstract Base Classes (ABC)</td></tr>
+                        <tr><td>Streams API</td><td>List comprehensions / Generators</td></tr>
+                        <tr><td>Builders & Factories</td><td>Named parameters (kwargs) / Dataclasses</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div class="section" id="surprises">
+                <h2 class="section-title">1B. Top Things That Surprise Java Developers</h2>
+                <div class="highlight-box">
+                    <div class="list-item"><strong>No braces:</strong> Indentation defines blocks. A wrong space is a compilation error!</div>
+                    <div class="list-item"><strong>Everything is mutable by default:</strong> Pass-by-object-reference can lead to unintended side effects if you aren't careful.</div>
+                    <div class="list-item"><strong>Lists vs Tuples:</strong> <code>[]</code> is mutable (like ArrayList), <code>()</code> is immutable (no exact Java equivalent).</div>
+                    <div class="list-item"><strong>Shallow Copy Pitfalls:</strong> <code>a = b</code> doesn't copy the object, it copies the reference. Use <code>copy.deepcopy()</code>.</div>
+                    <div class="list-item"><strong>Multiple Return Values:</strong> You can return <code>(name, age)</code> natively without creating a custom DTO.</div>
+                    <div class="list-item"><strong>Lambda Limitations:</strong> Python lambdas are strictly single-line expressions, unlike Java's multi-line lambdas.</div>
+                    <div class="list-item"><strong>Default Mutable Arguments:</strong> <code>def add(item, lst=[]):</code> is a massive trap! The list is evaluated once at definition time, not on every call.</div>
+                </div>
+            </div>
+
+            <!-- Section 2 -->
+            <div class="section" id="hello">
+                <h2 class="section-title">2. Hello World</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello World");
+    }
+}</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>print("Hello World")</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3 -->
+            <div class="section" id="variables">
+                <h2 class="section-title">3. Variables and Data Types</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Concept</th>
+                            <th>Java</th>
+                            <th>Python</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Integer</td><td>int a = 10;</td><td>a = 10</td></tr>
+                        <tr><td>Long</td><td>long a = 10L;</td><td>a = 10</td></tr>
+                        <tr><td>Double</td><td>double d = 10.5;</td><td>d = 10.5</td></tr>
+                        <tr><td>Boolean</td><td>boolean b = true;</td><td>b = True</td></tr>
+                        <tr><td>String</td><td>String s = "abc";</td><td>s = "abc"</td></tr>
+                        <tr><td>Character</td><td>char c = 'A';</td><td>c = 'A'</td></tr>
+                        <tr><td>Null</td><td>null</td><td>None</td></tr>
+                    </tbody>
+                </table>
+                
+                <h3 class="subsection-title">Type Checking</h3>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>System.out.println(obj instanceof String);</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>x = 10
+print(type(x))</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4 -->
+            <div class="section" id="conversion">
+                <h2 class="section-title">4. Type Conversion</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>int a = Integer.parseInt("10");
+String s = String.valueOf(a);</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>x = int("10")
+s = str(x)</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 5 -->
+            <div class="section" id="input">
+                <h2 class="section-title">5. Input Handling</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>Scanner sc = new Scanner(System.in);
+String name = sc.nextLine();</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>name = input("Enter Name: ")</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 6 -->
+            <div class="section" id="operators">
+                <h2 class="section-title">6. Operators</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Operation</th>
+                            <th>Java</th>
+                            <th>Python</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Equality</td><td>==</td><td>==</td></tr>
+                        <tr><td>Reference Equality</td><td>==</td><td>is</td></tr>
+                        <tr><td>AND</td><td>&&</td><td>and</td></tr>
+                        <tr><td>OR</td><td>||</td><td>or</td></tr>
+                        <tr><td>NOT</td><td>!</td><td>not</td></tr>
+                        <tr><td>Modulus</td><td>%</td><td>%</td></tr>
+                        <tr><td>Power</td><td>Math.pow(a,b)</td><td>a ** b</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section 7 -->
+            <div class="section" id="conditionals">
+                <h2 class="section-title">7. Conditional Statements</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>if(age > 18) {
+    System.out.println("Adult");
+} else {
+    System.out.println("Minor");
+}</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>if age > 18:
+    print("Adult")
+else:
+    print("Minor")</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 8 -->
+            <div class="section" id="loops">
+                <h2 class="section-title">8. Loops</h2>
+                <h3 class="subsection-title">For Loop</h3>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>for(int i=0; i<5; i++) {
+    System.out.println(i);
+}</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>for i in range(5):
+    print(i)</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="subsection-title">While Loop</h3>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>while(i < 5) {
+    i++;
+}</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>while i < 5:
+    i += 1</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 9 -->
+            <div class="section" id="functions">
+                <h2 class="section-title">9. Functions / Methods</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>public static int add(int a, int b) {
+    return a + b;
+}</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>def add(a, b):
+    return a + b</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="subsection-title">Default Arguments (Python)</h3>
+                <div class="code-block python">
+                    <span class="code-label">Python</span>
+                    <pre>def greet(name="Guest"):
+    print(name)</pre>
+                </div>
+            </div>
+
+            <!-- Section 10 -->
+            
+            <div class="section" id="collections">
+                <h2 class="section-title">10. Advanced Collections Framework</h2>
+                <p style="margin-bottom: 15px; color: var(--text-muted);">Java's Collections framework is robust and interface-driven. Python uses a mix of built-in types and the <code>collections</code> / <code>heapq</code> modules to achieve the same functionality with less boilerplate.</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Java Collection</th>
+                            <th>Python Equivalent</th>
+                            <th>Key Difference / Usage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ArrayList&lt;T&gt;</code></td>
+                            <td><span class="tag python">list</span></td>
+                            <td>Python lists are dynamic arrays and can hold mixed types (though usually homogeneous).</td>
+                        </tr>
+                        <tr>
+                            <td><code>HashMap&lt;K, V&gt;</code></td>
+                            <td><span class="tag python">dict</span></td>
+                            <td>Since Python 3.7, <code>dict</code> maintains insertion order natively. Very fast hash table.</td>
+                        </tr>
+                        <tr>
+                            <td><code>HashSet&lt;T&gt;</code></td>
+                            <td><span class="tag python">set</span></td>
+                            <td>Defined with curly braces: <code>my_set = {1, 2, 3}</code>. Fast O(1) lookups.</td>
+                        </tr>
+                        <tr>
+                            <td><code>PriorityQueue&lt;T&gt;</code></td>
+                            <td><span class="tag python">heapq</span></td>
+                            <td>Not a class, but a module of functions that operate on a standard list.</td>
+                        </tr>
+                        <tr>
+                            <td><code>LinkedHashMap&lt;K, V&gt;</code></td>
+                            <td><span class="tag python">collections.OrderedDict</span></td>
+                            <td>Rarely needed now as standard <code>dict</code> is ordered, but useful for LRU caches.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="subsection-title">Frequency Counting (Map.merge vs Counter)</h3>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <pre>Map&lt;String, Integer&gt; counts = new HashMap&lt;&gt;();
+for (String word : words) {
+    counts.merge(word, 1, Integer::sum);
+}</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <pre>from collections import Counter
+
+# Does exactly the same thing, but in 1 line
+counts = Counter(words)</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<!-- Section 11 -->
+            <div class="section" id="arrays">
+                <h2 class="section-title">11. Arrays vs Lists</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java Array</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>int[] arr = {1,2,3};</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python List</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>arr = [1,2,3]</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="subsection-title">Add Elements</h3>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>list.add(10);</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>arr.append(10)</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 12 -->
+            <div class="section" id="list-ops">
+                <h2 class="section-title">12. List Operations</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java Equivalent</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>List<Integer> nums = new ArrayList<>();
+nums.add(4);
+Collections.sort(nums);
+Collections.reverse(nums);</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>nums = [1,2,3]
+nums.append(4)
+nums.remove(2)
+nums.sort()
+nums.reverse()</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 13 -->
+            <div class="section" id="tuples">
+                <h2 class="section-title">13. Tuples (No Direct Java Equivalent)</h2>
+                <div class="code-block python">
+                    <span class="code-label">Python</span>
+                    <pre>point = (10, 20)
+print(point[0])</pre>
+                </div>
+                <div class="highlight-box">
+                    <strong>Characteristics:</strong>
+                    <div class="list-item">Immutable</div>
+                    <div class="list-item">Faster than list</div>
+                    <div class="list-item">Used in data processing</div>
+                </div>
+            </div>
+
+            <!-- Section 14 -->
+            <div class="section" id="sets">
+                <h2 class="section-title">14. Sets</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>Set<Integer> set = new HashSet<>();</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>s = {1,2,3}
+s.add(4)</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 15 -->
+            <div class="section" id="maps">
+                <h2 class="section-title">15. Maps / Dictionaries</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>Map<String, Integer> map = new HashMap<>();
+map.put("a", 1);</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>data = {
+    "a": 1,
+    "b": 2
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="subsection-title">Iteration</h3>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>for(Map.Entry<String,Integer> e : map.entrySet()) {
+    System.out.println(e.getKey());
+}</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>for k, v in data.items():
+    print(k, v)</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 16 -->
+            <div class="section" id="strings">
+                <h2 class="section-title">16. String Handling</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>String name = "Nova";
+name.toUpperCase();</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>name = "Nova"
+name.upper()</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="subsection-title">Common Operations</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Operation</th>
+                            <th>Java</th>
+                            <th>Python</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Length</td><td>str.length()</td><td>len(str)</td></tr>
+                        <tr><td>Substring</td><td>substring()</td><td>slicing</td></tr>
+                        <tr><td>Upper</td><td>toUpperCase()</td><td>upper()</td></tr>
+                        <tr><td>Lower</td><td>toLowerCase()</td><td>lower()</td></tr>
+                        <tr><td>Replace</td><td>replace()</td><td>replace()</td></tr>
+                        <tr><td>Split</td><td>split()</td><td>split()</td></tr>
+                        <tr><td>Contains</td><td>contains()</td><td>in</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section 17 -->
+            <div class="section" id="formatting">
+                <h2 class="section-title">17. String Formatting</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>String msg = String.format("Hello %s", name);</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>msg = f"Hello {name}"</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 18 -->
+            
+            <div class="section" id="exceptions">
+                <h2 class="section-title">18. Exception Handling & Context Managers</h2>
+                <div class="important-box">
+                    <strong>Mindset Shift:</strong> Python does NOT have Checked Exceptions. You do not need to declare <code>throws IOException</code> in your method signatures. If something fails, it throws at runtime.
+                </div>
+                
+                <h3 class="subsection-title">Throwing & Catching</h3>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <pre>try {
+    if (age < 18) {
+        throw new IllegalArgumentException("Too young");
+    }
+} catch (IllegalArgumentException e) {
+    System.out.println(e.getMessage());
+} finally {
+    System.out.println("Done");
+}</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <pre>try:
+    if age < 18:
+        raise ValueError("Too young")
+except ValueError as e:
+    print(e)
+finally:
+    print("Done")</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="subsection-title" style="margin-top: 20px;">Try-With-Resources vs Python 'with' Statement</h3>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">Python uses Context Managers (the <code>with</code> block) to guarantee resource cleanup, exactly like Java's Try-With-Resources.</p>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java (AutoCloseable)</h4>
+                        <div class="code-block java">
+                            <pre>try (BufferedReader br = new BufferedReader(...)) {
+    System.out.println(br.readLine());
+}</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python (Context Manager)</h4>
+                        <div class="code-block python">
+                            <pre>with open("file.txt", "r") as f:
+    print(f.readline())
+# f is automatically closed here</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<!-- Section 19 -->
+            <div class="section" id="classes">
+                <h2 class="section-title">19. Classes and Objects</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>public class Employee {
+    private String name;
+    public Employee(String name) {
+        this.name = name;
+    }
+}</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>class Employee:
+    def __init__(self, name):
+        self.name = name</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 20 -->
+            <div class="section" id="access">
+                <h2 class="section-title">20. Access Modifiers</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Java</th>
+                            <th>Python Equivalent</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>private</td><td>_variable (convention)</td></tr>
+                        <tr><td>protected</td><td>__variable (name mangling)</td></tr>
+                        <tr><td>public</td><td>default</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section 21 -->
+            <div class="section" id="inheritance">
+                <h2 class="section-title">21. Inheritance</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>class Animal {
+    void sound() {}
+}
+class Dog extends Animal {
+}</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>class Animal:
+    def sound(self):
+        pass
+class Dog(Animal):
+    pass</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 22 -->
+            <div class="section" id="interfaces">
+                <h2 class="section-title">22. Interfaces vs Abstract Classes</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java Interface</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>interface Payment {
+    void pay();
+}</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>from abc import ABC, abstractmethod
+class Payment(ABC):
+    @abstractmethod
+    def pay(self):
+        pass</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 23 -->
+            <div class="section" id="constructors">
+                <h2 class="section-title">23. Constructors</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>public Employee() {}</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>def __init__(self):
+    pass</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 24 -->
+            <div class="section" id="static">
+                <h2 class="section-title">24. Static Methods</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>public static void test() {}</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>@staticmethod
+def test():
+    pass</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 25 -->
+            <div class="section" id="lambda">
+                <h2 class="section-title">25. Lambda Expressions</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>list.stream()
+    .filter(x -> x > 5)
+    .forEach(System.out::println);</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>nums = [1,2,3,6,7]
+result = list(filter(lambda x: x > 5, nums))</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 26 -->
+            
+            <div class="section" id="pythonic">
+                <h2 class="section-title">26. Pythonic Code vs Java-style Python</h2>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">Writing idiomatic Python means ditching explicit loops for data transformation.</p>
+                
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java-style Python (Bad)</h4>
+                        <div class="code-block python">
+                            <pre>numbers = []
+for n in list1:
+    if n > 5:
+        numbers.append(n * 2)</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Pythonic (Good)</h4>
+                        <div class="code-block python">
+                            <pre># List Comprehension
+numbers = [n * 2 for n in list1 if n > 5]</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<!-- Section 27 -->
+            <div class="section" id="comprehensions">
+                <h2 class="section-title">27. List Comprehensions</h2>
+                <div class="code-block python">
+                    <span class="code-label">Python</span>
+                    <pre>squares = [x*x for x in range(10)]</pre>
+                </div>
+                <p><em>Equivalent Java logic usually needs loops or streams.</em></p>
+            </div>
+
+            <!-- Section 28 -->
+            <div class="section" id="generators">
+                <h2 class="section-title">28. Generators</h2>
+                <div class="code-block python">
+                    <span class="code-label">Python</span>
+                    <pre>def generate_numbers():
+    for i in range(5):
+        yield i</pre>
+                </div>
+                <div class="highlight-box">
+                    <strong>Java Equivalent:</strong>
+                    <div class="list-item">Streams</div>
+                    <div class="list-item">Iterators</div>
+                    <div class="list-item">Reactive Streams</div>
+                </div>
+            </div>
+
+            <!-- Section 29 -->
+            
+            <div class="section" id="files">
+                <h2 class="section-title">29. File Handling & Modern Paths</h2>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">Stop using <code>os.path</code>. In modern Python (3.4+), <code>pathlib</code> is the equivalent of Java's <code>java.nio.file.Paths</code>, offering an elegant object-oriented approach to file systems.</p>
+                
+                <h3 class="subsection-title">Path Manipulation & Reading</h3>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java (java.nio)</h4>
+                        <div class="code-block java">
+                            <pre>Path p = Paths.get("data", "users.txt");
+if (Files.exists(p)) {
+    List&lt;String&gt; lines = Files.readAllLines(p);
+}</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python (pathlib)</h4>
+                        <div class="code-block python">
+                            <pre>from pathlib import Path
+
+p = Path("data") / "users.txt"
+if p.exists():
+    lines = p.read_text().splitlines()</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="subsection-title" style="margin-top: 20px;">Writing JSON & CSV</h3>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">Python has built-in modules for JSON and CSV, whereas Java typically requires external libraries like Jackson or OpenCSV.</p>
+                <div class="code-block python">
+                    <pre>import json
+import csv
+
+# Write JSON
+with open("data.json", "w") as f:
+    json.dump({"name": "Naresh", "role": "Architect"}, f, indent=4)
+
+# Read CSV
+with open("data.csv", "r") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        print(row['name'])</pre>
+                </div>
+            </div>
+<!-- Section 30 -->
+            <div class="section" id="json">
+                <h2 class="section-title">30. JSON Handling</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java (Jackson)</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>ObjectMapper mapper = new ObjectMapper();</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>import json
+json.dumps(data)
+json.loads(text)</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 31 -->
+            <div class="section" id="datetime">
+                <h2 class="section-title">31. Date and Time</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>LocalDate.now();</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>from datetime import datetime
+print(datetime.now())</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 32 -->
+            <div class="section" id="threading">
+                <h2 class="section-title">32. Multithreading</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>Thread t = new Thread(() -> {
+    System.out.println("Running");
+});</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>import threading
+thread = threading.Thread(target=my_func)
+thread.start()</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 33 -->
+            
+            <div class="section" id="async">
+                <h2 class="section-title">33. Async & Concurrency Mapping</h2>
+                <p style="margin-bottom: 15px; color: var(--text-muted);">Python's GIL (Global Interpreter Lock) means threads don't run in true parallel for CPU tasks, but they work great for I/O tasks.</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Java</th>
+                            <th>Python Equivalent</th>
+                            <th>Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>CompletableFuture</code></td>
+                            <td><span class="tag python">asyncio</span></td>
+                            <td>High-throughput I/O bound tasks (Websockets, APIs).</td>
+                        </tr>
+                        <tr>
+                            <td><code>ThreadPoolExecutor</code></td>
+                            <td><span class="tag python">concurrent.futures.ThreadPoolExecutor</span></td>
+                            <td>Legacy I/O or wrapping blocking calls.</td>
+                        </tr>
+                        <tr>
+                            <td><code>ForkJoinPool</code></td>
+                            <td><span class="tag python">multiprocessing.Pool</span></td>
+                            <td>CPU-heavy tasks (bypasses the GIL by using multiple processes).</td>
+                        </tr>
+                        <tr>
+                            <td><code>Reactive Streams (WebFlux)</code></td>
+                            <td><span class="tag python">Async Generators / FastAPI</span></td>
+                            <td>Streaming data and non-blocking event loops.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+<!-- Section 34 -->
+            <div class="section" id="database">
+                <h2 class="section-title">34. Database Access</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java JDBC</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>Connection con = DriverManager.getConnection(url);</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>import sqlite3
+con = sqlite3.connect("test.db")</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 35 -->
+            <div class="section" id="rest">
+                <h2 class="section-title">35. REST APIs</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java Spring Boot</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>@RestController
+public class TestController {
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello";
+    }
+}</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python Flask</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>from flask import Flask
+app = Flask(__name__)
+
+@app.route('/hello')
+def hello():
+    return "Hello"</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 36 -->
+            <div class="section" id="deps">
+                <h2 class="section-title">36. Dependency Management</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Java</th>
+                            <th>Python</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Maven</td><td>pip</td></tr>
+                        <tr><td>Gradle</td><td>poetry</td></tr>
+                        <tr><td></td><td>pipenv</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 class="subsection-title">Install Package</h3>
+                <div class="code-block python">
+                    <span class="code-label">Python</span>
+                    <pre>pip install pandas</pre>
+                </div>
+                <p><em>Equivalent Java: &lt;dependency&gt;...&lt;/dependency&gt;</em></p>
+            </div>
+
+            <!-- Section 37 -->
+            <div class="section" id="venv">
+                <h2 class="section-title">37. Virtual Environments</h2>
+                <div class="code-block python">
+                    <span class="code-label">Python</span>
+                    <pre>python -m venv venv</pre>
+                </div>
+                <div class="highlight-box">
+                    <strong>Activate:</strong>
+                    <div class="list-item">Linux/Mac: <code>source venv/bin/activate</code></div>
+                    <div class="list-item">Windows: <code>venv\Scripts\activate</code></div>
+                </div>
+            </div>
+
+            <!-- Section 38 -->
+            <div class="section" id="packages">
+                <h2 class="section-title">38. Important Python Packages for Java Developers</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Area</th>
+                            <th>Java</th>
+                            <th>Python</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Web</td><td>Spring Boot</td><td>Flask/FastAPI/Django</td></tr>
+                        <tr><td>JSON</td><td>Jackson</td><td>json/pydantic</td></tr>
+                        <tr><td>ORM</td><td>Hibernate</td><td>SQLAlchemy</td></tr>
+                        <tr><td>Data Processing</td><td>Spark</td><td>pandas/polars</td></tr>
+                        <tr><td>AI/ML</td><td>DL4J</td><td>scikit-learn/tensorflow/pytorch</td></tr>
+                        <tr><td>REST Calls</td><td>RestTemplate/WebClient</td><td>requests/httpx</td></tr>
+                        <tr><td>Async</td><td>CompletableFuture</td><td>asyncio</td></tr>
+                        <tr><td>Unit Test</td><td>JUnit</td><td>pytest</td></tr>
+                        <tr><td>Logging</td><td>log4j/slf4j</td><td>logging</td></tr>
+                        <tr><td>Scheduling</td><td>Quartz</td><td>APScheduler</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section 39 -->
+            <div class="section" id="logging">
+                <h2 class="section-title">39. Logging</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>private static final Logger log = 
+    LoggerFactory.getLogger(Test.class);</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>import logging
+logging.basicConfig(level=logging.INFO)
+logging.info("Hello")</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 40 -->
+            <div class="section" id="testing">
+                <h2 class="section-title">40. Unit Testing</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java JUnit</h4>
+                        <div class="code-block java">
+                            <span class="code-label">Java</span>
+                            <pre>@Test
+public void testAdd() {
+    assertEquals(5, add(2,3));
+}</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python Pytest</h4>
+                        <div class="code-block python">
+                            <span class="code-label">Python</span>
+                            <pre>def test_add():
+    assert add(2,3) == 5</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 41 -->
+            <div class="section" id="decorators">
+                <h2 class="section-title">41. Decorators (Very Important)</h2>
+                <div class="code-block python">
+                    <span class="code-label">Python</span>
+                    <pre>def log(func):
+    def wrapper():
+        print("Before")
+        func()
+    return wrapper</pre>
+                </div>
+                <div class="highlight-box">
+                    <strong>Java Equivalent Concepts:</strong>
+                    <div class="list-item">AOP</div>
+                    <div class="list-item">Proxy Pattern</div>
+                    <div class="list-item">Interceptors</div>
+                </div>
+            </div>
+
+            <!-- Section 42 -->
+            <div class="section" id="context">
+                <h2 class="section-title">42. Context Managers</h2>
+                <div class="code-block python">
+                    <span class="code-label">Python</span>
+                    <pre>with open("a.txt") as f:
+    data = f.read()</pre>
+                </div>
+                <p><em>Java Equivalent: try(resource) { }</em></p>
+            </div>
+
+            <!-- Section 43 -->
+            <div class="section" id="structure">
+                <h2 class="section-title">43. Python Packaging Structure</h2>
+                <div class="code-block python">
+                    <span class="code-label">Structure</span>
+                    <pre>project/
+│
+├── app/
+│   ├── __init__.py
+│   ├── main.py
+│   └── service.py
+│
+├── tests/
+├── requirements.txt
+└── README.md</pre>
+                </div>
+            </div>
+
+            <!-- Section 44 -->
+            <div class="section" id="keywords">
+                <h2 class="section-title">44. Important Python Keywords</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Keyword</th>
+                            <th>Meaning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>def</td><td>function</td></tr>
+                        <tr><td>class</td><td>class</td></tr>
+                        <tr><td>lambda</td><td>anonymous function</td></tr>
+                        <tr><td>yield</td><td>generator</td></tr>
+                        <tr><td>import</td><td>import package</td></tr>
+                        <tr><td>from</td><td>partial import</td></tr>
+                        <tr><td>pass</td><td>empty block</td></tr>
+                        <tr><td>global</td><td>global variable</td></tr>
+                        <tr><td>nonlocal</td><td>outer variable</td></tr>
+                        <tr><td>async</td><td>asynchronous</td></tr>
+                        <tr><td>await</td><td>wait async result</td></tr>
+                        <tr><td>with</td><td>resource handling</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section 46 -->
+            <div class="section" id="fastapi">
+                <h2 class="section-title">46. FastAPI Example</h2>
+                <div class="code-block python">
+                    <span class="code-label">Python</span>
+                    <pre>from fastapi import FastAPI
+app = FastAPI()
+
+@app.get("/")
+def root():
+    return {"message": "Hello"}</pre>
+                </div>
+            </div>
+
+            
+            <div class="section" id="realproject">
+                <h2 class="section-title">46B. Real Project Mapping (Spring Boot vs FastAPI)</h2>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">A direct comparison of a simple REST endpoint. Notice how much lighter the Python version is.</p>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java (Spring Boot)</h4>
+                        <div class="code-block java">
+                            <pre>@RestController
+@RequestMapping("/api")
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+
+    @GetMapping("/users/{id}")
+    public User getUser(@PathVariable String id) {
+        return userService.findById(id);
+    }
+}</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python (FastAPI)</h4>
+                        <div class="code-block python">
+                            <pre>from fastapi import APIRouter, Depends
+
+router = APIRouter(prefix="/api")
+
+@router.get("/users/{user_id}")
+async def get_user(
+    user_id: str, 
+    user_service: UserService = Depends()
+):
+    return user_service.find_by_id(user_id)</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 47 -->
+            <div class="section" id="dataeng">
+                <h2 class="section-title">47. Python for Data Engineering</h2>
+                <div class="important-box">
+                    <strong>Very important for your background.</strong>
+                </div>
+                <h3 class="subsection-title">Common Stack</h3>
+                <div>
+                    <span class="tag python">Python</span>
+                    <span class="tag python">PySpark</span>
+                    <span class="tag python">pandas</span>
+                    <span class="tag python">Airflow</span>
+                    <span class="tag python">FastAPI</span>
+                    <span class="tag python">Databricks</span>
+                    <span class="tag python">boto3</span>
+                </div>
+                <h3 class="subsection-title">Example CSV Read</h3>
+                <div class="code-block python">
+                    <span class="code-label">Python</span>
+                    <pre>import pandas as pd
+df = pd.read_csv("file.csv")</pre>
+                </div>
+            </div>
+
+                        <!-- Section 45: Data Science Ecosystem -->
+            <div class="section" id="datascience">
+                <h2 class="section-title">45. Data Science & Core Packages (Pandas / NumPy)</h2>
+                <div class="important-box">
+                    <strong>Java vs Python Data Paradigm:</strong> Java uses Collections (List, Map) for data manipulation which is slow for large datasets. Python uses <strong>Vectorized C-extensions</strong> via Pandas and NumPy, which are blazing fast and bypass the GIL.
+                </div>
+                
+                <h3 class="subsection-title">NumPy (Numerical Python)</h3>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">Replaces Java's multidimensional arrays (e.g., <code>double[][]</code>) with highly optimized C-arrays.</p>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java</h4>
+                        <div class="code-block java">
+                            <pre>double[] a = {1.0, 2.0};
+double[] b = {3.0, 4.0};
+double[] c = new double[2];
+for(int i=0; i<2; i++) {
+    c[i] = a[i] + b[i];
+}</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python (NumPy)</h4>
+                        <div class="code-block python">
+                            <pre>import numpy as np
+a = np.array([1.0, 2.0])
+b = np.array([3.0, 4.0])
+# Vectorized addition (No loops!)
+c = a + b</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="subsection-title">Pandas (DataFrames)</h3>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">The industry standard for tabular data. Think of it as an in-memory SQL table on steroids.</p>
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java (Streams)</h4>
+                        <div class="code-block java">
+                            <pre>List&lt;Employee&gt; emps = getEmps();
+emps.stream()
+    .filter(e -> e.salary > 50k)
+    .map(e -> e.name)
+    .collect(Collectors.toList());</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>Python (Pandas)</h4>
+                        <div class="code-block python">
+                            <pre>import pandas as pd
+df = pd.read_csv("emps.csv")
+
+# Filter and select column
+high_earners = df[df['salary'] > 50000]['name']</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 48: PySpark -->
+            
+            <div class="section" id="pyspark">
+                <h2 class="section-title">48. PySpark Data Processing (Advanced)</h2>
+                <div class="highlight-box">
+                    <strong>Architecture Note:</strong> PySpark DataFrames are just a Python wrapper over JVM DataFrames. Python builds a logical plan, passes it to the JVM via py4j, and the JVM executes it. <strong>Performance is identical to Scala</strong> unless you use Python UDFs.
+                </div>
+                
+                <h3 class="subsection-title">DataFrame Transformations (Nearly Identical Syntax)</h3>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">Because PySpark is a wrapper, the API translates almost 1-to-1 with Java Spark. Notice how seamlessly your Java Spark knowledge transfers.</p>
+                
+                <div class="comparison-grid">
+                    <div class="comparison-card java">
+                        <h4>Java Spark</h4>
+                        <div class="code-block java">
+                            <pre>import static org.apache.spark.sql.functions.*;
+
+Dataset&lt;Row&gt; df = spark.read().parquet("users");
+
+df.filter(col("age").gt(21))
+  .withColumn("is_adult", lit(true))
+  .groupBy("city")
+  .agg(count("id").alias("user_count"))
+  .orderBy(desc("user_count"))
+  .show();</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-card python">
+                        <h4>PySpark</h4>
+                        <div class="code-block python">
+                            <pre>import pyspark.sql.functions as F
+
+df = spark.read.parquet("users")
+
+df.filter(F.col("age") > 21) \
+  .withColumn("is_adult", F.lit(True)) \
+  .groupBy("city") \
+  .agg(F.count("id").alias("user_count")) \
+  .orderBy(F.desc("user_count")) \
+  .show()</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="subsection-title" style="margin-top: 20px;">Pandas UDFs (Vectorized) vs Python UDFs</h3>
+                <ul style="margin-left: 20px; color: var(--text-muted); margin-bottom: 15px;">
+                    <li class="list-item"><strong>Standard UDFs:</strong> Spawns Python workers, serializes row-by-row with Pickle. <strong>Very Slow.</strong></li>
+                    <li class="list-item"><strong>Pandas UDFs:</strong> Uses Apache Arrow to transfer data in columnar format to Python in memory. <strong>Extremely Fast.</strong></li>
+                </ul>
+                <div class="code-block python">
+                    <pre>from pyspark.sql.functions import pandas_udf
+import pandas as pd
+
+# Define a vectorized Pandas UDF
+@pandas_udf('double')
+def calculate_bonus_udf(salary_series: pd.Series) -> pd.Series:
+    return salary_series * 0.15
+
+# Apply it (Fast!)
+df.withColumn("bonus", calculate_bonus_udf(F.col("salary")))</pre>
+                </div>
+            </div>
+
+            <div class="section" id="ai-ml">
+                <h2 class="section-title">48B. The AI & Machine Learning Ecosystem</h2>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">Python is the undisputed king of AI. If you are a backend engineer moving into AI, here is how your world maps over:</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Java Backend World</th>
+                            <th>Python AI World</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Spring Boot</td>
+                            <td><span class="tag python">FastAPI</span> (Standard for serving AI models)</td>
+                        </tr>
+                        <tr>
+                            <td>Spark Java</td>
+                            <td><span class="tag python">PySpark</span> (Standard for Data Engineering)</td>
+                        </tr>
+                        <tr>
+                            <td>Microservices</td>
+                            <td><span class="tag python">LangChain / LlamaIndex Agents</span></td>
+                        </tr>
+                        <tr>
+                            <td>DTOs</td>
+                            <td><span class="tag python">Pydantic Models</span> (Crucial for AI output validation)</td>
+                        </tr>
+                        <tr>
+                            <td>REST APIs</td>
+                            <td><span class="tag python">OpenAI / Hugging Face APIs</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+<!-- Section 49 -->
+            <div class="section" id="memory">
+                <h2 class="section-title">49. Python Memory Model</h2>
+                <div class="important-box">
+                    <strong>Important Differences:</strong>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Java</th>
+                            <th>Python</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Primitive vs Object</td><td>Everything is Object</td></tr>
+                        <tr><td>Stack + Heap</td><td>Mostly Object References</td></tr>
+                        <tr><td>JVM Memory</td><td>Python Runtime Memory</td></tr>
+                        <tr><td>Strong Encapsulation</td><td>Flexible</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section 50 -->
+            <div class="section" id="naming">
+                <h2 class="section-title">50. Python Naming Conventions</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Convention</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Variable</td><td>snake_case</td></tr>
+                        <tr><td>Class</td><td>PascalCase</td></tr>
+                        <tr><td>Constant</td><td>UPPER_CASE</td></tr>
+                        <tr><td>Private</td><td>_name</td></tr>
+                        <tr><td>Strong Private</td><td>__name</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section 51 -->
+            <div class="section" id="interview">
+                <h2 class="section-title">51. Common Interview Questions for Java Developers Learning Python</h2>
+                <div class="highlight-box">
+                    <div class="list-item">Difference between list and tuple</div>
+                    <div class="list-item">What is GIL?</div>
+                    <div class="list-item">Difference between deep copy and shallow copy</div>
+                    <div class="list-item">What are decorators?</div>
+                    <div class="list-item">Difference between multithreading and multiprocessing</div>
+                    <div class="list-item">What is duck typing?</div>
+                    <div class="list-item">What is monkey patching?</div>
+                    <div class="list-item">Difference between Flask and Django</div>
+                    <div class="list-item">What is asyncio?</div>
+                    <div class="list-item">Difference between is and ==</div>
+                </div>
+            </div>
+
+            <!-- Section 52 -->
+            <div class="section" id="multiprocessing">
+                <h2 class="section-title">52. Python Multiprocessing</h2>
+                <div class="code-block python">
+                    <span class="code-label">Python</span>
+                    <pre>from multiprocessing import Process</pre>
+                </div>
+                <div class="highlight-box">
+                    <strong>Used because of:</strong>
+                    <div class="list-item">GIL limitations</div>
+                    <div class="list-item">CPU intensive tasks</div>
+                </div>
+            </div>
+
+            <!-- Section 53 -->
+            <div class="section" id="gil">
+                <h2 class="section-title">53. GIL (Global Interpreter Lock)</h2>
+                <div class="warning-box">
+                    <strong>Very Important Concept.</strong>
+                </div>
+                <div class="highlight-box">
+                    <strong>Meaning:</strong>
+                    <div class="list-item">Only one thread executes Python bytecode at a time.</div>
+                    <div class="list-item">Multithreading helps mainly for I/O tasks.</div>
+                    <div class="list-item">Multiprocessing helps CPU-intensive tasks.</div>
+                </div>
+            </div>
+
+            <!-- Section 54 -->
+            <div class="section" id="pip">
+                <h2 class="section-title">54. Pip Commands Cheat Sheet</h2>
+                <div class="code-block python">
+                    <span class="code-label">Pip Commands</span>
+                    <pre>pip install requests
+pip uninstall requests
+pip list
+pip freeze
+pip freeze > requirements.txt</pre>
+                </div>
+            </div>
+
+            <!-- Section 55 -->
+            <div class="section" id="builtin">
+                <h2 class="section-title">55. Useful Python Built-in Functions</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Function</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>len()</td><td>size</td></tr>
+                        <tr><td>type()</td><td>datatype</td></tr>
+                        <tr><td>range()</td><td>sequence</td></tr>
+                        <tr><td>enumerate()</td><td>index + value</td></tr>
+                        <tr><td>zip()</td><td>combine lists</td></tr>
+                        <tr><td>map()</td><td>transformation</td></tr>
+                        <tr><td>filter()</td><td>filtering</td></tr>
+                        <tr><td>sorted()</td><td>sorting</td></tr>
+                        <tr><td>sum()</td><td>total</td></tr>
+                        <tr><td>max()</td><td>maximum</td></tr>
+                        <tr><td>min()</td><td>minimum</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section 56 -->
+            <div class="section" id="enumerate">
+                <h2 class="section-title">56. enumerate and zip</h2>
+                <div class="code-block python">
+                    <span class="code-label">Python</span>
+                    <pre>names = ["a", "b"]
+for index, value in enumerate(names):
+    print(index, value)
+
+a = [1,2]
+b = [3,4]
+for x, y in zip(a,b):
+    print(x,y)</pre>
+                </div>
+            </div>
+
+            <!-- Section 57 -->
+            <div class="section" id="slicing">
+                <h2 class="section-title">57. Python Slicing</h2>
+                <div class="code-block python">
+                    <span class="code-label">Python</span>
+                    <pre>name = "Python"
+print(name[0:3])
+print(name[-1])
+print(name[::-1])</pre>
+                </div>
+            </div>
+
+            <!-- Section 58 -->
+            <div class="section" id="copying">
+                <h2 class="section-title">58. Copying Objects</h2>
+                <div class="code-block python">
+                    <span class="code-label">Python</span>
+                    <pre>import copy
+copy.copy(obj)
+copy.deepcopy(obj)</pre>
+                </div>
+            </div>
+
+            <!-- Section 59 -->
+            <div class="section" id="dataclasses">
+                <h2 class="section-title">59. Dataclasses</h2>
+                <div class="code-block python">
+                    <span class="code-label">Python</span>
+                    <pre>from dataclasses import dataclass
+
+@dataclass
+class Employee:
+    id: int
+    name: str</pre>
+                </div>
+                <div class="highlight-box">
+                    <strong>Java Equivalent:</strong>
+                    <div class="list-item">Lombok</div>
+                    <div class="list-item">Records</div>
+                </div>
+            </div>
+
+            <!-- Section 60 -->
+            <div class="section" id="typehints">
+                <h2 class="section-title">60. Type Hints</h2>
+                <div class="code-block python">
+                    <span class="code-label">Python</span>
+                    <pre>from typing import List
+
+def add(a: int, b: int) -> int:
+    return a + b</pre>
+                </div>
+                <p><em>Equivalent to Java type declarations.</em></p>
+            </div>
+
+            <!-- Section 61 -->
+            <div class="section" id="setup">
+                <h2 class="section-title">61. Python Project Setup</h2>
+                <div class="code-block python">
+                    <span class="code-label">Commands</span>
+                    <pre>mkdir project
+cd project
+python -m venv venv
+pip install fastapi uvicorn</pre>
+                </div>
+            </div>
+
+            <!-- Section 62 -->
+            <div class="section" id="learning">
+                <h2 class="section-title">62. Recommended Learning Path for You</h2>
+                
+                <h3 class="subsection-title">Phase 1 — Python Basics</h3>
+                <div>
+                    <span class="tag">Variables</span>
+                    <span class="tag">Functions</span>
+                    <span class="tag">Collections</span>
+                    <span class="tag">OOP</span>
+                    <span class="tag">Exceptions</span>
+                    <span class="tag">Modules</span>
+                </div>
+
+                <h3 class="subsection-title">Phase 2 — Advanced Python</h3>
+                <div>
+                    <span class="tag">Decorators</span>
+                    <span class="tag">Generators</span>
+                    <span class="tag">Asyncio</span>
+                    <span class="tag">Multithreading</span>
+                    <span class="tag">Type Hints</span>
+                </div>
+
+                <h3 class="subsection-title">Phase 3 — Data Engineering</h3>
+                <div>
+                    <span class="tag">pandas</span>
+                    <span class="tag">PySpark</span>
+                    <span class="tag">Airflow</span>
+                    <span class="tag">Databricks</span>
+                    <span class="tag">boto3</span>
+                </div>
+
+                <h3 class="subsection-title">Phase 4 — AI Integration</h3>
+                <div>
+                    <span class="tag">LangChain</span>
+                    <span class="tag">OpenAI APIs</span>
+                    <span class="tag">RAG</span>
+                    <span class="tag">Vector DBs</span>
+                    <span class="tag">AI Agents</span>
+                </div>
+            </div>
+
+            <!-- Section 63 -->
+            <div class="section" id="mental">
+                <h2 class="section-title">63. Java to Python Mental Mapping</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Java Thinking</th>
+                            <th>Python Thinking</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Classes Everywhere</td><td>Functions + Simplicity</td></tr>
+                        <tr><td>Strict Structure</td><td>Rapid Development</td></tr>
+                        <tr><td>Enterprise Pattern Heavy</td><td>Minimalism</td></tr>
+                        <tr><td>Boilerplate</td><td>Readability</td></tr>
+                        <tr><td>Interfaces</td><td>Duck Typing</td></tr>
+                        <tr><td>Streams</td><td>Comprehensions</td></tr>
+                        <tr><td>DTOs</td><td>dict/dataclass</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section 64 -->
+            <div class="section" id="mistakes">
+                <h2 class="section-title">64. Common Mistakes by Java Developers</h2>
+                <div class="warning-box">
+                    <div class="list-item">Writing too many classes</div>
+                    <div class="list-item">Overusing getters/setters</div>
+                    <div class="list-item">Ignoring list comprehensions</div>
+                    <div class="list-item">Avoiding dynamic typing completely</div>
+                    <div class="list-item">Writing Java-style verbose code</div>
+                    <div class="list-item">Ignoring Python package ecosystem</div>
+                    <div class="list-item">Misunderstanding indentation</div>
+                    <div class="list-item">Forgetting mutable vs immutable types</div>
+                </div>
+            </div>
+
+            <!-- Section 65 -->
+            
+            <div class="section" id="libraries">
+                <h2 class="section-title">65. Equivalent Enterprise Libraries</h2>
+                <p style="margin-bottom: 15px; color: var(--text-muted);">When building production pipelines and backend systems, use these standard Python alternatives to your favorite Java tools.</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Java Ecosystem</th>
+                            <th>Python Ecosystem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Jackson / Gson</td><td><span class="tag python">json / pydantic</span> (Pydantic provides validation)</td></tr>
+                        <tr><td>Spring Boot</td><td><span class="tag python">FastAPI / Flask / Django</span></td></tr>
+                        <tr><td>JUnit / TestNG</td><td><span class="tag python">pytest</span></td></tr>
+                        <tr><td>Lombok</td><td><span class="tag python">dataclasses</span></td></tr>
+                        <tr><td>Maven / Gradle</td><td><span class="tag python">pip + poetry</span></td></tr>
+                        <tr><td>Hibernate / JPA</td><td><span class="tag python">SQLAlchemy</span></td></tr>
+                        <tr><td>Kafka Client</td><td><span class="tag python">confluent-kafka</span></td></tr>
+                        <tr><td>SLF4J / Logback</td><td><span class="tag python">logging / loguru</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+<!-- Section 66 -->
+            <div class="section" id="performance">
+                <h2 class="section-title">66. Python vs Java Performance Reality</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Area</th>
+                            <th>Better Choice</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Enterprise Backend</td><td>Java</td></tr>
+                        <tr><td>AI/ML</td><td>Python</td></tr>
+                        <tr><td>Rapid Prototyping</td><td>Python</td></tr>
+                        <tr><td>High Throughput APIs</td><td>Java</td></tr>
+                        <tr><td>Data Science</td><td>Python</td></tr>
+                        <tr><td>Big Data</td><td>Both</td></tr>
+                        <tr><td>Automation</td><td>Python</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section 67 -->
+            <div class="section" id="quickmap">
+                <h2 class="section-title">67. Final Quick Mapping Table</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Java</th>
+                            <th>Python</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>System.out.println</td><td>print</td></tr>
+                        <tr><td>ArrayList</td><td>list</td></tr>
+                        <tr><td>HashMap</td><td>dict</td></tr>
+                        <tr><td>HashSet</td><td>set</td></tr>
+                        <tr><td>Stream API</td><td>list comprehension</td></tr>
+                        <tr><td>Exception</td><td>Exception</td></tr>
+                        <tr><td>Thread</td><td>threading.Thread</td></tr>
+                        <tr><td>CompletableFuture</td><td>asyncio</td></tr>
+                        <tr><td>Spring Boot</td><td>FastAPI/Flask</td></tr>
+                        <tr><td>Maven</td><td>pip</td></tr>
+                        <tr><td>Lombok</td><td>dataclass</td></tr>
+                        <tr><td>Jackson</td><td>json/pydantic</td></tr>
+                        <tr><td>JUnit</td><td>pytest</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section 68 -->
+            <div class="section" id="tools">
+                <h2 class="section-title">68. Recommended Tools</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Purpose</th>
+                            <th>Tool</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>IDE</td><td>VS Code / PyCharm</td></tr>
+                        <tr><td>Package Mgmt</td><td>pip / poetry</td></tr>
+                        <tr><td>API Testing</td><td>Postman</td></tr>
+                        <tr><td>Notebook</td><td>Jupyter</td></tr>
+                        <tr><td>Formatting</td><td>black</td></tr>
+                        <tr><td>Linting</td><td>pylint</td></tr>
+                        <tr><td>Type Checking</td><td>mypy</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section 69 -->
+            <div class="section" id="memory-tricks">
+                <h2 class="section-title">69. Cheat Memory Tricks</h2>
+                <div class="quick-reference">
+                    <h4>Remember These</h4>
+                    <div class="highlight-box">
+                        <strong>Python Uses:</strong>
+                        <div class="list-item">Indentation</div>
+                        <div class="list-item">Simplicity</div>
+                        <div class="list-item">Readability</div>
+                        <div class="list-item">Dynamic Typing</div>
+                        <div class="list-item">Everything as Object</div>
+                    </div>
+                    <div class="highlight-box">
+                        <strong>Java Uses:</strong>
+                        <div class="list-item">Explicit Types</div>
+                        <div class="list-item">Boilerplate</div>
+                        <div class="list-item">Enterprise Structure</div>
+                        <div class="list-item">JVM Ecosystem</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 70 -->
+            <div class="section" id="career">
+                <h2 class="section-title">70. Your Best Career Combination</h2>
+                <div class="important-box">
+                    <strong>Your strongest future stack can be:</strong>
+                </div>
+                <div>
+                    <span class="tag java">Java + Spring Boot</span>
+                    <span class="tag python">Python + AI/ML</span>
+                    <span class="tag python">PySpark + Databricks</span>
+                    <span class="tag python">FastAPI + AI Agents</span>
+                    <span class="tag python">RAG + Vector Databases</span>
+                    <span class="tag python">Multi-tenant Data Pipelines</span>
+                </div>
+                <p style="margin-top: 15px; font-style: italic;">This combination is extremely valuable in modern enterprise AI and data engineering ecosystems.</p>
+            </div>
+
+            <!-- Section 71 -->
+            <div class="section" id="projects">
+                <h2 class="section-title">71. Recommended Practice Projects</h2>
+                
+                <h3 class="subsection-title">Beginner</h3>
+                <div class="highlight-box">
+                    <div class="list-item">CSV Processor</div>
+                    <div class="list-item">REST API Client</div>
+                    <div class="list-item">File Automation Tool</div>
+                    <div class="list-item">JSON Transformer</div>
+                </div>
+
+                <h3 class="subsection-title">Intermediate</h3>
+                <div class="highlight-box">
+                    <div class="list-item">FastAPI CRUD App</div>
+                    <div class="list-item">ETL Pipeline</div>
+                    <div class="list-item">PySpark Data Processor</div>
+                    <div class="list-item">S3 File Upload Service</div>
+                </div>
+
+                <h3 class="subsection-title">Advanced</h3>
+                <div class="highlight-box">
+                    <div class="list-item">AI Agent for Metadata Extraction</div>
+                    <div class="list-item">RAG-based Pipeline Builder</div>
+                    <div class="list-item">AI-powered Data Mapper</div>
+                    <div class="list-item">Databricks Workflow Generator</div>
+                </div>
+            </div>
+
+            <!-- Section 72 -->
+            <div class="section" id="advice">
+                <h2 class="section-title">72. Final Advice for Senior Java Developers</h2>
+                <div class="warning-box">
+                    <strong>Do NOT try to replace Java with Python.</strong>
+                </div>
+                <div class="important-box">
+                    <strong>Instead:</strong>
+                    <div class="list-item">Use Java for enterprise-grade systems.</div>
+                    <div class="list-item">Use Python for AI, automation, and data workloads.</div>
+                    <div class="list-item">Combine both strategically.</div>
+                </div>
+                <p style="margin-top: 15px;">Your 15 years of architecture and backend experience becomes significantly more valuable when combined with Python + AI ecosystems.</p>
+            </div>
+
+        
+        
+                
+        </main>
+    </div>
+
+    <script src="assets/scripts.js"></script>
+
+
+    <footer class="global-footer">
+        <div class="footer-brand">
+            <img src="assets/ns_logo.png" alt="NS Logo">
+            Naresh Sanda
+        </div>
+        <div>&copy; 2026 Senior Developer Hub. All rights reserved.</div>
+    </footer>
+</body>
+</html>

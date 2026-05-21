@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Design Mastery - Cheat Sheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta property="og:title" content="System Design Mastery - Cheat Sheet">
+    <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="assets/ns_logo.png">
+</head>
+<body>
+
+    <header class="global-navbar">
+        <a href="index.html" class="brand-logo">
+            <img src="assets/ns_logo.png" alt="NS Logo" class="brand-image" >
+            <div>Naresh Sanda</div>
+        </a>
+        <div class="header-subtitle">Senior Developer Hub</div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search topics...">
+                <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
+            </div>
+            <nav class="toc-nav" id="tocNav">
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#cap">1. CAP Theorem</a></li>
+                    <li><a href="#scaling">2. Scaling Strategies</a></li>
+                    <li><a href="#sharding">3. Database Sharding</a></li>
+                    
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <div class="header">
+                <h1>System Design Mastery</h1>
+                <p class="author">Author: Naresh Kumar Sanda</p>
+                <p style="color: var(--text-muted);">Load Balancing, CAP Theorem, Sharding, and Event-Driven Patterns.</p>
+            </div>
+
+            
+            <div class="section" id="cap">
+                <h2 class="section-title">1. CAP Theorem</h2>
+                <div class="highlight-box">A distributed system can only provide TWO of the following three guarantees:</div><ul><li><strong>Consistency (C):</strong> Every read receives the most recent write.</li><li><strong>Availability (A):</strong> Every request receives a response (even if stale).</li><li><strong>Partition Tolerance (P):</strong> System continues to operate despite network failures.</li></ul><p><em>(Note: Network partitions (P) are unavoidable, so you must choose between CP or AP).</em></p>
+            </div>
+        
+            <div class="section" id="scaling">
+                <h2 class="section-title">2. Scaling Strategies</h2>
+                <table><thead><tr><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><strong>Vertical (Scale Up)</strong></td><td>Adding more RAM/CPU to a single server. Limited ceiling, has single point of failure.</td></tr><tr><td><strong>Horizontal (Scale Out)</strong></td><td>Adding more servers and putting a Load Balancer in front. Infinite scaling.</td></tr></tbody></table>
+            </div>
+        
+            <div class="section" id="sharding">
+                <h2 class="section-title">3. Database Sharding</h2>
+                <p>Splitting a massive database table across multiple servers. <strong>Consistent Hashing</strong> is used to determine which shard a specific user's data belongs to, minimizing data movement when adding new shards.</p>
+            </div>
+        
+
+        
+        
+                
+        </main>
+    </div>
+
+    <script src="assets/scripts.js"></script>
+
+    <footer class="global-footer">
+        <div class="footer-brand">
+            <img src="assets/ns_logo.png" alt="NS Logo">
+            Naresh Sanda
+        </div>
+        <div>&copy; 2026 Senior Developer Hub. All rights reserved.</div>
+    </footer>
+</body>
+</html>

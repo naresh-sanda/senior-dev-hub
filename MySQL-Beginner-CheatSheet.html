@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySQL Beginner Cheat Sheet</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="assets/styles.css">
+    
+
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta property="og:title" content="MySQL Beginner Cheat Sheet">
+    <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="assets/ns_logo.png">
+</head>
+<body>
+
+    <header class="global-navbar">
+        <a href="index.html" class="brand-logo">
+            <img src="assets/ns_logo.png" alt="NS Logo" class="brand-image" >
+            <div>Naresh Sanda</div>
+        </a>
+        <div class="header-subtitle">Senior Developer Hub</div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search topics...">
+                <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
+            </div>
+            <nav class="toc-nav" id="tocNav">
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#fundamentals">1. DB Fundamentals</a></li>
+                    <li><a href="#datatypes">1B. MySQL Data Types</a></li>
+                    <li><a href="#schema">2. Sample Schema</a></li>
+                    <li><a href="#ddl">3. DDL (Create, Drop)</a></li>
+                    <li><a href="#dml">4. DML (Insert, Update)</a></li>
+                    <li><a href="#dql">5. DQL (Select, Where)</a></li>
+                    <li><a href="#aggregations">6. Aggregations & Grouping</a></li>
+                    <li><a href="#joins">7. SQL Joins</a></li>
+                    <li><a href="#scenarios">7B. Real-World Scenarios</a></li>
+                    <li><a href="#advanced">8. Subqueries & CTEs</a></li>
+                    <li><a href="#dcl">9. DCL (Grant, Revoke)</a></li>
+                    <li><a href="#tcl">10. TCL & Best Practices</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <div class="header">
+                <h1>MySQL Beginner Cheat Sheet</h1>
+                <p class="author">Author: Naresh Kumar Sanda</p>
+                <p style="color: var(--text-muted);">The definitive guide to learning MySQL, packed with sample data and real-world queries.</p>
+            </div>
+
+            <!-- Section 1 -->
+            <div class="section" id="fundamentals">
+                <h2 class="section-title">1. Database Fundamentals</h2>
+                <div class="highlight-box">
+                    <strong>MySQL</strong> is a Relational Database Management System (RDBMS). It stores data in <strong>Tables</strong> (which look like Excel spreadsheets). Tables are made up of <strong>Rows</strong> (records) and <strong>Columns</strong> (fields/attributes).
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Concept</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Primary Key (PK)</strong></td><td>A unique identifier for a row (e.g., User ID). No two rows can have the same PK.</td></tr>
+                        <tr><td><strong>Foreign Key (FK)</strong></td><td>A column that links to the Primary Key of another table, creating a relationship.</td></tr>
+                        <tr><td><strong>Query</strong></td><td>A command (written in SQL) sent to the database to insert, read, or delete data.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            
+            <!-- Section 1B: Data Types -->
+            <div class="section" id="datatypes">
+                <h2 class="section-title">1B. Essential MySQL Data Types</h2>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">When you create a column in a table, you must tell MySQL what kind of data it will hold.</p>
+                
+                <h3 class="subsection-title">String (Text) Types</h3>
+                <table>
+                    <thead><tr><th>Type</th><th>Use Case</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>VARCHAR(255)</code></td><td>Variable-length text (emails, names, passwords). Max length is 255 in this example.</td></tr>
+                        <tr><td><code>TEXT</code></td><td>Long-form text (blog posts, descriptions). Can hold huge amounts of text.</td></tr>
+                        <tr><td><code>CHAR(2)</code></td><td>Fixed-length text. Always takes exactly 2 characters (e.g., State codes like 'TX', 'CA').</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 class="subsection-title">Numeric Types</h3>
+                <table>
+                    <thead><tr><th>Type</th><th>Use Case</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>INT</code></td><td>Whole numbers (IDs, age, quantities).</td></tr>
+                        <tr><td><code>DECIMAL(10, 2)</code></td><td>Exact monetary values. Means 10 digits total, 2 of which are after the decimal (e.g., 99999999.99).</td></tr>
+                        <tr><td><code>FLOAT / DOUBLE</code></td><td>Approximate numbers with decimals (scientific calculations). Do NOT use for money!</td></tr>
+                        <tr><td><code>BOOLEAN</code></td><td>True/False values (MySQL actually saves this as <code>TINYINT(1)</code> behind the scenes).</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 class="subsection-title">Date & Time Types</h3>
+                <table>
+                    <thead><tr><th>Type</th><th>Use Case</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>DATE</code></td><td>Date only (YYYY-MM-DD), e.g., '2026-05-20'.</td></tr>
+                        <tr><td><code>DATETIME</code></td><td>Date and Time (YYYY-MM-DD HH:MI:SS).</td></tr>
+                        <tr><td><code>TIMESTAMP</code></td><td>Tracks exactly when a record was created or updated. Automatically converts to UTC.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+    
+            <!-- Section 2 -->
+            <div class="section" id="schema">
+                <h2 class="section-title">2. Our Sample E-Commerce Schema</h2>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">Throughout this guide, we will use a realistic E-Commerce database with three tables. This helps you understand how data connects in the real world.</p>
+                
+                <h3 class="subsection-title">1. users</h3>
+                <p>Stores customer information.</p>
+                <table>
+                    <thead><tr><th>id (PK)</th><th>name</th><th>email</th></tr></thead>
+                    <tbody>
+                        <tr><td>1</td><td>Naresh Kumar</td><td>naresh@example.com</td></tr>
+                        <tr><td>2</td><td>Alice Smith</td><td>alice@example.com</td></tr>
+                        <tr><td>3</td><td>Bob Johnson</td><td>bob@example.com</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 class="subsection-title">2. products</h3>
+                <p>Stores items available for purchase.</p>
+                <table>
+                    <thead><tr><th>id (PK)</th><th>title</th><th>price</th><th>category</th></tr></thead>
+                    <tbody>
+                        <tr><td>101</td><td>Laptop</td><td>1200.00</td><td>Electronics</td></tr>
+                        <tr><td>102</td><td>Mouse</td><td>25.00</td><td>Electronics</td></tr>
+                        <tr><td>103</td><td>Coffee Mug</td><td>15.00</td><td>Kitchen</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 class="subsection-title">3. orders</h3>
+                <p>Records which user bought which product.</p>
+                <table>
+                    <thead><tr><th>id (PK)</th><th>user_id (FK)</th><th>product_id (FK)</th><th>quantity</th></tr></thead>
+                    <tbody>
+                        <tr><td>1001</td><td>1</td><td>101</td><td>1</td></tr>
+                        <tr><td>1002</td><td>1</td><td>102</td><td>2</td></tr>
+                        <tr><td>1003</td><td>2</td><td>103</td><td>4</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section 3 -->
+            <div class="section" id="ddl">
+                <h2 class="section-title">3. DDL (Data Definition Language)</h2>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">Used to create and modify the structure of your database (Tables, Columns).</p>
+                
+                <h3 class="subsection-title">Creating the Database and Tables</h3>
+                <div class="code-block sql">
+                    <pre>-- Create and switch to the database
+CREATE DATABASE ecommerce;
+USE ecommerce;
+
+-- Create users table
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL
+);
+
+-- Create products table
+CREATE TABLE products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(150) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    category VARCHAR(50)
+);
+
+-- Create orders table with Foreign Keys
+CREATE TABLE orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    product_id INT,
+    quantity INT DEFAULT 1,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);</pre>
+                </div>
+
+                <h3 class="subsection-title">Modifying Tables</h3>
+                <div class="code-block sql">
+                    <pre>-- Add a new column to users
+ALTER TABLE users ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+-- Delete a table entirely (Careful!)
+DROP TABLE orders;</pre>
+                </div>
+            </div>
+
+            <!-- Section 4 -->
+            <div class="section" id="dml">
+                <h2 class="section-title">4. DML (Data Manipulation Language)</h2>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">Used to Insert, Update, and Delete the actual rows in your tables.</p>
+
+                <h3 class="subsection-title">Inserting Data</h3>
+                <div class="code-block sql">
+                    <pre>-- Insert a single user
+INSERT INTO users (name, email) 
+VALUES ('Naresh Kumar', 'naresh@example.com');
+
+-- Insert multiple products at once
+INSERT INTO products (title, price, category) VALUES 
+('Laptop', 1200.00, 'Electronics'),
+('Mouse', 25.00, 'Electronics'),
+('Coffee Mug', 15.00, 'Kitchen');</pre>
+                </div>
+
+                <h3 class="subsection-title">Updating Data</h3>
+                <div class="important-box">
+                    <strong>Warning:</strong> Always use a <code>WHERE</code> clause when updating! If you forget it, you will update every single row in the table!
+                </div>
+                <div class="code-block sql">
+                    <pre>-- Increase the price of the Mouse
+UPDATE products 
+SET price = 29.99 
+WHERE title = 'Mouse';</pre>
+                </div>
+
+                <h3 class="subsection-title">Deleting Data</h3>
+                <div class="code-block sql">
+                    <pre>-- Delete Bob from the database
+DELETE FROM users 
+WHERE name = 'Bob Johnson';</pre>
+                </div>
+            </div>
+
+            <!-- Section 5 -->
+            <div class="section" id="dql">
+                <h2 class="section-title">5. DQL (Data Query Language) - Querying Data</h2>
+                
+                <h3 class="subsection-title">Basic SELECT</h3>
+                <div class="code-block sql">
+                    <pre>-- Read everything from products table
+SELECT * FROM products;
+
+-- Read specific columns
+SELECT title, price FROM products;</pre>
+                </div>
+
+                <h3 class="subsection-title">Filtering with WHERE</h3>
+                <div class="code-block sql">
+                    <pre>-- Exact match
+SELECT * FROM users WHERE id = 1;
+
+-- Greater than
+SELECT * FROM products WHERE price > 50.00;
+
+-- Multiple conditions (AND / OR)
+SELECT * FROM products WHERE category = 'Electronics' AND price < 100.00;
+
+-- Pattern matching (LIKE)
+-- % means "any characters". This finds emails ending in @example.com
+SELECT * FROM users WHERE email LIKE '%@example.com';
+
+-- List matching (IN)
+SELECT * FROM products WHERE category IN ('Kitchen', 'Books');</pre>
+                </div>
+
+                <h3 class="subsection-title">Sorting and Pagination</h3>
+                <div class="code-block sql">
+                    <pre>-- Sort products by price highest to lowest
+SELECT * FROM products ORDER BY price DESC;
+
+-- Get the top 5 most expensive products
+SELECT * FROM products ORDER BY price DESC LIMIT 5;</pre>
+                </div>
+            </div>
+
+            <!-- Section 6 -->
+            <div class="section" id="aggregations">
+                <h2 class="section-title">6. Aggregations & Grouping</h2>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">Used to calculate summaries of data, like totals, counts, and averages.</p>
+
+                <div class="code-block sql">
+                    <pre>-- Count the total number of users
+SELECT COUNT(*) FROM users;
+
+-- Find the average product price
+SELECT AVG(price) FROM products;</pre>
+                </div>
+
+                <h3 class="subsection-title">GROUP BY</h3>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">Groups rows that have the same values into summary rows.</p>
+                <div class="code-block sql">
+                    <pre>-- How many products are in each category?
+SELECT category, COUNT(*) as product_count
+FROM products
+GROUP BY category;
+
+-- Total revenue generated per user (assuming quantity * price)
+SELECT user_id, SUM(quantity) as total_items_bought
+FROM orders
+GROUP BY user_id;</pre>
+                </div>
+
+                <h3 class="subsection-title">HAVING (Filtering Grouped Data)</h3>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">You cannot use <code>WHERE</code> on aggregated functions like COUNT(). You must use <code>HAVING</code>.</p>
+                <div class="code-block sql">
+                    <pre>-- Find categories that have more than 10 products
+SELECT category, COUNT(*) 
+FROM products
+GROUP BY category
+HAVING COUNT(*) > 10;</pre>
+                </div>
+            </div>
+
+            <!-- Section 7 -->
+            <div class="section" id="joins">
+                <h2 class="section-title">7. SQL Joins</h2>
+                <div class="highlight-box">
+                    Joins are used to combine rows from two or more tables, based on a related column between them (like Foreign Keys).
+                </div>
+
+                <h3 class="subsection-title">INNER JOIN</h3>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">Returns records that have matching values in <strong>both</strong> tables. If a user hasn't made an order, they won't show up here.</p>
+
+                <div class="venn-container">
+                    <svg width="200" height="120" viewBox="0 0 200 120">
+                        <!-- Left Circle -->
+                        <circle cx="70" cy="60" r="50" fill="rgba(0, 117, 143, 0.1)" stroke="#00758F" stroke-width="2"/>
+                        <!-- Right Circle -->
+                        <circle cx="130" cy="60" r="50" fill="rgba(0, 117, 143, 0.1)" stroke="#00758F" stroke-width="2"/>
+                        <!-- Intersection Path -->
+                        <g class="inner-anim">
+                            <path d="M 100 20 A 50 50 0 0 0 100 100 A 50 50 0 0 0 100 20 Z" fill="none"/>
+                        </g>
+                        <text x="40" y="65" font-family="Arial" font-size="12" fill="#475569">A</text>
+                        <text x="150" y="65" font-family="Arial" font-size="12" fill="#475569">B</text>
+                    </svg>
+                </div>
+    
+                <div class="code-block sql">
+                    <pre>SELECT users.name, orders.quantity
+FROM users
+INNER JOIN orders ON users.id = orders.user_id;</pre>
+                </div>
+
+                <h3 class="subsection-title">LEFT JOIN</h3>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">Returns <strong>all</strong> records from the left table (users), and the matched records from the right table (orders). Users without orders will show <code>NULL</code> for their order quantity.</p>
+
+                <div class="venn-container">
+                    <svg width="200" height="120" viewBox="0 0 200 120">
+                        <!-- Right Circle -->
+                        <circle cx="130" cy="60" r="50" fill="rgba(0, 117, 143, 0.1)" stroke="#00758F" stroke-width="2"/>
+                        <!-- Left Circle Full Highlight -->
+                        <g class="left-anim">
+                            <path class="left-full" d="M 70 10 A 50 50 0 1 0 70 110 A 50 50 0 0 0 70 10 Z" fill="none"/>
+                        </g>
+                        <!-- Left Circle Outline -->
+                        <circle cx="70" cy="60" r="50" fill="none" stroke="#00758F" stroke-width="2"/>
+                        <text x="40" y="65" font-family="Arial" font-size="12" fill="#475569">A</text>
+                        <text x="150" y="65" font-family="Arial" font-size="12" fill="#475569">B</text>
+                    </svg>
+                </div>
+    
+                <div class="code-block sql">
+                    <pre>SELECT users.name, orders.quantity
+FROM users
+LEFT JOIN orders ON users.id = orders.user_id;</pre>
+                </div>
+
+                <h3 class="subsection-title">Multi-Table Join (The Real Power)</h3>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">Let's join all three tables to see EXACTLY who bought what and for how much.</p>
+                <div class="code-block sql">
+                    <pre>SELECT users.name, products.title, products.price, orders.quantity
+FROM orders
+INNER JOIN users ON orders.user_id = users.id
+INNER JOIN products ON orders.product_id = products.id;</pre>
+                </div>
+            </div>
+
+            
+            <!-- Section 7B: Real-World Scenarios -->
+            <div class="section" id="scenarios">
+                <h2 class="section-title">7B. Real-World Business Scenarios</h2>
+                <div class="highlight-box">
+                    Syntax is great, but combining tools to answer real questions is what makes a great developer. Let's solve actual business problems using our E-Commerce schema!
+                </div>
+                
+                <h3 class="subsection-title">Scenario 1: "Who are our top 3 highest-spending customers?"</h3>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">This requires joining all three tables to get the user name, product price, and order quantity, then calculating the total spend per user.</p>
+                <div class="code-block sql">
+                    <pre>SELECT 
+    users.name, 
+    SUM(orders.quantity * products.price) AS total_spent
+FROM users
+INNER JOIN orders ON users.id = orders.user_id
+INNER JOIN products ON orders.product_id = products.id
+GROUP BY users.id, users.name
+ORDER BY total_spent DESC
+LIMIT 3;</pre>
+                </div>
+
+                <h3 class="subsection-title">Scenario 2: "Which products have NEVER been ordered?"</h3>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">A classic technique to find "orphaned" data. We use a <code>LEFT JOIN</code> from products to orders. If a product has no orders, the order ID will be <code>NULL</code>.</p>
+                <div class="code-block sql">
+                    <pre>SELECT products.title 
+FROM products
+LEFT JOIN orders ON products.id = orders.product_id
+WHERE orders.id IS NULL;</pre>
+                </div>
+
+                <h3 class="subsection-title">Scenario 3: "Give me a Monthly Sales Report"</h3>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">Working with dates is incredibly common. Here we use MySQL's built-in date functions to group revenue by the month the order was placed. <em>(Assumes an <code>order_date</code> column in orders)</em></p>
+                <div class="code-block sql">
+                    <pre>SELECT 
+    YEAR(order_date) AS sales_year,
+    MONTHNAME(order_date) AS sales_month,
+    SUM(quantity * price) AS monthly_revenue
+FROM orders
+INNER JOIN products ON orders.product_id = products.id
+GROUP BY sales_year, sales_month
+ORDER BY sales_year DESC, MONTH(order_date) DESC;</pre>
+                </div>
+            </div>
+    
+            <!-- Section 8 -->
+            <div class="section" id="advanced">
+                <h2 class="section-title">8. Advanced Beginner Concepts</h2>
+                
+                <h3 class="subsection-title">Subqueries</h3>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">A query nested inside another query.</p>
+                <div class="code-block sql">
+                    <pre>-- Find products that cost more than the average product
+SELECT title, price 
+FROM products 
+WHERE price > (SELECT AVG(price) FROM products);</pre>
+                </div>
+
+                <h3 class="subsection-title">CTEs (Common Table Expressions)</h3>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">A cleaner, more readable alternative to subqueries using the <code>WITH</code> keyword.</p>
+                <div class="code-block sql">
+                    <pre>WITH ExpensiveProducts AS (
+    SELECT id, title FROM products WHERE price > 1000
+)
+SELECT * FROM ExpensiveProducts;</pre>
+                </div>
+            </div>
+
+            
+            <!-- Section 9: DCL -->
+            <div class="section" id="dcl">
+                <h2 class="section-title">9. DCL (Data Control Language)</h2>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">Used to control access and manage permissions for users.</p>
+                
+                <h3 class="subsection-title">GRANT & REVOKE</h3>
+                <div class="code-block sql">
+                    <pre>-- Create a new user
+CREATE USER 'readonly_user'@'localhost' IDENTIFIED BY 'password123';
+
+-- Give them permission to ONLY read the ecommerce database
+GRANT SELECT ON ecommerce.* TO 'readonly_user'@'localhost';
+
+-- Remove a permission
+REVOKE SELECT ON ecommerce.* FROM 'readonly_user'@'localhost';</pre>
+                </div>
+            </div>
+    
+            <!-- Section 10 -->
+            <div class="section" id="tcl">
+                <h2 class="section-title">10. TCL & Best Practices</h2>
+                
+                <h3 class="subsection-title">Indexes</h3>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">If you constantly search by email, querying a table with millions of rows is slow. Indexes build a "Table of Contents" for that column, making lookups blazing fast.</p>
+                <div class="code-block sql">
+                    <pre>-- Create an index on the email column
+CREATE INDEX idx_user_email ON users(email);</pre>
+                </div>
+
+                <h3 class="subsection-title">TCL (Transaction Control Language)</h3>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">Groups multiple SQL statements into a single unit of work. If one statement fails, the entire transaction rolls back, preventing corrupt/partial data (like money leaving one account but never arriving in another).</p>
+                <div class="code-block sql">
+                    <pre>START TRANSACTION;
+
+UPDATE accounts SET balance = balance - 100 WHERE id = 1;
+UPDATE accounts SET balance = balance + 100 WHERE id = 2;
+
+-- If both succeeded:
+COMMIT;
+
+-- If something crashed/failed:
+ROLLBACK;</pre>
+                </div>
+            </div>
+
+        
+        
+                
+        </main>
+    </div>
+
+    <script src="assets/scripts.js"></script>
+
+    <footer class="global-footer">
+        <div class="footer-brand">
+            <img src="assets/ns_logo.png" alt="NS Logo">
+            Naresh Sanda
+        </div>
+        <div>&copy; 2026 Senior Developer Hub. All rights reserved.</div>
+    </footer>
+</body>
+</html>

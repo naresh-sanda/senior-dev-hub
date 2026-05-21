@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Security & Authorization - Cheat Sheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta property="og:title" content="API Security & Authorization - Cheat Sheet">
+    <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="assets/ns_logo.png">
+</head>
+<body>
+
+    <header class="global-navbar">
+        <a href="index.html" class="brand-logo">
+            <img src="assets/ns_logo.png" alt="NS Logo" class="brand-image" >
+            <div>Naresh Sanda</div>
+        </a>
+        <div class="header-subtitle">Senior Developer Hub</div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search topics...">
+                <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
+            </div>
+            <nav class="toc-nav" id="tocNav">
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#authn-authz">1. Authentication vs. Authorization</a></li>
+                    <li><a href="#no-auth">2. No Auth (Public/Anonymous)</a></li>
+                    <li><a href="#basic">3. Basic Authentication</a></li>
+                    <li><a href="#session">4. Session-Based Authentication (Stateful)</a></li>
+                    <li><a href="#bearer-jwt">5. Bearer Tokens & JWT (Stateless)</a></li>
+                    <li><a href="#oauth2">6. OAuth 2.0 & OpenID Connect (Delegated Access)</a></li>
+                    <li><a href="#api-keys">7. API Keys (Machine-to-Machine)</a></li>
+                    
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <div class="header">
+                <h1>API Security & Authorization</h1>
+                <p class="author">Author: Naresh Kumar Sanda</p>
+                <p style="color: var(--text-muted);">Comprehensive guide to Basic, Bearer, Session, JWT, and OAuth2 architectures.</p>
+            </div>
+
+            
+            <div class="section" id="authn-authz">
+                <h2 class="section-title">1. Authentication vs. Authorization</h2>
+                
+                    <ul>
+                        <li><strong>Authentication (AuthN):</strong> Who are you? (e.g., verifying a username and password).</li>
+                        <li><strong>Authorization (AuthZ):</strong> What are you allowed to do? (e.g., checking if the user has the <code>ROLE_ADMIN</code> permission).</li>
+                    </ul>
+            </div>
+        
+            <div class="section" id="no-auth">
+                <h2 class="section-title">2. No Auth (Public/Anonymous)</h2>
+                
+                    <p>Some endpoints explicitly require NO authentication. The server processes the request without checking any headers.</p>
+                    <ul>
+                        <li><strong>Use Cases:</strong> <code>/actuator/health</code> (health checks for Load Balancers/K8s), Public product catalogs, or user registration endpoints.</li>
+                        <li><strong>Spring Security Example:</strong> <code>http.authorizeRequests().antMatchers("/public/**").permitAll();</code></li>
+                    </ul>
+            </div>
+        
+            <div class="section" id="basic">
+                <h2 class="section-title">3. Basic Authentication</h2>
+                
+                    <div class="important-box"><strong>Warning:</strong> Basic Auth sends credentials encoded (NOT encrypted) in the header. It is fundamentally insecure unless sent over HTTPS (TLS/SSL).</div>
+                    <p>The client concatenates the username and password with a colon (<code>user:pass</code>), Base64 encodes it, and sends it in the Authorization header on EVERY request.</p>
+                    <div class="code-block bash"><pre># Client Request Header
+Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==</pre></div>
+                    <p><strong>Pros:</strong> Extremely simple to implement. <strong>Cons:</strong> Insecure over HTTP, requires sending the actual password on every single request.</p>
+            </div>
+        
+            <div class="section" id="session">
+                <h2 class="section-title">4. Session-Based Authentication (Stateful)</h2>
+                
+                    <p>The traditional approach for web browsers. The server does the heavy lifting.</p>
+                    <ol>
+                        <li>User logs in with credentials.</li>
+                        <li>Server validates, creates a "Session Object" in server memory (or Redis), and sends a Session ID cookie (like <code>JSESSIONID</code>) back to the browser.</li>
+                        <li>Browser automatically sends the Cookie on subsequent requests.</li>
+                        <li>Server looks up the Session ID in its memory to identify the user.</li>
+                    </ol>
+                    <div class="highlight-box"><strong>Drawbacks:</strong> <strong>1. Scalability:</strong> If you have 3 backend servers, the session must be shared (e.g., via Redis) otherwise a user hitting Server 2 will be "logged out". <strong>2. Vulnerability:</strong> Susceptible to CSRF (Cross-Site Request Forgery) attacks.</div>
+            </div>
+        
+            <div class="section" id="bearer-jwt">
+                <h2 class="section-title">5. Bearer Tokens & JWT (Stateless)</h2>
+                
+                    <p>Unlike Sessions, JWT (JSON Web Token) is <strong>Stateless</strong>. The server does NOT save the token in a database or memory.</p>
+                    <p>A JWT consists of 3 Base64-encoded parts separated by dots: <code>Header.Payload.Signature</code>.</p>
+                    <ul>
+                        <li><strong>Header:</strong> Specifies the algorithm used (e.g., HS256 or RS256).</li>
+                        <li><strong>Payload:</strong> The actual data (Claims) like <code>{"userId": 123, "role": "ADMIN"}</code>. <em>Anyone can decode and read this, so do not put passwords here!</em></li>
+                        <li><strong>Signature:</strong> The crucial security piece. The server hashes the Header + Payload using a secret key.</li>
+                    </ul>
+                    <h3 class="subsection-title">How it works:</h3>
+                    <p>When the server receives a request with <code>Authorization: Bearer &lt;token&gt;</code>, it recalculates the Signature using its secret key. If the signatures match, the token is perfectly valid and hasn't been tampered with. No database lookup is required!</p>
+                    <div class="code-block bash"><pre># Client Request Header
+Authorization: Bearer eyJhbGciOiJIUzI1Ni...[rest of JWT]</pre></div>
+            </div>
+        
+            <div class="section" id="oauth2">
+                <h2 class="section-title">6. OAuth 2.0 & OpenID Connect (Delegated Access)</h2>
+                
+                    <p>OAuth 2.0 is an <strong>Authorization</strong> framework. OpenID Connect (OIDC) is an identity layer built on top of OAuth 2.0 to provide <strong>Authentication</strong>.</p>
+                    <p><strong>The standard "Login with Google/GitHub" flow (Authorization Code Flow):</strong></p>
+                    <ol>
+                        <li><strong>User</strong> clicks "Login". Your App redirects them to the <strong>Authorization Server</strong> (Google).</li>
+                        <li>User logs into Google and grants permission (Consent).</li>
+                        <li>Google redirects the user back to your App with a short-lived <strong>Authorization Code</strong> in the URL.</li>
+                        <li>Your Backend securely contacts Google (server-to-server) and trades the Code + Client Secret for an <strong>Access Token</strong> (usually a JWT) and a <strong>Refresh Token</strong>.</li>
+                        <li>Your App uses the Access Token to fetch resources on behalf of the user.</li>
+                    </ol>
+            </div>
+        
+            <div class="section" id="api-keys">
+                <h2 class="section-title">7. API Keys (Machine-to-Machine)</h2>
+                
+                    <p>Typically used for server-to-server communication or monetizing public APIs (e.g., Google Maps API). The client sends a unique, long-lived string (the key) in a custom header (e.g., <code>X-API-Key</code>).</p>
+                    <p><strong>Use Cases:</strong> Rate-limiting, tracking usage/billing per client. Not suitable for authenticating individual users in a web browser because the key is permanent and hard to secure on the client side.</p>
+            </div>
+        
+
+        
+        
+                
+        </main>
+    </div>
+
+    <script src="assets/scripts.js"></script>
+
+    <footer class="global-footer">
+        <div class="footer-brand">
+            <img src="assets/ns_logo.png" alt="NS Logo">
+            Naresh Sanda
+        </div>
+        <div>&copy; 2026 Senior Developer Hub. All rights reserved.</div>
+    </footer>
+</body>
+</html>

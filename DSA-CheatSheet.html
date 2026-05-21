@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSA Mastery (Deep Dive) - Cheat Sheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta property="og:title" content="DSA Mastery (Deep Dive) - Cheat Sheet">
+    <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="assets/ns_logo.png">
+</head>
+<body>
+
+    <header class="global-navbar">
+        <a href="index.html" class="brand-logo">
+            <img src="assets/ns_logo.png" alt="NS Logo" class="brand-image" >
+            <div>Naresh Sanda</div>
+        </a>
+        <div class="header-subtitle">Senior Developer Hub</div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search topics...">
+                <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
+            </div>
+            <nav class="toc-nav" id="tocNav">
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#bigo">1. Big O Notation (Time/Space Complexity)</a></li>
+                    <li><a href="#arrays">2. Arrays & Strings (Two Pointers / Sliding Window)</a></li>
+                    <li><a href="#linkedlists">3. Linked Lists (Fast & Slow Pointers)</a></li>
+                    <li><a href="#hashmaps">4. HashMaps (Deep Internal Mechanics)</a></li>
+                    <li><a href="#trees">5. Trees (Binary Search Trees & Traversals)</a></li>
+                    <li><a href="#graphs">6. Graph Traversals (BFS vs DFS)</a></li>
+                    
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <div class="header">
+                <h1>DSA Mastery (Deep Dive)</h1>
+                <p class="author">Author: Naresh Kumar Sanda</p>
+                <p style="color: var(--text-muted);">Data Structures, Algorithms, and Patterns for Elite Tech Interviews.</p>
+            </div>
+
+            
+            <div class="section" id="bigo">
+                <h2 class="section-title">1. Big O Notation (Time/Space Complexity)</h2>
+                
+                    <div class="highlight-box">Big O describes how the runtime or space requirements grow as the input size (N) grows towards infinity. Drop constants and non-dominant terms (e.g., O(2N + N²) becomes O(N²)).</div>
+                    <table>
+                        <thead><tr><th>Complexity</th><th>Name</th><th>Data Structure / Algorithm Example</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>O(1)</code></td><td>Constant</td><td>HashMap lookup, Array index access.</td></tr>
+                            <tr><td><code>O(log n)</code></td><td>Logarithmic</td><td>Binary Search on sorted array, inserting into a BST.</td></tr>
+                            <tr><td><code>O(n)</code></td><td>Linear</td><td>Looping an array, traversing a Linked List.</td></tr>
+                            <tr><td><code>O(n log n)</code></td><td>Log-Linear</td><td>Merge Sort, Quick Sort (average), Java's <code>Arrays.sort()</code>.</td></tr>
+                            <tr><td><code>O(n²)</code></td><td>Quadratic</td><td>Nested loops (Bubble Sort, Selection Sort).</td></tr>
+                            <tr><td><code>O(2^n)</code></td><td>Exponential</td><td>Naive Fibonacci recursive function.</td></tr>
+                        </tbody>
+                    </table>
+            </div>
+        
+            <div class="section" id="arrays">
+                <h2 class="section-title">2. Arrays & Strings (Two Pointers / Sliding Window)</h2>
+                
+                    <p>Arrays and Strings are the most common interview topics. The key to optimizing <code>O(N²)</code> nested loops is using the <strong>Two Pointer</strong> or <strong>Sliding Window</strong> patterns.</p>
+                    <h3 class="subsection-title">Sliding Window (Find max sum of K consecutive elements)</h3>
+                    <div class="code-block java"><pre>public int maxSubArraySum(int[] arr, int k) {
+    if (arr.length < k) return -1;
+    int maxSum = 0, windowSum = 0;
+    // 1. Calculate sum of first 'k' elements
+    for (int i = 0; i < k; i++) {
+        windowSum += arr[i];
+    }
+    maxSum = windowSum;
+    // 2. Slide the window: subtract outgoing element, add incoming element
+    for (int i = k; i < arr.length; i++) {
+        windowSum += arr[i] - arr[i - k];
+        maxSum = Math.max(maxSum, windowSum);
+    }
+    return maxSum; // O(N) Time, O(1) Space
+}</pre></div>
+            </div>
+        
+            <div class="section" id="linkedlists">
+                <h2 class="section-title">3. Linked Lists (Fast & Slow Pointers)</h2>
+                
+                    <div class="important-box"><strong>Tortoise and Hare Algorithm:</strong> Use a Slow pointer (moves 1 step) and a Fast pointer (moves 2 steps) to detect cycles or find the middle element in a Linked List in O(N) time and O(1) space.</div>
+                    <div class="code-block java"><pre>public boolean hasCycle(ListNode head) {
+    if (head == null || head.next == null) return false;
+    ListNode slow = head;
+    ListNode fast = head.next;
+    
+    while (slow != fast) {
+        if (fast == null || fast.next == null) return false; // Reached the end
+        slow = slow.next;        // Moves 1 step
+        fast = fast.next.next;   // Moves 2 steps
+    }
+    return true; // Fast pointer lapped the slow pointer (Cycle detected!)
+}</pre></div>
+            </div>
+        
+            <div class="section" id="hashmaps">
+                <h2 class="section-title">4. HashMaps (Deep Internal Mechanics)</h2>
+                
+                    <p>A HashMap provides <code>O(1)</code> average time complexity for inserts and lookups. It is backed by an array of <strong>Buckets</strong>.</p>
+                    <ul>
+                        <li><strong>Hashing:</strong> The key's <code>hashCode()</code> determines which array index (Bucket) it belongs to.</li>
+                        <li><strong>Collisions:</strong> If two different keys hash to the same bucket, they form a <strong>Linked List</strong> at that bucket (Separate Chaining).</li>
+                        <li><strong>Java 8 Optimization:</strong> If a bucket's Linked List exceeds 8 elements, Java converts it into a <strong>Red-Black Tree</strong>, improving worst-case search time from <code>O(N)</code> to <code>O(log N)</code>!</li>
+                        <li><strong>Load Factor:</strong> When the map is 75% full (0.75 default load factor), the array size is doubled (Rehashing).</li>
+                    </ul>
+            </div>
+        
+            <div class="section" id="trees">
+                <h2 class="section-title">5. Trees (Binary Search Trees & Traversals)</h2>
+                
+                    <p>A BST is ordered: Left child < Node < Right child. Lookups are <code>O(log N)</code>. Understanding DFS traversals via recursion is critical.</p>
+                    <div class="code-block java"><pre>class TreeNode {
+    int val;
+    TreeNode left, right;
+}
+
+// In-Order Traversal (Left, Root, Right) -> Prints BST in ascending sorted order!
+public void inorder(TreeNode root) {
+    if (root == null) return;
+    inorder(root.left);           // 1. Go Left
+    System.out.println(root.val); // 2. Visit Node
+    inorder(root.right);          // 3. Go Right
+}</pre></div>
+            </div>
+        
+            <div class="section" id="graphs">
+                <h2 class="section-title">6. Graph Traversals (BFS vs DFS)</h2>
+                
+                    <table>
+                        <thead><tr><th>Algorithm</th><th>Data Structure</th><th>Use Case</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>BFS (Breadth-First)</strong></td><td>Queue</td><td>Finding the shortest path in an unweighted graph. Explores neighbors level by level.</td></tr>
+                            <tr><td><strong>DFS (Depth-First)</strong></td><td>Stack / Recursion</td><td>Exploring all paths, solving mazes, topological sorting. Goes as deep as possible before backtracking.</td></tr>
+                        </tbody>
+                    </table>
+                    <h3 class="subsection-title">BFS Implementation (Shortest Path)</h3>
+                    <div class="code-block java"><pre>public void bfs(Node start) {
+    Queue<Node> queue = new LinkedList<>();
+    Set<Node> visited = new HashSet<>();
+    
+    queue.add(start);
+    visited.add(start);
+    
+    while (!queue.isEmpty()) {
+        Node current = queue.poll();
+        System.out.println(current.val);
+        
+        for (Node neighbor : current.neighbors) {
+            if (!visited.contains(neighbor)) {
+                visited.add(neighbor); // Mark visited BEFORE enqueuing
+                queue.add(neighbor);
+            }
+        }
+    }
+}</pre></div>
+            </div>
+        
+
+        
+        
+                
+        </main>
+    </div>
+
+    <script src="assets/scripts.js"></script>
+
+    <footer class="global-footer">
+        <div class="footer-brand">
+            <img src="assets/ns_logo.png" alt="NS Logo">
+            Naresh Sanda
+        </div>
+        <div>&copy; 2026 Senior Developer Hub. All rights reserved.</div>
+    </footer>
+</body>
+</html>

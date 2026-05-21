@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kubernetes (K8s) - Cheat Sheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta property="og:title" content="Kubernetes (K8s) - Cheat Sheet">
+    <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="assets/ns_logo.png">
+</head>
+<body>
+
+    <header class="global-navbar">
+        <a href="index.html" class="brand-logo">
+            <img src="assets/ns_logo.png" alt="NS Logo" class="brand-image" >
+            <div>Naresh Sanda</div>
+        </a>
+        <div class="header-subtitle">Senior Developer Hub</div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search topics...">
+                <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
+            </div>
+            <nav class="toc-nav" id="tocNav">
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#objects">1. Core Objects</a></li>
+                    <li><a href="#deployment">2. Deployment YAML</a></li>
+                    <li><a href="#kubectl">3. Kubectl Commands</a></li>
+                    
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <div class="header">
+                <h1>Kubernetes (K8s)</h1>
+                <p class="author">Author: Naresh Kumar Sanda</p>
+                <p style="color: var(--text-muted);">Pods, Deployments, Services, and Ingress routing.</p>
+            </div>
+
+            
+            <div class="section" id="objects">
+                <h2 class="section-title">1. Core Objects</h2>
+                <table><thead><tr><th>Object</th><th>Description</th></tr></thead><tbody><tr><td><strong>Pod</strong></td><td>Smallest deployable unit. Usually contains one container.</td></tr><tr><td><strong>Deployment</strong></td><td>Manages Pods. Ensures X replicas are always running. Handles rolling updates.</td></tr><tr><td><strong>Service</strong></td><td>Stable IP address that load-balances traffic across multiple ephemeral Pods.</td></tr><tr><td><strong>Ingress</strong></td><td>API Gateway that routes external HTTP traffic to internal Services based on URL paths.</td></tr></tbody></table>
+            </div>
+        
+            <div class="section" id="deployment">
+                <h2 class="section-title">2. Deployment YAML</h2>
+                <div class="code-block yaml"><pre>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+        image: myapp:latest
+        ports:
+        - containerPort: 8080</pre></div>
+            </div>
+        
+            <div class="section" id="kubectl">
+                <h2 class="section-title">3. Kubectl Commands</h2>
+                <div class="code-block bash"><pre>kubectl apply -f deployment.yaml  # Deploy
+kubectl get pods                  # View running pods
+kubectl logs &lt;pod-name&gt;           # Check logs
+kubectl scale deployment myapp --replicas=5</pre></div>
+            </div>
+        
+
+        
+        
+                
+        </main>
+    </div>
+
+    <script src="assets/scripts.js"></script>
+
+    <footer class="global-footer">
+        <div class="footer-brand">
+            <img src="assets/ns_logo.png" alt="NS Logo">
+            Naresh Sanda
+        </div>
+        <div>&copy; 2026 Senior Developer Hub. All rights reserved.</div>
+    </footer>
+</body>
+</html>

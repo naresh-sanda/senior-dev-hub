@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App & DB Performance - Cheat Sheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta property="og:title" content="App & DB Performance - Cheat Sheet">
+    <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="assets/ns_logo.png">
+</head>
+<body>
+
+    <header class="global-navbar">
+        <a href="index.html" class="brand-logo">
+            <img src="assets/ns_logo.png" alt="NS Logo" class="brand-image" >
+            <div>Naresh Sanda</div>
+        </a>
+        <div class="header-subtitle">Senior Developer Hub</div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search topics...">
+                <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
+            </div>
+            <nav class="toc-nav" id="tocNav">
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#explain">1. Using EXPLAIN</a></li>
+                    <li><a href="#indexes">2. B-Tree Indexes</a></li>
+                    <li><a href="#hikaricp">3. HikariCP (Connection Pooling)</a></li>
+                    
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <div class="header">
+                <h1>App & DB Performance</h1>
+                <p class="author">Author: Naresh Kumar Sanda</p>
+                <p style="color: var(--text-muted);">Query EXPLAIN plans, Indexes, and HikariCP Tuning.</p>
+            </div>
+
+            
+            <div class="section" id="explain">
+                <h2 class="section-title">1. Using EXPLAIN</h2>
+                <div class="highlight-box">Prefix your slow query with <code>EXPLAIN</code> to see exactly how MySQL executes it. Look closely at the <strong>type</strong> column. If it says <code>ALL</code>, MySQL is doing a Full Table Scan (terrible). If it says <code>ref</code> or <code>eq_ref</code>, it's using an index (good!).</div><div class="code-block sql"><pre>EXPLAIN SELECT * FROM users WHERE email = 'test@test.com';</pre></div>
+            </div>
+        
+            <div class="section" id="indexes">
+                <h2 class="section-title">2. B-Tree Indexes</h2>
+                <p>Indexes are separate data structures (B-Trees) that keep a sorted copy of a column, pointing back to the main table rows. They make <code>SELECT</code> extremely fast, but slow down <code>INSERT/UPDATE</code> (because the tree must be re-sorted).</p><div class="code-block sql"><pre>-- Composite Index (Order matters!)
+CREATE INDEX idx_last_first ON users(last_name, first_name);
+-- This index works for "WHERE last_name='Smith'"
+-- It DOES NOT work for "WHERE first_name='John'"</pre></div>
+            </div>
+        
+            <div class="section" id="hikaricp">
+                <h2 class="section-title">3. HikariCP (Connection Pooling)</h2>
+                <div class="important-box">Opening a new DB connection for every request takes hundreds of milliseconds (TCP handshake, SSL). A Connection Pool keeps a pool of connections permanently open and reuses them!</div><p><strong>Golden Rule:</strong> The optimal pool size is usually much smaller than you think: <code>Connections = ((core_count * 2) + effective_spindle_count)</code>. Usually around 10-20 connections per app instance is perfect.</p>
+            </div>
+        
+
+        
+        
+                
+        </main>
+    </div>
+
+    <script src="assets/scripts.js"></script>
+
+    <footer class="global-footer">
+        <div class="footer-brand">
+            <img src="assets/ns_logo.png" alt="NS Logo">
+            Naresh Sanda
+        </div>
+        <div>&copy; 2026 Senior Developer Hub. All rights reserved.</div>
+    </footer>
+</body>
+</html>

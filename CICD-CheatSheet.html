@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CI/CD Pipelines - Cheat Sheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta property="og:title" content="CI/CD Pipelines - Cheat Sheet">
+    <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="assets/ns_logo.png">
+</head>
+<body>
+
+    <header class="global-navbar">
+        <a href="index.html" class="brand-logo">
+            <img src="assets/ns_logo.png" alt="NS Logo" class="brand-image" >
+            <div>Naresh Sanda</div>
+        </a>
+        <div class="header-subtitle">Senior Developer Hub</div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search topics...">
+                <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
+            </div>
+            <nav class="toc-nav" id="tocNav">
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#definitions">1. CI vs CD</a></li>
+                    <li><a href="#githubactions">2. GitHub Actions (Sample)</a></li>
+                    <li><a href="#deployments">3. Deployment Strategies</a></li>
+                    
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <div class="header">
+                <h1>CI/CD Pipelines</h1>
+                <p class="author">Author: Naresh Kumar Sanda</p>
+                <p style="color: var(--text-muted);">End-to-end automation from Git to Production.</p>
+            </div>
+
+            
+            <div class="section" id="definitions">
+                <h2 class="section-title">1. CI vs CD</h2>
+                <table><thead><tr><th>Phase</th><th>Meaning</th><th>Actions</th></tr></thead><tbody><tr><td><strong>CI</strong></td><td>Continuous Integration</td><td>Code push -> Compile -> Run Unit Tests -> Build Docker Image -> Push to Registry.</td></tr><tr><td><strong>CD</strong></td><td>Continuous Deployment</td><td>Pull Docker Image -> Deploy to Staging -> Run E2E Tests -> Deploy to Prod.</td></tr></tbody></table>
+            </div>
+        
+            <div class="section" id="githubactions">
+                <h2 class="section-title">2. GitHub Actions (Sample)</h2>
+                <div class="code-block yaml"><pre>name: Java CI/CD
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+    - name: Build with Maven
+      run: mvn clean package
+    - name: Build & Push Docker Image
+      run: docker build -t myapp:latest .</pre></div>
+            </div>
+        
+            <div class="section" id="deployments">
+                <h2 class="section-title">3. Deployment Strategies</h2>
+                <ul><li><strong>Rolling Update:</strong> Replace pods one by one. Zero downtime, but you have old and new code running simultaneously for a minute.</li><li><strong>Blue/Green:</strong> Spin up a duplicate Prod environment (Green). Test it. Once perfect, instantly switch the router traffic from Blue to Green. Easy rollback.</li><li><strong>Canary:</strong> Route 5% of user traffic to the new version. Monitor for errors. Gradually scale to 100%.</li></ul>
+            </div>
+        
+
+        
+        
+                
+        </main>
+    </div>
+
+    <script src="assets/scripts.js"></script>
+
+    <footer class="global-footer">
+        <div class="footer-brand">
+            <img src="assets/ns_logo.png" alt="NS Logo">
+            Naresh Sanda
+        </div>
+        <div>&copy; 2026 Senior Developer Hub. All rights reserved.</div>
+    </footer>
+</body>
+</html>

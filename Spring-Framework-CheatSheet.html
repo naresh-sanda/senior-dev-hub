@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring Framework - Cheat Sheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta property="og:title" content="Spring Framework - Cheat Sheet">
+    <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="assets/ns_logo.png">
+</head>
+<body>
+
+    <header class="global-navbar">
+        <a href="index.html" class="brand-logo">
+            <img src="assets/ns_logo.png" alt="NS Logo" class="brand-image" >
+            <div>Naresh Sanda</div>
+        </a>
+        <div class="header-subtitle">Senior Developer Hub</div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search topics...">
+                <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
+            </div>
+            <nav class="toc-nav" id="tocNav">
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#ioc">1. Inversion of Control (IoC)</a></li>
+                    <li><a href="#beans">2. Bean Scopes</a></li>
+                    <li><a href="#aop">3. Aspect-Oriented Programming (AOP)</a></li>
+                    
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <div class="header">
+                <h1>Spring Framework</h1>
+                <p class="author">Author: Naresh Kumar Sanda</p>
+                <p style="color: var(--text-muted);">Deep dive into IoC, Beans, ApplicationContext, and AOP Proxies.</p>
+            </div>
+
+            
+            <div class="section" id="ioc">
+                <h2 class="section-title">1. Inversion of Control (IoC)</h2>
+                <div class="important-box">IoC shifts the responsibility of creating and wiring objects from your code to the Spring Container.</div><div class="code-block java"><pre>ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+MyService service = context.getBean(MyService.class);</pre></div>
+            </div>
+        
+            <div class="section" id="beans">
+                <h2 class="section-title">2. Bean Scopes</h2>
+                <table><thead><tr><th>Scope</th><th>Description</th></tr></thead><tbody><tr><td><code>singleton</code> (Default)</td><td>One instance per Spring IoC container.</td></tr><tr><td><code>prototype</code></td><td>A new instance is created every time the bean is requested.</td></tr><tr><td><code>request</code></td><td>One instance per HTTP request (Web only).</td></tr></tbody></table>
+            </div>
+        
+            <div class="section" id="aop">
+                <h2 class="section-title">3. Aspect-Oriented Programming (AOP)</h2>
+                <p>Used for cross-cutting concerns (Logging, Security, Transactions). Spring uses JDK Dynamic Proxies or CGLIB to wrap beans.</p><div class="code-block java"><pre>@Aspect
+@Component
+public class LoggingAspect {
+    @Before("execution(* com.app.service.*.*(..))")
+    public void logBefore() { System.out.println("Method called"); }
+}</pre></div>
+            </div>
+        
+
+        
+        
+                
+        </main>
+    </div>
+
+    <script src="assets/scripts.js"></script>
+
+    <footer class="global-footer">
+        <div class="footer-brand">
+            <img src="assets/ns_logo.png" alt="NS Logo">
+            Naresh Sanda
+        </div>
+        <div>&copy; 2026 Senior Developer Hub. All rights reserved.</div>
+    </footer>
+</body>
+</html>

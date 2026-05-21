@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring Boot - Cheat Sheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta property="og:title" content="Spring Boot - Cheat Sheet">
+    <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="assets/ns_logo.png">
+</head>
+<body>
+
+    <header class="global-navbar">
+        <a href="index.html" class="brand-logo">
+            <img src="assets/ns_logo.png" alt="NS Logo" class="brand-image" >
+            <div>Naresh Sanda</div>
+        </a>
+        <div class="header-subtitle">Senior Developer Hub</div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search topics...">
+                <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
+            </div>
+            <nav class="toc-nav" id="tocNav">
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#autoconfig">1. Auto-Configuration</a></li>
+                    <li><a href="#actuator">2. Spring Boot Actuator</a></li>
+                    <li><a href="#profiles">3. Profiles & Configuration</a></li>
+                    
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <div class="header">
+                <h1>Spring Boot</h1>
+                <p class="author">Author: Naresh Kumar Sanda</p>
+                <p style="color: var(--text-muted);">Auto-configuration mechanics, Actuator, and production-ready defaults.</p>
+            </div>
+
+            
+            <div class="section" id="autoconfig">
+                <h2 class="section-title">1. Auto-Configuration</h2>
+                <div class="highlight-box"><strong>@SpringBootApplication</strong> is a macro for:<br>1. <code>@Configuration</code><br>2. <code>@EnableAutoConfiguration</code> (Scans classpath and configures beans automatically based on dependencies, e.g., Tomcat, HikariCP).<br>3. <code>@ComponentScan</code> (Scans current package and sub-packages).</div>
+            </div>
+        
+            <div class="section" id="actuator">
+                <h2 class="section-title">2. Spring Boot Actuator</h2>
+                <p>Exposes production-ready endpoints for monitoring.</p><table><thead><tr><th>Endpoint</th><th>Purpose</th></tr></thead><tbody><tr><td><code>/actuator/health</code></td><td>Checks if the app is alive (used by K8s liveness probes).</td></tr><tr><td><code>/actuator/metrics</code></td><td>Exposes JVM memory, thread count, and HTTP latency.</td></tr><tr><td><code>/actuator/env</code></td><td>Shows active profiles and properties.</td></tr></tbody></table>
+            </div>
+        
+            <div class="section" id="profiles">
+                <h2 class="section-title">3. Profiles & Configuration</h2>
+                <div class="code-block yaml"><pre>spring:
+  profiles:
+    active: dev
+--- 
+spring.config.activate.on-profile: dev
+db.url: jdbc:mysql://localhost/dev_db</pre></div>
+            </div>
+        
+
+        
+        
+                
+        </main>
+    </div>
+
+    <script src="assets/scripts.js"></script>
+
+    <footer class="global-footer">
+        <div class="footer-brand">
+            <img src="assets/ns_logo.png" alt="NS Logo">
+            Naresh Sanda
+        </div>
+        <div>&copy; 2026 Senior Developer Hub. All rights reserved.</div>
+    </footer>
+</body>
+</html>
