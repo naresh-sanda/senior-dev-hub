@@ -1114,46 +1114,51 @@ body.portal-body {
    MOBILE RESPONSIVENESS FIXES
    ========================================= */
 @media (max-width: 900px) {
-    /* Allow the body to scroll naturally on mobile */
-    body {
-        display: block !important;
-        overflow-y: auto !important;
-        height: auto !important;
-    }
-    body.portal-body {
-        overflow-y: auto !important;
+    /* Keep body locked to viewport, just like a mobile app */
+    html, body {
+        height: 100vh !important;
+        overflow: hidden !important;
+        position: relative !important;
+        width: 100% !important;
     }
     
-    /* App container becomes a block instead of flex */
+    body.portal-body {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* The App Container handles all the scrolling! */
     .app-container {
         display: block !important;
-        overflow: visible !important;
-        height: auto !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        height: 100% !important;
+        flex-grow: 1 !important;
+        -webkit-overflow-scrolling: touch;
     }
 
-    /* Make sidebar sit on top of the content */
+    /* Sidebar sits at the top inside the scrollable container */
     .sidebar {
         width: 100% !important;
         height: auto !important;
         position: relative !important;
         border-right: none !important;
         border-bottom: 2px solid #e0e7ff !important;
+        z-index: 10;
     }
 
-    /* Restrict Table of Contents height so users can scroll past it */
     .toc-nav {
-        max-height: 250px !important;
+        max-height: 200px !important;
         overflow-y: auto !important;
     }
 
-    /* Ensure main content takes full width and natural height */
+    /* Main Content simply expands naturally */
     .main-content {
         padding: 20px 15px !important;
         height: auto !important;
         overflow: visible !important;
     }
 
-    /* Tighter padding for mobile portal pages */
     .portal-content {
         padding: 20px 15px !important;
     }
