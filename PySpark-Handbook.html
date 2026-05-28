@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PySpark Handbook - Cheat Sheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta name="keywords" content="PySpark, Spark, Python, Data Engineering, Big Data, Cheat Sheet, Senior Developer">
+    <meta property="og:title" content="PySpark Handbook - Cheat Sheet">
+    <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="assets/ns_logo.png">
+    <style>
+        .markdown-body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+        .markdown-body h1, .markdown-body h2, .markdown-body h3 {
+            margin-top: 24px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        .markdown-body h2 {
+            border-bottom: 1px solid var(--border-color, #ddd);
+            padding-bottom: 8px;
+        }
+        .markdown-body pre {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 16px;
+            overflow: auto;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+        }
+        .markdown-body code {
+            font-family: 'Fira Code', monospace;
+            background-color: rgba(27,31,35,0.05);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+        }
+        .markdown-body pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+        .markdown-body table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 16px;
+        }
+        .markdown-body th, .markdown-body td {
+            border: 1px solid var(--border-color, #ddd);
+            padding: 8px 12px;
+        }
+        .markdown-body blockquote {
+            margin: 0 0 16px 0;
+            padding: 0 1em;
+            color: #6a737d;
+            border-left: 0.25em solid #dfe2e5;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="global-navbar">
+        <a href="index.html" class="brand-logo">
+            <img src="assets/ns_logo.png" alt="NS Logo" class="brand-image" >
+            <div>Naresh Sanda</div>
+        </a>
+        <div class="header-subtitle">Senior Developer Hub</div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search topics...">
+                <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
+            </div>
+            <nav class="toc-nav" id="tocNav">
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#introduction">Introduction: Thinking in Distributed Systems</a></li>
+<li><a href="#environment-setup">Environment Setup</a></li>
+<li><a href="#chapter-1">Chapter 1: The SparkSession and Basic I/O</a></li>
+<li><a href="#chapter-2">Chapter 2: Data Manipulation (Transformations)</a></li>
+<li><a href="#chapter-3">Chapter 3: Schema Management and Data Types</a></li>
+<li><a href="#chapter-4">Chapter 4: Advanced Analytics</a></li>
+<li><a href="#chapter-5">Chapter 5: Joins & The Art of Avoiding Shuffles</a></li>
+<li><a href="#chapter-6">Chapter 6: User-Defined Functions (UDFs)</a></li>
+<li><a href="#chapter-7">Chapter 7: Structured Streaming</a></li>
+<li><a href="#chapter-8">Chapter 8: Cluster Performance & Tuning</a></li>
+<li><a href="#chapter-9">Chapter 9: The Modern Lakehouse (Delta Lake)</a></li>
+<li><a href="#chapter-10">Chapter 10: Testing PySpark Code</a></li>
+<li><a href="#chapter-11">Chapter 11: Best Practices Cheat Sheet</a></li>
+
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <div class="markdown-body">
+                <h1>The PySpark Handbook: From Zero to Cluster Optimization</h1>
+<blockquote>
+<p>A complete, progressive guide for data engineers — from your first SparkSession to production-grade lakehouse pipelines.</p>
+</blockquote>
+<hr>
+<h2 id="introduction">Introduction: Thinking in Distributed Systems</h2><p>Before writing a single line of PySpark, you have to shift how you think about data. In standard Python (like Pandas), your data sits on one machine&#39;s RAM. If the data gets too big, the machine crashes.</p>
+<p><strong>Apache Spark</strong> is a distributed computing engine. It takes your massive dataset and slices it into smaller chunks called <strong>partitions</strong>, distributing them across a cluster of computers (workers). When you write PySpark code, you are writing a set of instructions that a <strong>Driver</strong> node sends to all the <strong>Worker</strong> nodes to execute in parallel.</p>
+<h3>The Spark Architecture</h3>
+<pre><code>                    ┌─────────────────────────────────────┐
+                    │           DRIVER NODE               │
+                    │  - Your PySpark script runs here    │
+                    │  - Builds the DAG (execution plan)  │
+                    │  - Coordinates all workers          │
+                    └───────────────┬─────────────────────┘
+                                    │  sends tasks
+              ┌─────────────────────┼──────────────────────┐
+              ▼                     ▼                       ▼
+     ┌──────────────┐     ┌──────────────┐       ┌──────────────┐
+     │  WORKER NODE │     │  WORKER NODE │       │  WORKER NODE │
+     │  Executor 1  │     │  Executor 2  │       │  Executor 3  │
+     │  Partition A │     │  Partition B │       │  Partition C │
+     └──────────────┘     └──────────────┘       └──────────────┘
+</code></pre>
+<h3>Two Golden Rules of Spark</h3>
+<ol>
+<li><p><strong>DataFrames are Immutable</strong> — Once created, you cannot change a DataFrame. Every transformation creates a new DataFrame.</p>
+</li>
+<li><p><strong>Lazy Evaluation</strong> — Spark doesn&#39;t process data immediately. When you tell it to filter or join, it just takes notes (creating a <strong>Directed Acyclic Graph</strong>, or DAG). It only actually executes the work when you call an <strong>Action</strong> (like <code>.show()</code>, <code>.count()</code>, or <code>.write()</code>).</p>
+</li>
+</ol>
+<h3>Transformations vs Actions</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>What it does</th>
+<th>Examples</th>
+<th>Triggers execution?</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Transformation</strong></td>
+<td>Creates a new DataFrame</td>
+<td><code>filter</code>, <code>select</code>, <code>join</code>, <code>groupBy</code></td>
+<td>❌ No</td>
+</tr>
+<tr>
+<td><strong>Action</strong></td>
+<td>Returns a result or writes data</td>
+<td><code>show</code>, <code>count</code>, <code>collect</code>, <code>write</code></td>
+<td>✅ Yes</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>Tip for beginners:</strong> Think of transformations as building a recipe and actions as actually cooking it.</p>
+</blockquote>
+<hr>
+<h2 id="environment-setup">Environment Setup</h2><h3>Local Installation</h3>
+<pre><code class="language-bash"># Step 1: Install Java (Spark runs on the JVM)
+# On Ubuntu/Debian
+sudo apt install default-jdk -y
+java -version
+
+# Step 2: Install PySpark via pip
+pip install pyspark
+
+# Step 3: Verify installation
+python -c &quot;import pyspark; print(pyspark.__version__)&quot;
+</code></pre>
+<h3>Using PySpark in a Jupyter Notebook</h3>
+<pre><code class="language-bash">pip install pyspark jupyter findspark
+
+# In your notebook&#39;s first cell:
+import findspark
+findspark.init()
+
+from pyspark.sql import SparkSession
+spark = SparkSession.builder.appName(&quot;Notebook&quot;).getOrCreate()
+</code></pre>
+<h3>Using PySpark on Cloud Platforms</h3>
+<p>Most cloud platforms (Databricks, AWS EMR, Google Dataproc) come with Spark pre-installed. You typically just need to create a cluster and start writing code. No local install needed.</p>
+<h3>Project Structure (Recommended)</h3>
+<pre><code>my_spark_project/
+├── jobs/
+│   ├── etl_job.py          # Main entry point
+│   └── transformations.py  # Reusable transform logic
+├── tests/
+│   └── test_transformations.py
+├── configs/
+│   └── spark_config.py     # SparkSession configs
+└── requirements.txt
+</code></pre>
+<hr>
+<h2 id="chapter-1">Chapter 1: The SparkSession and Basic I/O</h2><p>The <code>SparkSession</code> is your steering wheel. It is the single entry point for reading data, executing SQL, and managing cluster configurations.</p>
+<h3>1.1 Initializing the Session</h3>
+<pre><code class="language-python">from pyspark.sql import SparkSession
+
+# The builder pattern is used to configure and create the session
+spark = SparkSession.builder \
+    .appName(&quot;Daily_ETL_Job&quot;) \
+    .config(&quot;spark.sql.shuffle.partitions&quot;, &quot;200&quot;) \
+    .getOrCreate()
+
+# Always stop the session when done (important in local/test environments)
+# spark.stop()
+</code></pre>
+<blockquote>
+<p><strong>Theory Note:</strong> The <code>spark.sql.shuffle.partitions</code> config is crucial. When Spark moves data around (a &quot;shuffle&quot;), it defaults to splitting the data into 200 partitions. For small datasets, this creates too much overhead. For huge datasets, you may need more. A good rule of thumb: aim for partitions of ~128MB each.</p>
+</blockquote>
+<h3>1.2 Reading Data</h3>
+<p>Data engineering relies heavily on picking the right file format. While CSV and JSON are human-readable, they are terrible for big data because they are row-based and uncompressed. <strong>Parquet</strong> is a columnar format, highly compressed, and the industry standard for Spark.</p>
+<pre><code class="language-python"># Reading a CSV (Spark has to infer the schema, which is slow and error-prone)
+df_csv = spark.read.csv(&quot;path/sales.csv&quot;, header=True, inferSchema=True)
+
+# Better: Define the schema explicitly (faster, safer in production)
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType, IntegerType
+
+schema = StructType([
+    StructField(&quot;customer_id&quot;, StringType(), nullable=False),
+    StructField(&quot;purchase_amount&quot;, DoubleType(), nullable=True),
+    StructField(&quot;region&quot;, StringType(), nullable=True)
+])
+df_csv_typed = spark.read.csv(&quot;path/sales.csv&quot;, header=True, schema=schema)
+
+# Reading Parquet (Schema is built-in, highly optimized)
+df_parquet = spark.read.parquet(&quot;path/sales_data/&quot;)
+
+# Reading JSON
+df_json = spark.read.json(&quot;path/events.json&quot;)
+
+# Reading from a database (JDBC)
+df_db = spark.read.format(&quot;jdbc&quot;) \
+    .option(&quot;url&quot;, &quot;jdbc:mysql://host:3306/mydb&quot;) \
+    .option(&quot;dbtable&quot;, &quot;sales&quot;) \
+    .option(&quot;user&quot;, &quot;user&quot;) \
+    .option(&quot;password&quot;, &quot;password&quot;) \
+    .load()
+</code></pre>
+<h3>1.3 Writing Data</h3>
+<pre><code class="language-python"># Write to Parquet (recommended for intermediate storage)
+df_sales.write.mode(&quot;overwrite&quot;).parquet(&quot;path/output/&quot;)
+
+# Write to CSV (for downstream tools that need it)
+df_sales.write.mode(&quot;overwrite&quot;).option(&quot;header&quot;, True).csv(&quot;path/output_csv/&quot;)
+
+# Write to a database
+df_sales.write.format(&quot;jdbc&quot;) \
+    .option(&quot;url&quot;, &quot;jdbc:mysql://host:3306/mydb&quot;) \
+    .option(&quot;dbtable&quot;, &quot;sales_output&quot;) \
+    .option(&quot;user&quot;, &quot;user&quot;) \
+    .option(&quot;password&quot;, &quot;password&quot;) \
+    .mode(&quot;append&quot;) \
+    .save()
+</code></pre>
+<h3>Write Modes</h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>overwrite</code></td>
+<td>Delete existing data, write new data</td>
+</tr>
+<tr>
+<td><code>append</code></td>
+<td>Add to existing data</td>
+</tr>
+<tr>
+<td><code>ignore</code></td>
+<td>Do nothing if data already exists</td>
+</tr>
+<tr>
+<td><code>error</code> (default)</td>
+<td>Throw an error if data exists</td>
+</tr>
+</tbody></table>
+<h3>1.4 Exploring Your DataFrame</h3>
+<pre><code class="language-python"># See the first 5 rows
+df_parquet.show(5)
+
+# See the schema (column names and types)
+df_parquet.printSchema()
+
+# Count rows
+print(df_parquet.count())
+
+# See summary statistics
+df_parquet.describe(&quot;purchase_amount&quot;, &quot;customer_id&quot;).show()
+
+# See how many partitions your data is split into
+print(df_parquet.rdd.getNumPartitions())
+</code></pre>
+<hr>
+<h2 id="chapter-2">Chapter 2: Data Manipulation (Transformations)</h2><p>Transformations are how we clean and shape our data.</p>
+<h3>2.1 Selecting, Filtering, and Creating Columns</h3>
+<p>Use the <code>col</code> function to reference columns programmatically. <code>lit</code> is used to inject literal (constant) values.</p>
+<pre><code class="language-python">from pyspark.sql.functions import col, lit, when
+
+# 1. Select specific columns
+df_subset = df_parquet.select(&quot;customer_id&quot;, &quot;purchase_amount&quot;)
+
+# 2. Filter data (WHERE clause)
+df_high_value = df_parquet.filter(col(&quot;purchase_amount&quot;) &gt; 1000)
+
+# Combining multiple conditions
+df_filtered = df_parquet.filter(
+    (col(&quot;purchase_amount&quot;) &gt; 100) &amp; 
+    (col(&quot;region&quot;) == &quot;WEST&quot;) &amp;
+    col(&quot;customer_id&quot;).isNotNull()
+)
+
+# 3. Create or modify a column (withColumn)
+# If the column exists, it overwrites it. If not, it creates a new one.
+df_taxed = df_high_value \
+    .withColumn(&quot;tax_amount&quot;, col(&quot;purchase_amount&quot;) * 0.08) \
+    .withColumn(&quot;status&quot;, lit(&quot;PROCESSED&quot;))
+
+# 4. Conditional column using when/otherwise (equivalent to CASE WHEN in SQL)
+df_tier = df_parquet.withColumn(
+    &quot;customer_tier&quot;,
+    when(col(&quot;purchase_amount&quot;) &gt;= 10000, &quot;PLATINUM&quot;)
+    .when(col(&quot;purchase_amount&quot;) &gt;= 1000, &quot;GOLD&quot;)
+    .when(col(&quot;purchase_amount&quot;) &gt;= 100, &quot;SILVER&quot;)
+    .otherwise(&quot;BRONZE&quot;)
+)
+
+# 5. Rename a column
+df_renamed = df_parquet.withColumnRenamed(&quot;purchase_amount&quot;, &quot;amount_usd&quot;)
+
+# 6. Drop a column
+df_dropped = df_parquet.drop(&quot;unwanted_column&quot;)
+</code></pre>
+<h3>2.2 Working with Strings</h3>
+<pre><code class="language-python">from pyspark.sql.functions import (
+    upper, lower, trim, length, substring, 
+    concat, concat_ws, split, regexp_replace, like
+)
+
+df_strings = df_parquet \
+    .withColumn(&quot;region_upper&quot;, upper(col(&quot;region&quot;))) \
+    .withColumn(&quot;email_clean&quot;, trim(lower(col(&quot;customer_email&quot;)))) \
+    .withColumn(&quot;name_len&quot;, length(col(&quot;customer_name&quot;))) \
+    .withColumn(&quot;first_3&quot;, substring(col(&quot;customer_id&quot;), 1, 3)) \
+    .withColumn(&quot;full_label&quot;, concat_ws(&quot;-&quot;, col(&quot;region&quot;), col(&quot;customer_id&quot;))) \
+    .withColumn(&quot;phone_clean&quot;, regexp_replace(col(&quot;phone&quot;), &quot;[^0-9]&quot;, &quot;&quot;))
+</code></pre>
+<h3>2.3 Working with Dates and Timestamps</h3>
+<pre><code class="language-python">from pyspark.sql.functions import (
+    current_date, current_timestamp, to_date, to_timestamp,
+    date_format, datediff, months_between, year, month, dayofweek,
+    date_add, date_sub
+)
+
+df_dates = df_parquet \
+    .withColumn(&quot;today&quot;, current_date()) \
+    .withColumn(&quot;days_since_purchase&quot;, datediff(current_date(), col(&quot;purchase_date&quot;))) \
+    .withColumn(&quot;purchase_year&quot;, year(col(&quot;purchase_date&quot;))) \
+    .withColumn(&quot;purchase_month&quot;, month(col(&quot;purchase_date&quot;))) \
+    .withColumn(&quot;day_of_week&quot;, dayofweek(col(&quot;purchase_date&quot;)))  # 1=Sunday, 7=Saturday
+
+# Parse a string into a date
+df_parsed = df_parquet.withColumn(
+    &quot;purchase_date&quot;,
+    to_date(col(&quot;purchase_date_str&quot;), &quot;yyyy-MM-dd&quot;)
+)
+</code></pre>
+<h3>2.4 Handling Messy Data (Nulls and Duplicates)</h3>
+<p>Real-world data is dirty. Spark provides <code>.na</code> and <code>.dropDuplicates</code> methods to handle this at scale.</p>
+<pre><code class="language-python"># Remove rows where ANY column is null
+df_no_nulls = df_parquet.na.drop()
+
+# Remove rows where specific columns are null
+df_no_nulls_id = df_parquet.na.drop(subset=[&quot;customer_id&quot;, &quot;purchase_amount&quot;])
+
+# Fill null values with defaults based on column type
+df_cleaned = df_parquet.na.fill({
+    &quot;tax_amount&quot;: 0.0,
+    &quot;customer_email&quot;: &quot;unknown@domain.com&quot;,
+    &quot;region&quot;: &quot;UNKNOWN&quot;
+})
+
+# Replace specific values (e.g., replace sentinel values with null)
+from pyspark.sql.functions import when
+df_replaced = df_parquet.withColumn(
+    &quot;purchase_amount&quot;,
+    when(col(&quot;purchase_amount&quot;) == -1, None).otherwise(col(&quot;purchase_amount&quot;))
+)
+
+# Remove identical rows
+df_unique = df_parquet.dropDuplicates()
+
+# Remove rows only if the specific ID is duplicated (keep first occurrence)
+df_unique_ids = df_parquet.dropDuplicates([&quot;customer_id&quot;])
+</code></pre>
+<hr>
+<h2 id="chapter-3">Chapter 3: Schema Management and Data Types</h2><p>Schema control is what separates a data scientist writing one-off notebooks from a data engineer building reliable pipelines.</p>
+<h3>3.1 Defining Schemas Explicitly</h3>
+<p>Always define schemas explicitly in production. <code>inferSchema=True</code> reads the data twice (once to infer types, once to load), is slow, and can silently guess wrong.</p>
+<pre><code class="language-python">from pyspark.sql.types import (
+    StructType, StructField,
+    StringType, IntegerType, LongType,
+    DoubleType, FloatType, BooleanType,
+    DateType, TimestampType,
+    ArrayType, MapType
+)
+
+# Flat schema
+sales_schema = StructType([
+    StructField(&quot;sale_id&quot;,        LongType(),   nullable=False),
+    StructField(&quot;customer_id&quot;,    StringType(), nullable=False),
+    StructField(&quot;product_id&quot;,     StringType(), nullable=True),
+    StructField(&quot;amount&quot;,         DoubleType(), nullable=True),
+    StructField(&quot;sale_date&quot;,      DateType(),   nullable=True),
+    StructField(&quot;is_returned&quot;,    BooleanType(),nullable=True),
+])
+
+# Nested schema (for JSON data)
+event_schema = StructType([
+    StructField(&quot;event_id&quot;, StringType(), nullable=False),
+    StructField(&quot;user&quot;, StructType([
+        StructField(&quot;user_id&quot;, StringType()),
+        StructField(&quot;country&quot;, StringType())
+    ])),
+    StructField(&quot;tags&quot;, ArrayType(StringType())),           # Array column
+    StructField(&quot;metadata&quot;, MapType(StringType(), StringType())) # Map column
+])
+</code></pre>
+<h3>3.2 Casting Types</h3>
+<pre><code class="language-python"># Cast a column to a different type
+df_cast = df_parquet \
+    .withColumn(&quot;amount&quot;, col(&quot;amount&quot;).cast(DoubleType())) \
+    .withColumn(&quot;sale_id&quot;, col(&quot;sale_id&quot;).cast(LongType()))
+
+# Or using string shorthand
+df_cast2 = df_parquet.withColumn(&quot;amount&quot;, col(&quot;amount&quot;).cast(&quot;double&quot;))
+</code></pre>
+<h3>3.3 Working with Nested Data (JSON/Struct columns)</h3>
+<pre><code class="language-python">from pyspark.sql.functions import col, explode, from_json
+
+# Access a nested field
+df_flat = df_events.select(
+    col(&quot;event_id&quot;),
+    col(&quot;user.user_id&quot;).alias(&quot;user_id&quot;),
+    col(&quot;user.country&quot;).alias(&quot;country&quot;)
+)
+
+# Explode an array column into multiple rows
+df_exploded = df_events.select(
+    col(&quot;event_id&quot;),
+    explode(col(&quot;tags&quot;)).alias(&quot;tag&quot;)
+)
+
+# Parse a JSON string column into a struct
+df_parsed = df_raw.withColumn(
+    &quot;parsed_payload&quot;,
+    from_json(col(&quot;json_string_col&quot;), event_schema)
+)
+</code></pre>
+<hr>
+<h2 id="chapter-4">Chapter 4: Advanced Analytics</h2><h3>4.1 Grouping and Aggregations</h3>
+<p>When you want to summarize data (e.g., total sales per region), you use <code>groupBy</code>. Spark will group all identical keys together, which requires moving data across the network (a <strong>shuffle</strong>).</p>
+<pre><code class="language-python">from pyspark.sql.functions import sum, avg, count, max, min, countDistinct, collect_list
+
+df_summary = df_cleaned.groupBy(&quot;region&quot;).agg(
+    sum(&quot;purchase_amount&quot;).alias(&quot;total_revenue&quot;),
+    avg(&quot;purchase_amount&quot;).alias(&quot;average_order_value&quot;),
+    count(&quot;customer_id&quot;).alias(&quot;total_transactions&quot;),
+    countDistinct(&quot;customer_id&quot;).alias(&quot;unique_customers&quot;),
+    max(&quot;purchase_amount&quot;).alias(&quot;largest_order&quot;),
+    collect_list(&quot;product_id&quot;).alias(&quot;all_products_list&quot;)
+)
+
+# Multi-column groupBy
+df_monthly = df_cleaned.groupBy(&quot;region&quot;, &quot;purchase_year&quot;, &quot;purchase_month&quot;).agg(
+    sum(&quot;purchase_amount&quot;).alias(&quot;monthly_revenue&quot;)
+)
+</code></pre>
+<h3>4.2 Window Functions</h3>
+<blockquote>
+<p><strong>Theory:</strong> What if you want to rank employees by salary within their department, but you don&#39;t want to collapse the data into a summary like <code>groupBy</code> does? You use <strong>Window functions</strong>. They perform calculations across a set of rows related to the current row, without reducing the number of rows.</p>
+</blockquote>
+<pre><code class="language-python">from pyspark.sql.window import Window
+from pyspark.sql.functions import row_number, rank, dense_rank, lead, lag, sum, avg
+
+# Define the &quot;Window&quot; (Group by department, sort by salary descending)
+window_spec = Window.partitionBy(&quot;department&quot;).orderBy(col(&quot;salary&quot;).desc())
+
+# row_number: 1 to the highest paid, 2 to the next — no ties
+df_ranked = df_employees.withColumn(&quot;salary_rank&quot;, row_number().over(window_spec))
+
+# rank: allows ties, but gaps in rank (1, 1, 3...)
+df_rank = df_employees.withColumn(&quot;salary_rank&quot;, rank().over(window_spec))
+
+# dense_rank: allows ties, no gaps (1, 1, 2...)
+df_dense = df_employees.withColumn(&quot;salary_rank&quot;, dense_rank().over(window_spec))
+
+# Filter to get only the top earner per department
+df_top_earners = df_ranked.filter(col(&quot;salary_rank&quot;) == 1)
+
+# lead(): peek at the NEXT row&#39;s value
+df_next = df_employees.withColumn(
+    &quot;next_highest_salary&quot;,
+    lead(&quot;salary&quot;, 1).over(window_spec)
+)
+
+# lag(): peek at the PREVIOUS row&#39;s value
+df_prev = df_employees.withColumn(
+    &quot;previous_salary&quot;,
+    lag(&quot;salary&quot;, 1).over(window_spec)
+)
+
+# Running total (cumulative sum)
+window_running = Window.partitionBy(&quot;region&quot;) \
+    .orderBy(&quot;sale_date&quot;) \
+    .rowsBetween(Window.unboundedPreceding, Window.currentRow)
+
+df_cumulative = df_sales.withColumn(
+    &quot;cumulative_revenue&quot;,
+    sum(&quot;purchase_amount&quot;).over(window_running)
+)
+
+# Rolling 7-day average
+window_rolling = Window.partitionBy(&quot;customer_id&quot;) \
+    .orderBy(&quot;sale_date&quot;) \
+    .rowsBetween(-6, 0)  # current row + 6 preceding rows
+
+df_rolling = df_sales.withColumn(
+    &quot;rolling_7day_avg&quot;,
+    avg(&quot;purchase_amount&quot;).over(window_rolling)
+)
+</code></pre>
+<h3>4.3 Pivoting and Unpivoting</h3>
+<pre><code class="language-python"># PIVOT: Turn row values into column headers
+# e.g., one column per region showing total sales
+df_pivot = df_sales.groupBy(&quot;product_id&quot;).pivot(&quot;region&quot;, [&quot;EAST&quot;, &quot;WEST&quot;, &quot;NORTH&quot;, &quot;SOUTH&quot;]) \
+    .agg(sum(&quot;purchase_amount&quot;))
+
+# UNPIVOT / STACK: Turn columns back into rows
+# (Spark doesn&#39;t have a native unpivot until Spark 3.4, so we use a workaround)
+from pyspark.sql.functions import expr
+
+df_unpivot = df_pivot.select(
+    &quot;product_id&quot;,
+    expr(&quot;stack(4, &#39;EAST&#39;, EAST, &#39;WEST&#39;, WEST, &#39;NORTH&#39;, NORTH, &#39;SOUTH&#39;, SOUTH) as (region, revenue)&quot;)
+)
+</code></pre>
+<hr>
+<h2 id="chapter-5">Chapter 5: Joins & The Art of Avoiding Shuffles</h2><p>Joining tables is the most expensive operation in Spark because it forces the cluster to physically move massive amounts of data across the network to align matching keys.</p>
+<h3>5.1 Standard Joins</h3>
+<pre><code class="language-python"># Inner join (Keep only matching rows)
+df_joined = df_sales.join(df_customers, df_sales.cust_id == df_customers.id, &quot;inner&quot;)
+
+# Left join (Keep all rows from the left, nulls for non-matching right)
+df_left = df_sales.join(df_customers, df_sales.cust_id == df_customers.id, &quot;left&quot;)
+
+# Right join
+df_right = df_sales.join(df_customers, df_sales.cust_id == df_customers.id, &quot;right&quot;)
+
+# Full outer join
+df_full = df_sales.join(df_customers, df_sales.cust_id == df_customers.id, &quot;full&quot;)
+
+# Left Anti Join (Find sales that have NO matching customer — great for finding data errors!)
+df_orphans = df_sales.join(df_customers, df_sales.cust_id == df_customers.id, &quot;left_anti&quot;)
+
+# Left Semi Join (Keep only left rows that DO have a match, without bringing in right columns)
+df_has_match = df_sales.join(df_customers, df_sales.cust_id == df_customers.id, &quot;left_semi&quot;)
+</code></pre>
+<h3>5.2 The Broadcast Join (Optimization Technique)</h3>
+<blockquote>
+<p><strong>Theory:</strong> If you have a massive table (Sales — 1 Billion rows) and a tiny table (Country Codes — 200 rows), a normal join will shuffle the 1 Billion rows. Instead, we can <strong>Broadcast</strong> the tiny table. Spark will copy the tiny table to the memory of every single worker node, allowing local joins without any network shuffle.</p>
+</blockquote>
+<pre><code class="language-python">from pyspark.sql.functions import broadcast
+
+# Spark will ship df_country_codes to all nodes, bypassing the shuffle entirely
+df_optimized = df_sales.join(broadcast(df_country_codes), &quot;country_id&quot;)
+</code></pre>
+<blockquote>
+<p><strong>Rule of thumb:</strong> Broadcast tables smaller than ~10MB (configurable via <code>spark.sql.autoBroadcastJoinThreshold</code>).</p>
+</blockquote>
+<h3>5.3 Avoiding Column Ambiguity After Joins</h3>
+<p>When both DataFrames have a column with the same name, Spark gets confused.</p>
+<pre><code class="language-python"># Problem: both tables have a &quot;status&quot; column
+df_joined = df_sales.join(df_customers, &quot;customer_id&quot;)  # ambiguous &quot;status&quot;
+
+# Solution 1: Rename before joining
+df_customers_renamed = df_customers.withColumnRenamed(&quot;status&quot;, &quot;customer_status&quot;)
+df_joined = df_sales.join(df_customers_renamed, &quot;customer_id&quot;)
+
+# Solution 2: Select specific columns after joining
+df_joined = df_sales.join(df_customers, &quot;customer_id&quot;).select(
+    df_sales[&quot;status&quot;].alias(&quot;sale_status&quot;),
+    df_customers[&quot;status&quot;].alias(&quot;customer_status&quot;),
+    &quot;customer_id&quot;
+)
+</code></pre>
+<hr>
+<h2 id="chapter-6">Chapter 6: User-Defined Functions (UDFs)</h2><p>Sometimes built-in Spark functions aren&#39;t enough. UDFs let you write arbitrary Python logic and apply it to a column — but they come with a significant performance cost.</p>
+<h3>6.1 Regular UDFs (Slow but Flexible)</h3>
+<p>When you use a Python UDF, Spark has to:</p>
+<ol>
+<li>Serialize each row from the JVM to Python</li>
+<li>Run your Python function</li>
+<li>Serialize the result back to the JVM</li>
+</ol>
+<p>This Python ↔ JVM serialization overhead can make UDFs <strong>10x–100x slower</strong> than native Spark functions.</p>
+<pre><code class="language-python">from pyspark.sql.functions import udf
+from pyspark.sql.types import StringType
+
+# Define a Python function
+def categorize_amount(amount):
+    if amount is None:
+        return &quot;UNKNOWN&quot;
+    if amount &gt; 10000:
+        return &quot;HIGH&quot;
+    elif amount &gt; 1000:
+        return &quot;MEDIUM&quot;
+    else:
+        return &quot;LOW&quot;
+
+# Register it as a UDF
+categorize_udf = udf(categorize_amount, StringType())
+
+# Use it
+df_categorized = df_sales.withColumn(&quot;amount_category&quot;, categorize_udf(col(&quot;purchase_amount&quot;)))
+</code></pre>
+<h3>6.2 Pandas UDFs (Vectorized — Much Faster)</h3>
+<p>Pandas UDFs operate on entire columns (as Pandas Series) using Apache Arrow for serialization, making them <strong>significantly faster</strong> than row-at-a-time UDFs.</p>
+<pre><code class="language-python">from pyspark.sql.functions import pandas_udf
+import pandas as pd
+
+# Scalar pandas UDF — operates on a Series, returns a Series
+@pandas_udf(StringType())
+def categorize_vectorized(amounts: pd.Series) -&gt; pd.Series:
+    def categorize(amount):
+        if pd.isna(amount):
+            return &quot;UNKNOWN&quot;
+        if amount &gt; 10000:
+            return &quot;HIGH&quot;
+        elif amount &gt; 1000:
+            return &quot;MEDIUM&quot;
+        return &quot;LOW&quot;
+    return amounts.apply(categorize)
+
+df_categorized = df_sales.withColumn(
+    &quot;amount_category&quot;,
+    categorize_vectorized(col(&quot;purchase_amount&quot;))
+)
+</code></pre>
+<h3>6.3 When to Use UDFs vs Built-in Functions</h3>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Logic is achievable with <code>when</code>, <code>col</code>, string functions etc.</td>
+<td>Always prefer built-in functions</td>
+</tr>
+<tr>
+<td>Complex custom logic, simple Python</td>
+<td>Pandas UDF (vectorized)</td>
+</tr>
+<tr>
+<td>Logic requires external libraries or stateful logic</td>
+<td>Regular UDF (accept the slowness)</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="chapter-7">Chapter 7: Structured Streaming</h2><p>Spark is not just for batch processing. <strong>Structured Streaming</strong> lets you apply DataFrame transformations to an infinite, continuously-arriving stream of data (like Kafka events) using the exact same API.</p>
+<h3>7.1 Reading from a Stream</h3>
+<pre><code class="language-python"># Read from Apache Kafka
+df_stream = spark.readStream \
+    .format(&quot;kafka&quot;) \
+    .option(&quot;kafka.bootstrap.servers&quot;, &quot;broker:9092&quot;) \
+    .option(&quot;subscribe&quot;, &quot;sales_events&quot;) \
+    .load()
+
+# Kafka gives you raw bytes — parse the value as JSON
+from pyspark.sql.functions import from_json, col
+
+df_parsed_stream = df_stream.select(
+    from_json(col(&quot;value&quot;).cast(&quot;string&quot;), sales_schema).alias(&quot;data&quot;)
+).select(&quot;data.*&quot;)
+</code></pre>
+<h3>7.2 Stateless Stream Transformations</h3>
+<p>Any standard transformation that doesn&#39;t require remembering past data works out of the box.</p>
+<pre><code class="language-python"># Filter and transform the live stream exactly like a batch DataFrame
+df_live_high_value = df_parsed_stream \
+    .filter(col(&quot;purchase_amount&quot;) &gt; 500) \
+    .withColumn(&quot;tax&quot;, col(&quot;purchase_amount&quot;) * 0.08)
+</code></pre>
+<h3>7.3 Stateful Operations: Windowed Aggregations</h3>
+<blockquote>
+<p><strong>Theory:</strong> To aggregate streaming data (e.g., total sales per minute), you define a <strong>time window</strong>. Spark remembers state across micro-batches to produce correct aggregates.</p>
+</blockquote>
+<pre><code class="language-python">from pyspark.sql.functions import window
+
+# Tumbling window: non-overlapping 5-minute buckets
+df_windowed = df_parsed_stream \
+    .groupBy(
+        window(col(&quot;event_timestamp&quot;), &quot;5 minutes&quot;),
+        col(&quot;region&quot;)
+    ) \
+    .agg(sum(&quot;purchase_amount&quot;).alias(&quot;revenue_per_5min&quot;))
+
+# Sliding window: 10-minute window that moves every 5 minutes
+df_sliding = df_parsed_stream \
+    .groupBy(
+        window(col(&quot;event_timestamp&quot;), &quot;10 minutes&quot;, &quot;5 minutes&quot;),
+        col(&quot;region&quot;)
+    ) \
+    .agg(sum(&quot;purchase_amount&quot;).alias(&quot;revenue&quot;))
+</code></pre>
+<h3>7.4 Writing a Stream</h3>
+<pre><code class="language-python"># Write aggregated results to console (for debugging)
+query = df_windowed.writeStream \
+    .outputMode(&quot;update&quot;) \
+    .format(&quot;console&quot;) \
+    .start()
+
+# Write to Parquet files (micro-batch append)
+query = df_live_high_value.writeStream \
+    .outputMode(&quot;append&quot;) \
+    .format(&quot;parquet&quot;) \
+    .option(&quot;checkpointLocation&quot;, &quot;/tmp/checkpoints/sales&quot;) \
+    .option(&quot;path&quot;, &quot;/data/streaming_output/&quot;) \
+    .trigger(processingTime=&quot;1 minute&quot;) \
+    .start()
+
+# Keep stream running
+query.awaitTermination()
+</code></pre>
+<h3>Output Modes</h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Use when</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>append</code></td>
+<td>Only new rows are written; no aggregations (or append-safe aggregations)</td>
+</tr>
+<tr>
+<td><code>update</code></td>
+<td>Only changed rows since last trigger are written</td>
+</tr>
+<tr>
+<td><code>complete</code></td>
+<td>Entire result table is rewritten each trigger (use with aggregations only)</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="chapter-8">Chapter 8: Cluster Performance & Tuning</h2><p>This is the &quot;Zero to Hero&quot; dividing line. Anyone can write a join. A data engineer knows how to make it run without failing with an Out Of Memory (OOM) error.</p>
+<h3>8.1 Caching</h3>
+<p>If your script uses the same DataFrame multiple times (e.g., you filter a dataset, write it to a database, and then run an aggregation on it), Spark will calculate that DataFrame <strong>from scratch twice</strong> due to lazy evaluation. Caching saves the intermediate state in RAM.</p>
+<pre><code class="language-python">from pyspark import StorageLevel
+
+# Save DataFrame to Memory and Disk to prevent re-computation
+df_heavy_processing.persist(StorageLevel.MEMORY_AND_DISK)
+
+# ... perform multiple actions on df_heavy_processing ...
+
+# Free up the RAM when done — always unpersist to avoid memory leaks
+df_heavy_processing.unpersist()
+</code></pre>
+<h3>Storage Levels Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Memory</th>
+<th>Disk</th>
+<th>CPU Cost</th>
+<th>When to use</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>MEMORY_ONLY</code></td>
+<td>✅</td>
+<td>❌</td>
+<td>Low</td>
+<td>DataFrame fits in RAM, used frequently</td>
+</tr>
+<tr>
+<td><code>MEMORY_AND_DISK</code></td>
+<td>✅</td>
+<td>✅ (overflow)</td>
+<td>Medium</td>
+<td>Default safe choice for most cases</td>
+</tr>
+<tr>
+<td><code>DISK_ONLY</code></td>
+<td>❌</td>
+<td>✅</td>
+<td>High</td>
+<td>Very large data, used infrequently</td>
+</tr>
+</tbody></table>
+<h3>8.2 Partitioning Strategies</h3>
+<pre><code class="language-python"># Check current partition count
+print(df.rdd.getNumPartitions())
+
+# Repartition: FULL shuffle, increases OR decreases partitions
+# Use when: preparing for a groupBy/join, or partitioning by a key
+df_repartitioned = df.repartition(100, col(&quot;region&quot;))
+
+# Coalesce: NO shuffle, only decreases partitions
+# Use when: writing a small result to disk (avoids 200 tiny files)
+df_small = df_filtered.coalesce(5)
+
+# Write partitioned data (creates folders by value, like Hive partitioning)
+df_sales.write.partitionBy(&quot;region&quot;, &quot;purchase_year&quot;) \
+    .mode(&quot;overwrite&quot;) \
+    .parquet(&quot;path/partitioned_sales/&quot;)
+</code></pre>
+<blockquote>
+<p><strong>When querying partitioned data</strong>, Spark uses <strong>partition pruning</strong> — it reads only the folders it needs. A query filtered on <code>region = &#39;WEST&#39;</code> skips 75% of the files.</p>
+</blockquote>
+<h3>8.3 Handling Data Skewness</h3>
+<blockquote>
+<p><strong>Theory:</strong> Data skew happens when one partition of data is massively larger than the others. For example, if you group sales by &quot;City&quot;, New York will have millions of records while a small town has 10. The worker node handling New York will run out of memory and crash, while other worker nodes sit idle.</p>
+</blockquote>
+<p><strong>Fix 1: Salting (Manual)</strong></p>
+<pre><code class="language-python">from pyspark.sql.functions import rand, monotonically_increasing_id
+
+# Add a random &quot;salt&quot; prefix to the join key to spread out the hot partition
+NUM_SALTS = 10
+
+# On the large table: randomly assign a salt value
+df_sales_salted = df_sales.withColumn(
+    &quot;salted_key&quot;,
+    concat(col(&quot;customer_id&quot;), lit(&quot;_&quot;), (rand() * NUM_SALTS).cast(&quot;int&quot;).cast(&quot;string&quot;))
+)
+
+# On the small/skewed reference table: explode to match all salt values
+from pyspark.sql.functions import explode, array
+
+df_customers_salted = df_customers.withColumn(
+    &quot;salt&quot;,
+    explode(array([lit(str(i)) for i in range(NUM_SALTS)]))
+).withColumn(
+    &quot;salted_key&quot;,
+    concat(col(&quot;customer_id&quot;), lit(&quot;_&quot;), col(&quot;salt&quot;))
+)
+
+# Now join on the salted key — no single node gets overloaded
+df_result = df_sales_salted.join(df_customers_salted, &quot;salted_key&quot;)
+</code></pre>
+<p><strong>Fix 2: Adaptive Query Execution (automatic — see below)</strong></p>
+<h3>8.4 Adaptive Query Execution (AQE)</h3>
+<p>In Spark 3.x, AQE is a game-changer. It allows Spark to analyze the data <strong>during execution</strong> and change its own physical plan on the fly. It can:</p>
+<ul>
+<li>Automatically coalesce small partitions after shuffles</li>
+<li>Switch standard joins to broadcast joins if a table gets heavily filtered</li>
+<li>Automatically handle skewed joins</li>
+</ul>
+<pre><code class="language-python"># Enable AQE in your Spark Session config
+spark.conf.set(&quot;spark.sql.adaptive.enabled&quot;, &quot;true&quot;)
+spark.conf.set(&quot;spark.sql.adaptive.skewJoin.enabled&quot;, &quot;true&quot;)
+spark.conf.set(&quot;spark.sql.adaptive.coalescePartitions.enabled&quot;, &quot;true&quot;)
+</code></pre>
+<h3>8.5 Reading the Execution Plan</h3>
+<p>Always check the physical plan for expensive operations before deploying.</p>
+<pre><code class="language-python"># See the query plan (start from the bottom, it reads upward)
+df_joined.explain(mode=&quot;formatted&quot;)
+</code></pre>
+<p>Key things to look for in the plan:</p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+<th>Good or Bad?</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>BroadcastHashJoin</code></td>
+<td>Small table was broadcast</td>
+<td>✅ Good</td>
+</tr>
+<tr>
+<td><code>SortMergeJoin</code></td>
+<td>Both sides were sorted and shuffled</td>
+<td>⚠️ Expensive</td>
+</tr>
+<tr>
+<td><code>Exchange</code></td>
+<td>A shuffle happened</td>
+<td>⚠️ Check if avoidable</td>
+</tr>
+<tr>
+<td><code>FileScan</code> with <code>PartitionFilters</code></td>
+<td>Partition pruning is working</td>
+<td>✅ Good</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="chapter-9">Chapter 9: The Modern Lakehouse (Delta Lake)</h2><p>Standard data lakes (saving Parquet files in S3/Cloud Storage) have a flaw: you cannot easily update or delete single records, and if a job fails halfway through, you end up with corrupted data.</p>
+<p><strong>Delta Lake</strong> is an open-source storage layer that brings ACID transactions to Spark.</p>
+<h3>9.1 Writing and Overwriting Delta</h3>
+<pre><code class="language-python"># Write data in Delta format
+df_sales.write.format(&quot;delta&quot;).mode(&quot;overwrite&quot;).save(&quot;/data/sales_table&quot;)
+
+# Or create it as a managed SQL table
+df_sales.write.format(&quot;delta&quot;).mode(&quot;overwrite&quot;).saveAsTable(&quot;sales&quot;)
+</code></pre>
+<h3>9.2 Reading Delta</h3>
+<pre><code class="language-python"># Read the current version
+df_delta = spark.read.format(&quot;delta&quot;).load(&quot;/data/sales_table&quot;)
+
+# Time Travel: Read a previous version
+df_yesterday = spark.read.format(&quot;delta&quot;) \
+    .option(&quot;versionAsOf&quot;, 5) \
+    .load(&quot;/data/sales_table&quot;)
+
+# Time Travel: Read data as of a specific timestamp
+df_last_week = spark.read.format(&quot;delta&quot;) \
+    .option(&quot;timestampAsOf&quot;, &quot;2024-01-01&quot;) \
+    .load(&quot;/data/sales_table&quot;)
+</code></pre>
+<h3>9.3 Upserts (MERGE INTO)</h3>
+<p>With Delta, you can perform database-style &quot;upserts&quot; — inserting new records and updating existing ones in a single pass, with full ACID guarantees.</p>
+<pre><code class="language-python">from delta.tables import DeltaTable
+
+# Load the target table
+target_table = DeltaTable.forPath(spark, &quot;/data/sales_table&quot;)
+
+# Merge new daily data into the historical table
+target_table.alias(&quot;target&quot;).merge(
+    df_daily_updates.alias(&quot;source&quot;),
+    &quot;target.sale_id = source.sale_id&quot;
+).whenMatchedUpdateAll(          # Update all columns when IDs match
+).whenNotMatchedInsertAll(       # Insert new rows when no match found
+).execute()
+</code></pre>
+<h3>9.4 Deletes and Schema Evolution</h3>
+<pre><code class="language-python"># Delete records (GDPR compliance use case)
+target_table.delete(&quot;customer_id = &#39;CUST_12345&#39;&quot;)
+
+# Update specific records
+from delta.tables import DeltaTable
+target_table.update(
+    condition=&quot;region = &#39;WEST&#39;&quot;,
+    set={&quot;status&quot;: lit(&quot;REVIEWED&quot;)}
+)
+
+# Schema evolution: add new columns without rewriting the table
+spark.conf.set(&quot;spark.databricks.delta.schema.autoMerge.enabled&quot;, &quot;true&quot;)
+df_with_new_column.write.format(&quot;delta&quot;).option(&quot;mergeSchema&quot;, &quot;true&quot;) \
+    .mode(&quot;append&quot;).save(&quot;/data/sales_table&quot;)
+</code></pre>
+<h3>9.5 Maintenance: OPTIMIZE and Z-ORDER</h3>
+<p>As you write data to Delta every day, you create thousands of tiny files. This &quot;small file problem&quot; destroys read performance. You must run optimization jobs to compact them.</p>
+<pre><code class="language-python"># OPTIMIZE (Bin-packing): Compacts small files into larger ~1GB files
+spark.sql(&quot;OPTIMIZE delta.`/data/sales_table`&quot;)
+
+# Z-Ordering: Co-locates related data (like customer_ids) in the same files.
+# This allows Spark to skip reading 90% of the files when querying a specific customer.
+spark.sql(&quot;OPTIMIZE delta.`/data/sales_table` ZORDER BY (customer_id)&quot;)
+
+# VACUUM: Removes old files no longer needed by time travel
+# WARNING: This makes time travel unavailable for the deleted versions
+spark.sql(&quot;VACUUM delta.`/data/sales_table` RETAIN 168 HOURS&quot;)  # keep 7 days
+</code></pre>
+<h3>9.6 Delta Table History</h3>
+<pre><code class="language-python"># See all operations performed on the table
+delta_table = DeltaTable.forPath(spark, &quot;/data/sales_table&quot;)
+delta_table.history().show(truncate=False)
+</code></pre>
+<hr>
+<h2 id="chapter-10">Chapter 10: Testing PySpark Code</h2><p>Production pipelines <strong>must</strong> be tested. Bugs in data pipelines can silently corrupt months of data before anyone notices.</p>
+<h3>10.1 Setting Up a Test SparkSession</h3>
+<pre><code class="language-python"># tests/conftest.py
+import pytest
+from pyspark.sql import SparkSession
+
+@pytest.fixture(scope=&quot;session&quot;)
+def spark():
+    &quot;&quot;&quot;Create a SparkSession for the test suite.&quot;&quot;&quot;
+    spark = SparkSession.builder \
+        .master(&quot;local[2]&quot;) \
+        .appName(&quot;pytest_spark&quot;) \
+        .config(&quot;spark.sql.shuffle.partitions&quot;, &quot;2&quot;)  # Keep it small for tests
+        .getOrCreate()
+    yield spark
+    spark.stop()
+</code></pre>
+<h3>10.2 Writing Unit Tests</h3>
+<pre><code class="language-python"># tests/test_transformations.py
+from pyspark.sql import Row
+from jobs.transformations import add_tax_column
+
+def test_add_tax_column(spark):
+    # Arrange: Create a small test DataFrame
+    data = [
+        Row(sale_id=1, purchase_amount=100.0),
+        Row(sale_id=2, purchase_amount=200.0),
+    ]
+    df_input = spark.createDataFrame(data)
+
+    # Act: Run the transformation
+    df_result = add_tax_column(df_input, tax_rate=0.1)
+
+    # Assert: Verify the output
+    results = df_result.collect()
+    assert results[0][&quot;tax_amount&quot;] == 10.0
+    assert results[1][&quot;tax_amount&quot;] == 20.0
+    assert &quot;tax_amount&quot; in df_result.columns
+</code></pre>
+<h3>10.3 Testing for Schema Correctness</h3>
+<pre><code class="language-python">def test_output_schema(spark):
+    df = spark.createDataFrame([Row(customer_id=&quot;C1&quot;, amount=100.0)])
+    df_result = your_transformation(df)
+
+    expected_columns = {&quot;customer_id&quot;, &quot;amount&quot;, &quot;tax_amount&quot;, &quot;status&quot;}
+    assert set(df_result.columns) == expected_columns
+</code></pre>
+<h3>10.4 Testing for Data Quality</h3>
+<pre><code class="language-python">def test_no_nulls_in_key_columns(spark):
+    df_result = run_full_pipeline(spark)
+    null_count = df_result.filter(col(&quot;customer_id&quot;).isNull()).count()
+    assert null_count == 0, f&quot;Found {null_count} null customer_ids!&quot;
+
+def test_no_negative_amounts(spark):
+    df_result = run_full_pipeline(spark)
+    negative_count = df_result.filter(col(&quot;purchase_amount&quot;) &lt; 0).count()
+    assert negative_count == 0
+</code></pre>
+<hr>
+<h2 id="chapter-11">Chapter 11: Best Practices Cheat Sheet</h2><h3>Performance Checklist</h3>
+<table>
+<thead>
+<tr>
+<th>Checklist Item</th>
+<th>Why it matters</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>✅ Define schema explicitly</td>
+<td>Avoid <code>inferSchema</code> overhead and type guessing</td>
+</tr>
+<tr>
+<td>✅ Filter early, select what you need</td>
+<td>Reduces data shuffled and processed</td>
+</tr>
+<tr>
+<td>✅ Use Parquet/Delta over CSV/JSON</td>
+<td>Columnar, compressed, schema-embedded</td>
+</tr>
+<tr>
+<td>✅ Broadcast small tables in joins</td>
+<td>Eliminates shuffle on the large side</td>
+</tr>
+<tr>
+<td>✅ Enable AQE (<code>spark.sql.adaptive.enabled=true</code>)</td>
+<td>Auto-handles skew and partition sizing</td>
+</tr>
+<tr>
+<td>✅ Check <code>.explain()</code> before deploying</td>
+<td>Catch SortMergeJoins and unexpected shuffles</td>
+</tr>
+<tr>
+<td>✅ Cache DataFrames used multiple times</td>
+<td>Prevents expensive recomputation</td>
+</tr>
+<tr>
+<td>✅ Always <code>unpersist()</code> when done</td>
+<td>Prevents memory leaks in long jobs</td>
+</tr>
+<tr>
+<td>✅ Coalesce before writing small results</td>
+<td>Avoids thousands of tiny output files</td>
+</tr>
+<tr>
+<td>✅ OPTIMIZE + Z-ORDER Delta tables regularly</td>
+<td>Maintains query performance over time</td>
+</tr>
+</tbody></table>
+<h3>Common Mistakes to Avoid</h3>
+<pre><code class="language-python"># ❌ BAD: Using collect() on large DataFrames
+# This pulls ALL data to the driver and will OOM crash it
+all_data = df.collect()   # DON&#39;T do this on big data
+
+# ✅ GOOD: Use show() to preview, or write() to persist
+df.show(20)
+df.write.parquet(...)
+
+
+# ❌ BAD: Calling count() in a loop
+for region in regions:
+    count = df.filter(col(&quot;region&quot;) == region).count()  # N full scans!
+
+# ✅ GOOD: Do one groupBy aggregation
+df.groupBy(&quot;region&quot;).count().show()
+
+
+# ❌ BAD: Using Python UDFs when built-in functions exist
+custom_upper_udf = udf(lambda x: x.upper(), StringType())
+
+# ✅ GOOD: Use built-in functions (100x faster)
+df.withColumn(&quot;name&quot;, upper(col(&quot;name&quot;)))
+
+
+# ❌ BAD: Not specifying a shuffle partition count
+# Default 200 partitions can be massively wrong for your data size
+spark = SparkSession.builder.appName(&quot;job&quot;).getOrCreate()
+
+# ✅ GOOD: Tune to your data size (target ~128MB per partition)
+spark = SparkSession.builder \
+    .appName(&quot;job&quot;) \
+    .config(&quot;spark.sql.shuffle.partitions&quot;, &quot;50&quot;) \  # adjust for your scale
+    .getOrCreate()
+</code></pre>
+<h3>Quick Reference: Key Imports</h3>
+<pre><code class="language-python"># Session
+from pyspark.sql import SparkSession
+
+# Types
+from pyspark.sql.types import (
+    StructType, StructField, StringType, IntegerType, LongType,
+    DoubleType, BooleanType, DateType, TimestampType, ArrayType, MapType
+)
+
+# Functions (use these instead of UDFs whenever possible)
+from pyspark.sql.functions import (
+    col, lit, when, coalesce,
+    upper, lower, trim, length, concat, concat_ws, regexp_replace, split,
+    to_date, to_timestamp, date_format, datediff, year, month, dayofweek,
+    sum, avg, count, countDistinct, max, min, collect_list,
+    row_number, rank, dense_rank, lead, lag,
+    explode, from_json, broadcast,
+    current_date, current_timestamp
+)
+
+# Window
+from pyspark.sql.window import Window
+
+# Delta Lake
+from delta.tables import DeltaTable
+
+# Storage levels for caching
+from pyspark import StorageLevel
+</code></pre>
+<hr>
+<p><em>Happy engineering — may your shuffles be few and your partitions be balanced.</em></p>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="assets/scripts.js"></script>
+
+    <footer class="global-footer">
+        <div class="footer-brand">
+            <img src="assets/ns_logo.png" alt="NS Logo">
+            Naresh Sanda
+        </div>
+        <div>&copy; 2026 Senior Developer Hub. All rights reserved.</div>
+    </footer>
+</body>
+</html>
