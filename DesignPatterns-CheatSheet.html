@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Patterns & Architecture - Cheat Sheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta name="keywords" content="Design Patterns, Java, Microservices, GoF, Circuit Breaker, Saga, Factory, Singleton, Cheat Sheet">
+    <meta property="og:title" content="Design Patterns & Architecture - Cheat Sheet">
+    <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="assets/ns_logo.png">
+
+    <style>
+        /* Custom Animations for Design Patterns */
+        
+        /* 1. Observer Pattern Animation */
+        .anim-container {
+            background: var(--bg-alt);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .subject {
+            background: #1890ff;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            position: relative;
+            z-index: 2;
+        }
+
+        .signal-wave {
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: 20px;
+            height: 20px;
+            background: rgba(24, 144, 255, 0.5);
+            border-radius: 50%;
+            transform: translateY(-50%);
+            animation: broadcast 3s infinite ease-out;
+            z-index: 1;
+        }
+
+        .subscribers {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .subscriber {
+            background: #2d2d2d;
+            color: #888;
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: 2px solid #444;
+            transition: all 0.3s;
+            animation: receive 3s infinite;
+        }
+
+        .subscriber:nth-child(1) { animation-delay: 0.8s; }
+        .subscriber:nth-child(2) { animation-delay: 0.9s; }
+        .subscriber:nth-child(3) { animation-delay: 1.0s; }
+
+        @keyframes broadcast {
+            0% { width: 0; height: 0; opacity: 1; }
+            50% { width: 150px; height: 150px; opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        @keyframes receive {
+            0%, 25% { background: #2d2d2d; color: #888; border-color: #444; transform: scale(1); }
+            30%, 40% { background: #52c41a; color: white; border-color: #52c41a; transform: scale(1.05); }
+            100% { background: #2d2d2d; color: #888; border-color: #444; transform: scale(1); }
+        }
+
+        /* 2. Circuit Breaker Animation */
+        .cb-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .services-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .service-box {
+            background: #2d2d2d;
+            border: 1px solid #444;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            flex: 1;
+            font-weight: bold;
+        }
+
+        .connection-line {
+            flex: 1;
+            height: 4px;
+            background: #52c41a;
+            position: relative;
+            animation: cb-status 8s infinite;
+        }
+
+        .request-dot {
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: -4px;
+            animation: cb-flow 8s infinite;
+        }
+
+        .cb-label {
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: white;
+            animation: cb-label-color 8s infinite;
+        }
+
+        .down-service {
+            animation: service-fail 8s infinite;
+        }
+
+        @keyframes cb-status {
+            0%, 25% { background: #52c41a; } /* Closed (Healthy) */
+            26%, 60% { background: #f5222d; } /* Open (Failing) */
+            61%, 75% { background: #faad14; } /* Half-Open (Testing) */
+            76%, 100% { background: #52c41a; } /* Closed (Recovered) */
+        }
+
+        @keyframes cb-label-color {
+            0%, 25% { background: #52c41a; content: 'CLOSED'; }
+            26%, 60% { background: #f5222d; content: 'OPEN'; }
+            61%, 75% { background: #faad14; content: 'HALF-OPEN'; }
+            76%, 100% { background: #52c41a; content: 'CLOSED'; }
+        }
+
+        /* Hack to change text content in CSS animation using pseudo-element */
+        .cb-label::after {
+            content: 'CLOSED (OK)';
+            animation: cb-text 8s infinite;
+        }
+
+        @keyframes cb-text {
+            0%, 25% { content: 'CLOSED (OK)'; }
+            26%, 60% { content: 'OPEN (BLOCKED)'; }
+            61%, 75% { content: 'HALF-OPEN (TEST)'; }
+            76%, 100% { content: 'CLOSED (OK)'; }
+        }
+
+        @keyframes cb-flow {
+            0%, 20% { left: 0; opacity: 1; }
+            25% { left: 100%; opacity: 0; }
+            26%, 60% { left: 50%; opacity: 0; transform: scale(2); background: red; } /* Blocked */
+            61%, 70% { left: 0; opacity: 1; }
+            75% { left: 100%; opacity: 0; }
+            76%, 95% { left: 0; opacity: 1; }
+            100% { left: 100%; opacity: 0; }
+        }
+
+        @keyframes service-fail {
+            0%, 25% { border-color: #444; opacity: 1; }
+            26%, 70% { border-color: #f5222d; opacity: 0.5; }
+            71%, 100% { border-color: #444; opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="global-navbar">
+        <a href="index.html" class="brand-logo">
+            <img src="assets/ns_logo.png" alt="NS Logo" class="brand-image" >
+            <div>Naresh Sanda</div>
+        </a>
+        <div class="header-subtitle">Senior Developer Hub</div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search topics...">
+                <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
+            </div>
+            <nav class="toc-nav" id="tocNav">
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#creational">1. Creational Patterns</a></li>
+                    <li><a href="#structural">2. Structural Patterns</a></li>
+                    <li><a href="#behavioral">3. Behavioral Patterns</a></li>
+                    <li><a href="#microservices">4. Microservices Architecture</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <div class="header">
+                <h1>Design Patterns & Architecture</h1>
+                <p class="author">Author: Naresh Kumar Sanda</p>
+                <p style="color: var(--text-muted);">Gang of Four (GoF) patterns and Microservices Architecture, with Java examples and visual animations.</p>
+            </div>
+
+            <div class="section" id="creational">
+                <h2 class="section-title">1. Creational Patterns</h2>
+                <p>These patterns deal with object creation mechanisms, trying to create objects in a manner suitable to the situation.</p>
+
+                <h3>Singleton</h3>
+                <p>Ensures a class has only one instance and provides a global point of access to it.</p>
+                <div class="code-block java"><pre>public class DatabaseConnection {
+    // volatile ensures multiple threads handle the singleton instance correctly
+    private static volatile DatabaseConnection instance;
+
+    private DatabaseConnection() {
+        // Private constructor prevents instantiation
+    }
+
+    // Double-Checked Locking (Thread Safe)
+    public static DatabaseConnection getInstance() {
+        if (instance == null) {
+            synchronized (DatabaseConnection.class) {
+                if (instance == null) {
+                    instance = new DatabaseConnection();
+                }
+            }
+        }
+        return instance;
+    }
+}</pre></div>
+
+                <h3>Factory Method</h3>
+                <p>Provides an interface for creating objects in a superclass, but allows subclasses to alter the type of objects that will be created.</p>
+                <div class="code-block java"><pre>public interface Notification { void notifyUser(); }
+public class SMSNotification implements Notification { public void notifyUser() { ... } }
+public class EmailNotification implements Notification { public void notifyUser() { ... } }
+
+public class NotificationFactory {
+    public Notification createNotification(String channel) {
+        if (channel.equals("SMS")) return new SMSNotification();
+        if (channel.equals("EMAIL")) return new EmailNotification();
+        throw new IllegalArgumentException("Unknown channel");
+    }
+}</pre></div>
+
+                <h3>Builder</h3>
+                <p>Separates the construction of a complex object from its representation, allowing the same construction process to create various representations (Often implemented using Lombok's <code>@Builder</code> in modern Java).</p>
+                <div class="code-block java"><pre>User user = new User.UserBuilder()
+    .firstName("Naresh")
+    .lastName("Sanda")
+    .age(30)
+    .build();</pre></div>
+            </div>
+
+            <div class="section" id="structural">
+                <h2 class="section-title">2. Structural Patterns</h2>
+                <p>These patterns explain how to assemble objects and classes into larger structures while keeping these structures flexible and efficient.</p>
+
+                <h3>Adapter</h3>
+                <p>Allows objects with incompatible interfaces to collaborate. (e.g., Making a Legacy JSON API work with a modern XML system).</p>
+                <div class="code-block java"><pre>public interface LightningPhone { void recharge(); }
+public interface MicroUsbPhone { void useMicroUsb(); }
+
+public class LightningToMicroUsbAdapter implements MicroUsbPhone {
+    private final LightningPhone lightningPhone;
+
+    public LightningToMicroUsbAdapter(LightningPhone lightningPhone) {
+        this.lightningPhone = lightningPhone;
+    }
+
+    @Override
+    public void useMicroUsb() {
+        System.out.println("Adapter converting MicroUSB signal to Lightning...");
+        lightningPhone.recharge();
+    }
+}</pre></div>
+
+                <h3>Facade</h3>
+                <p>Provides a simplified interface to a library, a framework, or any other complex set of classes.</p>
+                <p><em>Example:</em> Creating an <code>OrderFacade</code> that internally calls <code>InventoryService</code>, <code>PaymentService</code>, and <code>ShippingService</code>, hiding the complexity from the frontend controller.</p>
+
+                <h3>Decorator</h3>
+                <p>Attaches new behaviors to objects by placing these objects inside special wrapper objects that contain the behaviors. (Think: Java's <code>InputStream</code> wrappers).</p>
+            </div>
+
+            <div class="section" id="behavioral">
+                <h2 class="section-title">3. Behavioral Patterns</h2>
+                <p>These patterns are concerned with algorithms and the assignment of responsibilities between objects.</p>
+
+                <h3>Strategy</h3>
+                <p>Defines a family of algorithms, encapsulates each one, and makes them interchangeable. Strategy lets the algorithm vary independently from clients that use it.</p>
+                <div class="code-block java"><pre>public interface PaymentStrategy { void pay(int amount); }
+
+public class CreditCardStrategy implements PaymentStrategy { ... }
+public class PayPalStrategy implements PaymentStrategy { ... }
+
+public class ShoppingCart {
+    // The algorithm is injected dynamically!
+    public void checkout(int amount, PaymentStrategy strategy) {
+        strategy.pay(amount);
+    }
+}</pre></div>
+
+                <h3>Observer (Pub/Sub)</h3>
+                <p>Defines a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically.</p>
+
+                <!-- Animation for Observer Pattern -->
+                <div class="anim-container">
+                    <div class="subject">
+                        Subject (Publisher)
+                        <div class="signal-wave"></div>
+                    </div>
+                    <div class="subscribers">
+                        <div class="subscriber">Observer 1 (Email)</div>
+                        <div class="subscriber">Observer 2 (SMS)</div>
+                        <div class="subscriber">Observer 3 (Push)</div>
+                    </div>
+                </div>
+
+                <div class="code-block java"><pre>public class EventManager {
+    private List&lt;EventListener&gt; listeners = new ArrayList&lt;&gt;();
+
+    public void subscribe(EventListener listener) { listeners.add(listener); }
+    
+    public void notify(String eventType) {
+        for (EventListener listener : listeners) {
+            listener.update(eventType);
+        }
+    }
+}</pre></div>
+            </div>
+
+            <div class="section" id="microservices">
+                <h2 class="section-title">4. Microservices Architecture Patterns</h2>
+                <p>Patterns for distributed systems, ensuring resiliency, scalability, and data consistency.</p>
+
+                <h3>Circuit Breaker</h3>
+                <p>Prevents a network or service failure from cascading to other services. If a downstream service fails repeatedly, the circuit "opens" and immediately returns an error (or fallback) without making the network call, giving the broken service time to recover.</p>
+
+                <!-- Animation for Circuit Breaker -->
+                <div class="anim-container cb-container">
+                    <div class="cb-label"></div>
+                    <div class="services-row">
+                        <div class="service-box">Service A<br>(Caller)</div>
+                        <div class="connection-line">
+                            <div class="request-dot"></div>
+                        </div>
+                        <div class="service-box down-service">Service B<br>(Downstream)</div>
+                    </div>
+                </div>
+
+                <h3>Saga Pattern (Distributed Transactions)</h3>
+                <p>Instead of a monolithic ACID transaction, a Saga is a sequence of local transactions. If a local transaction fails, the Saga executes a series of <strong>compensating transactions</strong> that undo the changes made by the preceding local transactions.</p>
+                <ul>
+                    <li><strong>Choreography:</strong> Each local transaction publishes domain events that trigger local transactions in other services. (Decentralized, good for simple workflows).</li>
+                    <li><strong>Orchestration:</strong> An orchestrator (like Camunda or AWS Step Functions) tells the participants what local transactions to execute. (Centralized, good for complex workflows).</li>
+                </ul>
+
+                <h3>CQRS (Command Query Responsibility Segregation)</h3>
+                <p>Separates the model used to update data (Commands) from the model used to read data (Queries). Often used with Event Sourcing.</p>
+                <ul>
+                    <li><strong>Commands:</strong> Change state (POST, PUT, DELETE). Writes to a highly normalized relational database.</li>
+                    <li><strong>Queries:</strong> Read state (GET). Reads from a denormalized NoSQL database (like MongoDB or Elasticsearch) optimized for fast reading.</li>
+                    <li><em>Data Synchronization:</em> The Write DB publishes events to a message queue (Kafka), and the Read DB consumes them to update its state eventually.</li>
+                </ul>
+
+                <h3>API Gateway</h3>
+                <p>A single entry point for all clients. It encapsulates the internal system architecture and provides an API that is tailored to each client. It handles routing, composition, and edge functions like authentication, rate limiting, and CORS.</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="assets/scripts.js"></script>
+
+    <footer class="global-footer">
+        <div class="footer-brand">
+            <img src="assets/ns_logo.png" alt="NS Logo">
+            Naresh Sanda
+        </div>
+        <div>&copy; 2026 Senior Developer Hub. All rights reserved.</div>
+    </footer>
+</body>
+</html>
