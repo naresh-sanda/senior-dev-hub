@@ -9,7 +9,7 @@
 
     <!-- SEO & Metadata -->
     <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
-    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta name="keywords" content="Spring Data JPA, Hibernate, N+1 Query, Transactions, JDBC, Java, Cheat Sheet">
     <meta property="og:title" content="Spring Data JPA & JDBC - Cheat Sheet">
     <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
     <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
@@ -29,7 +29,6 @@
     <div class="app-container">
         
         <aside class="sidebar">
-            
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="Search topics...">
                 <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
@@ -37,10 +36,11 @@
             <nav class="toc-nav" id="tocNav">
                 <h3>📋 Table of Contents</h3>
                 <ul>
-                    <li><a href="#entities">1. Entity Mapping</a></li>
-                    <li><a href="#repositories">2. Spring Data Repositories</a></li>
-                    <li><a href="#nplus1">3. The N+1 Query Problem</a></li>
-                    
+                    <li><a href="#entity-lifecycle">1. Entity Lifecycle</a></li>
+                    <li><a href="#n-plus-1">2. Solving the N+1 Query Problem</a></li>
+                    <li><a href="#transactions">3. Transaction Management</a></li>
+                    <li><a href="#locking">4. Optimistic vs Pessimistic Locking</a></li>
+                    <li><a href="#pagination">5. Pagination & Sorting</a></li>
                 </ul>
             </nav>
         </aside>
@@ -49,49 +49,91 @@
             <div class="header">
                 <h1>Spring Data JPA & JDBC</h1>
                 <p class="author">Author: Naresh Kumar Sanda</p>
-                <p style="color: var(--text-muted);">Entity mapping, Repositories, and the N+1 Query Problem.</p>
+                <p style="color: var(--text-muted);">Entity mapping, JPQL, performance tuning, and solving N+1.</p>
             </div>
 
-            
-            <div class="section" id="entities">
-                <h2 class="section-title">1. Entity Mapping</h2>
-                <div class="code-block java"><pre>@Entity
-@Table(name = "users")
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Order> orders;
-}</pre></div>
+            <div class="section" id="entity-lifecycle">
+                <h2 class="section-title">1. Entity Lifecycle (Hibernate)</h2>
+                <ul>
+                    <li><strong>Transient:</strong> An object created using <code>new</code>. Not associated with a Hibernate Session. No DB row exists yet.</li>
+                    <li><strong>Managed / Persistent:</strong> Associated with the Session. Changes to this object will automatically be saved to the database upon transaction commit (Dirty Checking).</li>
+                    <li><strong>Detached:</strong> The Session was closed. Changes to the object are no longer tracked. You must call <code>save()</code> or <code>merge()</code> to re-attach it.</li>
+                    <li><strong>Removed:</strong> Scheduled for deletion.</li>
+                </ul>
             </div>
-        
-            <div class="section" id="repositories">
-                <h2 class="section-title">2. Spring Data Repositories</h2>
-                <p>Spring dynamically implements this interface at runtime. No SQL required!</p><div class="code-block java"><pre>public interface UserRepository extends JpaRepository<User, Long> {
-    // Magic finder method
-    List<User> findByEmailContainingIgnoreCase(String email);
-    
-    // Custom JPQL Query
-    @Query("SELECT u FROM User u WHERE u.status = 'ACTIVE'")
-    List<User> findActiveUsers();
-}</pre></div>
-            </div>
-        
-            <div class="section" id="nplus1">
-                <h2 class="section-title">3. The N+1 Query Problem</h2>
-                <div class="important-box"><strong>The Trap:</strong> You query 100 Users (1 query). Then you loop through them and call <code>user.getOrders()</code>. Because of Lazy Loading, Hibernate fires 100 extra queries to get the orders. (1 + 100 = 101 queries!).</div><p><strong>The Solution:</strong> Use <code>JOIN FETCH</code> or EntityGraphs to grab the orders in the very first query.</p><div class="code-block java"><pre>@Query("SELECT u FROM User u JOIN FETCH u.orders")
-List<User> findAllUsersWithOrders();</pre></div>
-            </div>
-        
 
-        
-        
+            <div class="section" id="n-plus-1">
+                <h2 class="section-title">2. Solving the N+1 Query Problem</h2>
+                <p><strong>The Problem:</strong> When you fetch a List of 10 Authors, and each Author has a List of Books (Lazy loaded). Iterating through the authors to get their books triggers 1 query for the authors, and 10 queries for the books (1 + N = 11 queries).</p>
                 
+                <h3>Solution 1: EntityGraph</h3>
+                <p>Dynamically tells JPA to fetch the related entities in a single JOIN query, ignoring the default Lazy loading.</p>
+                <div class="code-block java"><pre>public interface AuthorRepository extends JpaRepository&lt;Author, Long&gt; {
+    // Eagerly fetches the 'books' collection using a LEFT OUTER JOIN
+    @EntityGraph(attributePaths = {"books"})
+    List&lt;Author&gt; findAll();
+}</pre></div>
+
+                <h3>Solution 2: JOIN FETCH in JPQL</h3>
+                <div class="code-block java"><pre>@Query("SELECT a FROM Author a JOIN FETCH a.books")
+List&lt;Author&gt; findAllAuthorsWithBooks();</pre></div>
+            </div>
+
+            <div class="section" id="transactions">
+                <h2 class="section-title">3. Transaction Management</h2>
+                <p>The <code>@Transactional</code> annotation wraps your method in a database transaction using an AOP Proxy.</p>
+                <div class="code-block java"><pre>@Service
+public class TransferService {
+
+    // Rollback ONLY occurs on unchecked exceptions (RuntimeException) by default!
+    @Transactional(rollbackFor = Exception.class) 
+    public void transferMoney(Long from, Long to, BigDecimal amount) throws CustomCheckedException {
+        // ... business logic ...
+    }
+}</pre></div>
+                <h3>Propagation Types</h3>
+                <ul>
+                    <li><code>REQUIRED</code> (Default): Join existing transaction. If none exists, create a new one.</li>
+                    <li><code>REQUIRES_NEW</code>: Suspend the current transaction and create a completely new one.</li>
+                    <li><code>SUPPORTS</code>: Run within a transaction if it exists; otherwise, run non-transactionally.</li>
+                </ul>
+            </div>
+
+            <div class="section" id="locking">
+                <h2 class="section-title">4. Optimistic vs Pessimistic Locking</h2>
+                
+                <h3>Optimistic Locking (Best for High Read Volume)</h3>
+                <p>Uses a <code>@Version</code> column. Does not lock the DB row. When saving, Hibernate checks if the version in the DB matches the object's version. If it changed, it throws <code>OptimisticLockException</code>.</p>
+                <div class="code-block java"><pre>@Entity
+public class Product {
+    @Id private Long id;
+    private int quantity;
+    @Version private Long version; // Hibernate handles this automatically
+}</pre></div>
+
+                <h3>Pessimistic Locking (Best for High Write Contention)</h3>
+                <p>Issues a <code>SELECT ... FOR UPDATE</code> query, physically locking the row in the database so no other transaction can read/write it until the current transaction finishes.</p>
+                <div class="code-block java"><pre>public interface ProductRepository extends JpaRepository&lt;Product, Long&gt; {
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT p FROM Product p WHERE p.id = :id")
+    Optional&lt;Product&gt; findByIdWithLock(@Param("id") Long id);
+}</pre></div>
+            </div>
+
+            <div class="section" id="pagination">
+                <h2 class="section-title">5. Pagination & Sorting</h2>
+                <p>Never return millions of rows. Use Spring Data's <code>Pageable</code>.</p>
+                <div class="code-block java"><pre>// Repository
+Page&lt;User&gt; findByStatus(String status, Pageable pageable);
+
+// Service
+Pageable firstPageWithTwoElements = PageRequest.of(0, 2, Sort.by("lastName").descending());
+Page&lt;User&gt; page = userRepository.findByStatus("ACTIVE", firstPageWithTwoElements);
+
+List&lt;User&gt; users = page.getContent();
+long totalElements = page.getTotalElements();
+int totalPages = page.getTotalPages();</pre></div>
+            </div>
         </main>
     </div>
 

@@ -9,7 +9,7 @@
 
     <!-- SEO & Metadata -->
     <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
-    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta name="keywords" content="Spring, Java, IoC, Dependency Injection, AOP, Bean Lifecycle, Cheat Sheet">
     <meta property="og:title" content="Spring Framework - Cheat Sheet">
     <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
     <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
@@ -29,7 +29,6 @@
     <div class="app-container">
         
         <aside class="sidebar">
-            
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="Search topics...">
                 <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
@@ -37,47 +36,111 @@
             <nav class="toc-nav" id="tocNav">
                 <h3>📋 Table of Contents</h3>
                 <ul>
-                    <li><a href="#ioc">1. Inversion of Control (IoC)</a></li>
-                    <li><a href="#beans">2. Bean Scopes</a></li>
-                    <li><a href="#aop">3. Aspect-Oriented Programming (AOP)</a></li>
-                    
+                    <li><a href="#ioc">1. IoC & Dependency Injection</a></li>
+                    <li><a href="#bean-lifecycle">2. The Bean Lifecycle</a></li>
+                    <li><a href="#scopes">3. Bean Scopes</a></li>
+                    <li><a href="#aop">4. Aspect-Oriented Programming (AOP)</a></li>
                 </ul>
             </nav>
         </aside>
 
         <main class="main-content" id="mainContent">
             <div class="header">
-                <h1>Spring Framework</h1>
+                <h1>Spring Framework Core</h1>
                 <p class="author">Author: Naresh Kumar Sanda</p>
-                <p style="color: var(--text-muted);">Deep dive into IoC, Beans, ApplicationContext, and AOP Proxies.</p>
+                <p style="color: var(--text-muted);">Inversion of Control, Beans, ApplicationContext, and AOP Proxies.</p>
             </div>
 
-            
             <div class="section" id="ioc">
-                <h2 class="section-title">1. Inversion of Control (IoC)</h2>
-                <div class="important-box">IoC shifts the responsibility of creating and wiring objects from your code to the Spring Container.</div><div class="code-block java"><pre>ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-MyService service = context.getBean(MyService.class);</pre></div>
-            </div>
-        
-            <div class="section" id="beans">
-                <h2 class="section-title">2. Bean Scopes</h2>
-                <table><thead><tr><th>Scope</th><th>Description</th></tr></thead><tbody><tr><td><code>singleton</code> (Default)</td><td>One instance per Spring IoC container.</td></tr><tr><td><code>prototype</code></td><td>A new instance is created every time the bean is requested.</td></tr><tr><td><code>request</code></td><td>One instance per HTTP request (Web only).</td></tr></tbody></table>
-            </div>
-        
-            <div class="section" id="aop">
-                <h2 class="section-title">3. Aspect-Oriented Programming (AOP)</h2>
-                <p>Used for cross-cutting concerns (Logging, Security, Transactions). Spring uses JDK Dynamic Proxies or CGLIB to wrap beans.</p><div class="code-block java"><pre>@Aspect
-@Component
-public class LoggingAspect {
-    @Before("execution(* com.app.service.*.*(..))")
-    public void logBefore() { System.out.println("Method called"); }
+                <h2 class="section-title">1. IoC & Dependency Injection</h2>
+                <p><strong>Inversion of Control (IoC):</strong> Instead of objects creating their own dependencies using <code>new</code>, the Spring container (ApplicationContext) injects them. This decouples the code and makes testing easier.</p>
+                
+                <h3>Dependency Injection Types</h3>
+                <ul>
+                    <li><strong>Constructor Injection (Recommended):</strong> Ensures dependencies are not null, allows fields to be <code>final</code>, and simplifies unit testing without mocking frameworks.</li>
+                    <li><strong>Field Injection (@Autowired):</strong> <em>(Anti-pattern)</em> Hard to test outside of Spring, allows circular dependencies which can crash at runtime, and breaks encapsulation.</li>
+                    <li><strong>Setter Injection:</strong> Good for optional dependencies.</li>
+                </ul>
+                <div class="code-block java"><pre>@Service
+public class OrderService {
+    private final PaymentService paymentService;
+
+    // Constructor Injection (Spring 4.3+ auto-wires if there's only one constructor)
+    public OrderService(PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
 }</pre></div>
             </div>
-        
 
-        
-        
+            <div class="section" id="bean-lifecycle">
+                <h2 class="section-title">2. The Bean Lifecycle</h2>
+                <p>Understanding when a Bean is created and destroyed is critical for advanced configurations.</p>
+                <ol>
+                    <li><strong>Instantiation:</strong> Spring creates the object instance.</li>
+                    <li><strong>Populate Properties:</strong> Spring injects all required dependencies.</li>
+                    <li><strong>BeanPostProcessor (Before):</strong> Spring calls <code>postProcessBeforeInitialization</code>. (Often used to wrap beans in proxies).</li>
+                    <li><strong>@PostConstruct:</strong> Custom initialization logic runs here.</li>
+                    <li><strong>BeanPostProcessor (After):</strong> Spring calls <code>postProcessAfterInitialization</code>.</li>
+                    <li><strong>Ready for Use:</strong> The bean is placed in the ApplicationContext.</li>
+                    <li><strong>@PreDestroy:</strong> Called when the ApplicationContext is shutting down.</li>
+                </ol>
+            </div>
+
+            <div class="section" id="scopes">
+                <h2 class="section-title">3. Bean Scopes</h2>
+                <table style="width: 100%;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 25%;"><strong>Singleton (Default)</strong></td>
+                            <td>One shared instance per ApplicationContext. Stateless beans (Services, Repositories). Not thread-safe if you store state in fields!</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Prototype</strong></td>
+                            <td>A new instance is created every time it is injected. Good for stateful objects.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Request</strong></td>
+                            <td>One instance per HTTP request (Web applications only).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Session</strong></td>
+                            <td>One instance per HTTP session (Web applications only).</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section" id="aop">
+                <h2 class="section-title">4. Aspect-Oriented Programming (AOP)</h2>
+                <p>AOP allows you to separate cross-cutting concerns (like logging, security, or transactions) from the core business logic. Spring achieves this by wrapping your Bean in a dynamically generated <strong>Proxy</strong> class.</p>
                 
+                <h3>Key Terminology</h3>
+                <ul>
+                    <li><strong>Aspect:</strong> The module containing the cross-cutting logic (e.g., a Logging class).</li>
+                    <li><strong>Advice:</strong> The action taken at a particular point (e.g., "log this before the method runs").</li>
+                    <li><strong>Pointcut:</strong> A regex-like expression defining <em>where</em> the advice should be applied.</li>
+                </ul>
+
+                <div class="code-block java"><pre>@Aspect
+@Component
+public class LoggingAspect {
+
+    // Pointcut targeting all methods inside the 'service' package
+    @Around("execution(* com.myapp.service.*.*(..))")
+    public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+        long start = System.currentTimeMillis();
+        
+        // Execute the actual business method
+        Object proceed = joinPoint.proceed();
+        
+        long executionTime = System.currentTimeMillis() - start;
+        System.out.println(joinPoint.getSignature() + " executed in " + executionTime + "ms");
+        
+        return proceed;
+    }
+}</pre></div>
+                <p><em>Warning:</em> Because Spring AOP uses proxies, calling a method from <em>within the same class</em> bypasses the proxy! (This is why <code>@Transactional</code> doesn't work if called by a method in the same class).</p>
+            </div>
         </main>
     </div>
 

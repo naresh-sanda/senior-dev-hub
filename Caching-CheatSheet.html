@@ -9,7 +9,7 @@
 
     <!-- SEO & Metadata -->
     <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
-    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta name="keywords" content="Caching, Redis, Memcached, Write-Through, Write-Back, Cache Eviction, System Design, Cheat Sheet">
     <meta property="og:title" content="Caching Strategies - Cheat Sheet">
     <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
     <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
@@ -29,7 +29,6 @@
     <div class="app-container">
         
         <aside class="sidebar">
-            
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="Search topics...">
                 <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
@@ -37,10 +36,11 @@
             <nav class="toc-nav" id="tocNav">
                 <h3>📋 Table of Contents</h3>
                 <ul>
-                    <li><a href="#redis">1. Redis vs Memcached</a></li>
-                    <li><a href="#patterns">2. Caching Patterns</a></li>
-                    <li><a href="#eviction">3. Cache Eviction (LRU/LFU)</a></li>
-                    
+                    <li><a href="#cache-aside">1. Cache-Aside (Lazy Loading)</a></li>
+                    <li><a href="#write-through">2. Write-Through</a></li>
+                    <li><a href="#write-back">3. Write-Back (Write-Behind)</a></li>
+                    <li><a href="#eviction">4. Eviction Policies</a></li>
+                    <li><a href="#redis">5. Redis vs Memcached</a></li>
                 </ul>
             </nav>
         </aside>
@@ -49,29 +49,84 @@
             <div class="header">
                 <h1>Caching Strategies</h1>
                 <p class="author">Author: Naresh Kumar Sanda</p>
-                <p style="color: var(--text-muted);">Redis, Memcached, Write-through vs Write-back, and Eviction policies.</p>
+                <p style="color: var(--text-muted);">Read/Write strategies, Eviction policies, and Redis use cases.</p>
             </div>
 
-            
-            <div class="section" id="redis">
-                <h2 class="section-title">1. Redis vs Memcached</h2>
-                <table><thead><tr><th>Feature</th><th>Redis</th><th>Memcached</th></tr></thead><tbody><tr><td>Data Structures</td><td>Strings, Hashes, Lists, Sets</td><td>Strings only</td></tr><tr><td>Persistence</td><td>Yes (RDB snapshots, AOF)</td><td>No (In-memory only)</td></tr><tr><td>Use Case</td><td>Leaderboards, Pub/Sub, Complex Caching</td><td>Simple HTML/Session caching</td></tr></tbody></table>
+            <div class="section" id="cache-aside">
+                <h2 class="section-title">1. Cache-Aside (Lazy Loading)</h2>
+                <p>The application is responsible for reading and writing to the cache and the database.</p>
+                <ul>
+                    <li><strong>Read Flow:</strong> App checks cache. If hit, return data. If miss, app reads from DB, writes to cache, and returns data.</li>
+                    <li><strong>Write Flow:</strong> App writes directly to DB. App then invalidates (deletes) the cache entry.</li>
+                    <li><strong>Pros:</strong> Cache only contains data that is actually requested (saves memory). Node failures are handled gracefully (just results in DB reads).</li>
+                    <li><strong>Cons:</strong> Cache misses cause 3 network hops (Cache Check -> DB Read -> Cache Write), increasing latency.</li>
+                </ul>
             </div>
-        
-            <div class="section" id="patterns">
-                <h2 class="section-title">2. Caching Patterns</h2>
-                <ul><li><strong>Cache Aside:</strong> App checks cache. If miss, reads from DB and updates cache. (Best for read-heavy).</li><li><strong>Write-Through:</strong> App writes data to BOTH Cache and DB simultaneously. (Slower writes, fast reads).</li><li><strong>Write-Back:</strong> App writes to Cache ONLY. Cache asynchronously writes to DB later. (Extremely fast, but risk of data loss on crash).</li></ul>
+
+            <div class="section" id="write-through">
+                <h2 class="section-title">2. Write-Through</h2>
+                <p>The application writes to the cache, and the cache synchronously writes to the database.</p>
+                <ul>
+                    <li><strong>Read Flow:</strong> App reads from cache. (Misses are handled similarly to Cache-Aside, often by the cache provider automatically fetching from DB).</li>
+                    <li><strong>Write Flow:</strong> App writes to Cache -> Cache writes to DB -> Return Success.</li>
+                    <li><strong>Pros:</strong> Data in the cache is never stale. High read performance.</li>
+                    <li><strong>Cons:</strong> Write operations are slower because they require two synchronous writes. Cache might get filled with data that is rarely read.</li>
+                </ul>
             </div>
-        
+
+            <div class="section" id="write-back">
+                <h2 class="section-title">3. Write-Back (Write-Behind)</h2>
+                <p>The application writes to the cache, and the cache asynchronously writes to the database at a later time (or in batches).</p>
+                <ul>
+                    <li><strong>Pros:</strong> Extremely fast write performance. Reduces database load since writes are batched.</li>
+                    <li><strong>Cons:</strong> High risk of data loss. If the cache node crashes before the background write to the database occurs, the data is lost permanently. Complex to implement.</li>
+                </ul>
+            </div>
+
             <div class="section" id="eviction">
-                <h2 class="section-title">3. Cache Eviction (LRU/LFU)</h2>
-                <div class="important-box"><strong>LRU (Least Recently Used):</strong> Evicts items that haven't been accessed in the longest time.<br><strong>LFU (Least Frequently Used):</strong> Evicts items that are accessed the least often over time.</div>
+                <h2 class="section-title">4. Eviction Policies</h2>
+                <p>Caches are stored in RAM, which is expensive and limited. When the cache is full, an eviction policy determines which data to throw away.</p>
+                <table style="width: 100%;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 25%;"><strong>LRU (Least Recently Used)</strong></td>
+                            <td>Evicts the items that haven't been accessed for the longest time. <em>The most common default policy.</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>LFU (Least Frequently Used)</strong></td>
+                            <td>Evicts the items that are accessed the least often over a period of time. Requires keeping a counter for each item.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>FIFO (First In, First Out)</strong></td>
+                            <td>Evicts the oldest items in the cache, regardless of how often they are accessed.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>TTL (Time To Live)</strong></td>
+                            <td>Not strictly an eviction policy when full, but an expiration mechanism. Items automatically delete themselves after a set time (e.g., 60 seconds). Crucial for keeping Cache-Aside data fresh.</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-        
 
-        
-        
+            <div class="section" id="redis">
+                <h2 class="section-title">5. Redis vs Memcached</h2>
+                <p>Both are popular, open-source, in-memory key-value stores. But they have different use cases.</p>
                 
+                <h3>Memcached</h3>
+                <ul>
+                    <li>Extremely simple key-value store for strings/objects.</li>
+                    <li>Multi-threaded architecture (can utilize multiple CPU cores out of the box).</li>
+                    <li>No persistence (restarts = total data loss).</li>
+                </ul>
+
+                <h3>Redis (Remote Dictionary Server)</h3>
+                <ul>
+                    <li>Advanced data structures (Strings, Lists, Sets, Hashes, Sorted Sets, Bitmaps).</li>
+                    <li>Single-threaded (processes one command at a time, ensuring atomicity without locks).</li>
+                    <li>Supports persistence (RDB snapshots, AOF logs) so data survives restarts.</li>
+                    <li>Can be used for Pub/Sub messaging, Leaderboards (Sorted Sets), and Distributed Locks.</li>
+                </ul>
+            </div>
         </main>
     </div>
 

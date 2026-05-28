@@ -9,7 +9,7 @@
 
     <!-- SEO & Metadata -->
     <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
-    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta name="keywords" content="Spring Boot, Auto-configuration, Actuator, Profiles, Java, Cheat Sheet">
     <meta property="og:title" content="Spring Boot - Cheat Sheet">
     <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
     <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
@@ -29,7 +29,6 @@
     <div class="app-container">
         
         <aside class="sidebar">
-            
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="Search topics...">
                 <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
@@ -37,10 +36,10 @@
             <nav class="toc-nav" id="tocNav">
                 <h3>📋 Table of Contents</h3>
                 <ul>
-                    <li><a href="#autoconfig">1. Auto-Configuration</a></li>
+                    <li><a href="#autoconfig">1. Auto-Configuration Magic</a></li>
                     <li><a href="#actuator">2. Spring Boot Actuator</a></li>
-                    <li><a href="#profiles">3. Profiles & Configuration</a></li>
-                    
+                    <li><a href="#profiles">3. Profiles & Properties</a></li>
+                    <li><a href="#starters">4. Custom Starters</a></li>
                 </ul>
             </nav>
         </aside>
@@ -49,34 +48,85 @@
             <div class="header">
                 <h1>Spring Boot</h1>
                 <p class="author">Author: Naresh Kumar Sanda</p>
-                <p style="color: var(--text-muted);">Auto-configuration mechanics, Actuator, and production-ready defaults.</p>
+                <p style="color: var(--text-muted);">Auto-configuration, Actuator, Profiles, and production-ready defaults.</p>
             </div>
 
-            
             <div class="section" id="autoconfig">
-                <h2 class="section-title">1. Auto-Configuration</h2>
-                <div class="highlight-box"><strong>@SpringBootApplication</strong> is a macro for:<br>1. <code>@Configuration</code><br>2. <code>@EnableAutoConfiguration</code> (Scans classpath and configures beans automatically based on dependencies, e.g., Tomcat, HikariCP).<br>3. <code>@ComponentScan</code> (Scans current package and sub-packages).</div>
+                <h2 class="section-title">1. Auto-Configuration Magic</h2>
+                <p>Spring Boot removes the need for complex XML configurations by guessing what you need based on the JARs on your classpath.</p>
+                <p>The <code>@SpringBootApplication</code> annotation is actually a combination of three annotations:</p>
+                <ul>
+                    <li><code>@Configuration</code>: Marks the class as a source of bean definitions.</li>
+                    <li><code>@ComponentScan</code>: Tells Spring to scan the current package and sub-packages for Beans (<code>@Service</code>, <code>@Component</code>).</li>
+                    <li><code>@EnableAutoConfiguration</code>: The real magic. It triggers Spring Boot to look at the classpath and configure beans automatically. (e.g., If Tomcat is on the classpath, it sets up an embedded web server).</li>
+                </ul>
+
+                <h3>Conditionally Loading Beans</h3>
+                <p>Auto-configuration heavily relies on <code>@Conditional</code> annotations.</p>
+                <div class="code-block java"><pre>@Configuration
+// Only load this config if the 'DataSource' class is present on the classpath
+@ConditionalOnClass(DataSource.class) 
+// Only load if the user hasn't already defined a bean named 'dataSource'
+@ConditionalOnMissingBean(name = "dataSource")
+public class DataSourceAutoConfiguration {
+    @Bean
+    public DataSource dataSource() {
+        return new HikariDataSource();
+    }
+}</pre></div>
             </div>
-        
+
             <div class="section" id="actuator">
                 <h2 class="section-title">2. Spring Boot Actuator</h2>
-                <p>Exposes production-ready endpoints for monitoring.</p><table><thead><tr><th>Endpoint</th><th>Purpose</th></tr></thead><tbody><tr><td><code>/actuator/health</code></td><td>Checks if the app is alive (used by K8s liveness probes).</td></tr><tr><td><code>/actuator/metrics</code></td><td>Exposes JVM memory, thread count, and HTTP latency.</td></tr><tr><td><code>/actuator/env</code></td><td>Shows active profiles and properties.</td></tr></tbody></table>
-            </div>
-        
-            <div class="section" id="profiles">
-                <h2 class="section-title">3. Profiles & Configuration</h2>
-                <div class="code-block yaml"><pre>spring:
-  profiles:
-    active: dev
---- 
-spring.config.activate.on-profile: dev
-db.url: jdbc:mysql://localhost/dev_db</pre></div>
-            </div>
-        
-
-        
-        
+                <p>Actuator brings production-ready features to your application without writing code. It exposes REST endpoints to monitor your app.</p>
+                <div class="code-block yaml"><pre># application.yml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics,prometheus"
+  endpoint:
+    health:
+      show-details: always # Shows database/disk health details</pre></div>
                 
+                <h3>Crucial Endpoints</h3>
+                <ul>
+                    <li><code>/actuator/health</code>: Used by Kubernetes for Liveness and Readiness probes.</li>
+                    <li><code>/actuator/metrics</code>: JVM memory, garbage collection pauses, HTTP request timings.</li>
+                    <li><code>/actuator/prometheus</code>: Exposes metrics in a format Prometheus can scrape.</li>
+                    <li><code>/actuator/env</code>: Shows all environment variables and properties loaded.</li>
+                </ul>
+            </div>
+
+            <div class="section" id="profiles">
+                <h2 class="section-title">3. Profiles & Properties</h2>
+                <p>Profiles allow you to segregate parts of your application configuration and make it only available in certain environments.</p>
+                
+                <div class="code-block java"><pre>// Only load this Bean when the "dev" profile is active
+@Component
+@Profile("dev")
+public class MockEmailService implements EmailService { ... }</pre></div>
+
+                <h3>Property Resolution Hierarchy (Highest priority wins)</h3>
+                <ol>
+                    <li>Command line arguments (<code>--server.port=8080</code>)</li>
+                    <li>OS Environment Variables (<code>SERVER_PORT=8080</code>)</li>
+                    <li>Profile-specific application properties (<code>application-prod.yml</code>)</li>
+                    <li>Standard application properties (<code>application.yml</code>)</li>
+                </ol>
+            </div>
+
+            <div class="section" id="starters">
+                <h2 class="section-title">4. Custom Starters</h2>
+                <p>A "Starter" is simply a set of convenient dependency descriptors you include in your application. To build your own custom library that auto-configures itself when dropped into a Spring Boot project:</p>
+                <ol>
+                    <li>Create your <code>@Configuration</code> class with <code>@Conditional</code> annotations.</li>
+                    <li>Create a file named <code>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</code> (Spring Boot 2.7+).</li>
+                    <li>Add the fully qualified name of your Configuration class to that file.</li>
+                    <li>When any project includes your JAR, Spring Boot will automatically discover and load your configuration!</li>
+                </ol>
+            </div>
+
         </main>
     </div>
 

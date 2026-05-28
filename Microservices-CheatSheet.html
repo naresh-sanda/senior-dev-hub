@@ -9,7 +9,7 @@
 
     <!-- SEO & Metadata -->
     <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
-    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta name="keywords" content="Microservices, Spring Cloud, API Gateway, Circuit Breaker, Saga Pattern, Cheat Sheet">
     <meta property="og:title" content="Spring Microservices - Cheat Sheet">
     <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
     <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
@@ -29,7 +29,6 @@
     <div class="app-container">
         
         <aside class="sidebar">
-            
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="Search topics...">
                 <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
@@ -37,10 +36,11 @@
             <nav class="toc-nav" id="tocNav">
                 <h3>📋 Table of Contents</h3>
                 <ul>
-                    <li><a href="#discovery">1. Service Discovery (Eureka)</a></li>
-                    <li><a href="#gateway">2. API Gateway</a></li>
-                    <li><a href="#circuitbreaker">3. Circuit Breaker (Resilience4j)</a></li>
-                    
+                    <li><a href="#discovery">1. Service Discovery</a></li>
+                    <li><a href="#gateway">2. API Gateway Pattern</a></li>
+                    <li><a href="#circuit-breaker">3. Circuit Breaker (Resilience4j)</a></li>
+                    <li><a href="#saga">4. Distributed Transactions (Saga)</a></li>
+                    <li><a href="#tracing">5. Distributed Tracing</a></li>
                 </ul>
             </nav>
         </aside>
@@ -49,41 +49,88 @@
             <div class="header">
                 <h1>Spring Microservices</h1>
                 <p class="author">Author: Naresh Kumar Sanda</p>
-                <p style="color: var(--text-muted);">Service Discovery, API Gateway, Circuit Breakers, and Distributed Tracing.</p>
+                <p style="color: var(--text-muted);">Spring Cloud, Gateway, Resiliency, and Distributed Patterns.</p>
             </div>
 
-            
             <div class="section" id="discovery">
-                <h2 class="section-title">1. Service Discovery (Eureka)</h2>
-                <p>Microservices register their IP/Port with a central registry (Eureka Server) so they can discover each other without hardcoding URLs.</p><div class="code-block java"><pre>@EnableEurekaClient
-@SpringBootApplication
-public class OrderService {}</pre></div>
+                <h2 class="section-title">1. Service Discovery (Eureka / Consul)</h2>
+                <p>Instead of hardcoding IP addresses, microservices register themselves with a central registry. Other services query the registry to find them dynamically.</p>
+                <ul>
+                    <li><code>@EnableEurekaServer</code>: Turns a Spring Boot app into a registry.</li>
+                    <li><code>@EnableDiscoveryClient</code>: Tells a microservice to register itself.</li>
+                </ul>
+                <p><em>Note: In Kubernetes, this is often handled natively by K8s Services and CoreDNS, making Eureka unnecessary in modern cloud-native stacks.</em></p>
             </div>
-        
+
             <div class="section" id="gateway">
-                <h2 class="section-title">2. API Gateway</h2>
-                <p>Acts as the single entry point for clients. Handles routing, authentication, and rate limiting.</p><div class="code-block yaml"><pre>spring: 
+                <h2 class="section-title">2. API Gateway Pattern</h2>
+                <p>A single entry point for all clients. Handles routing, authentication, rate limiting, and CORS.</p>
+                <div class="code-block yaml"><pre># Spring Cloud Gateway Configuration
+spring:
   cloud:
     gateway:
       routes:
-        - id: user_route
-          uri: lb://USER-SERVICE
+        - id: user_service_route
+          uri: lb://USER-SERVICE # Uses Load Balancer to find the service via Eureka/Consul
           predicates:
-            - Path=/api/users/**</pre></div>
+            - Path=/api/users/**
+          filters:
+            - RewritePath=/api/users/(?&lt;segment&gt;.*), /$\{segment}</pre></div>
             </div>
-        
-            <div class="section" id="circuitbreaker">
-                <h2 class="section-title">3. Circuit Breaker (Resilience4j)</h2>
-                <div class="important-box">Prevents cascading failures. If Service B is down, Service A stops calling it immediately (Circuit OPEN) and returns a fallback response.</div><div class="code-block java"><pre>@CircuitBreaker(name = "inventoryService", fallbackMethod = "fallbackInventory")
-public String getInventory() {
-    return restTemplate.getForObject("http://INVENTORY-SERVICE/items", String.class);
-}</pre></div>
-            </div>
-        
 
-        
-        
+            <div class="section" id="circuit-breaker">
+                <h2 class="section-title">3. Circuit Breaker (Resilience4j)</h2>
+                <p>Prevents cascading failures. If Service A calls Service B, and B is down, the Circuit Breaker "opens" and immediately fails future calls (or returns a fallback) without waiting for timeouts.</p>
                 
+                <div class="code-block java"><pre>@Service
+public class OrderService {
+
+    @CircuitBreaker(name = "paymentService", fallbackMethod = "fallbackPayment")
+    public PaymentResponse processPayment(OrderRequest request) {
+        // HTTP call to Payment Service via RestTemplate or WebClient
+        return restTemplate.postForObject("http://PAYMENT-SERVICE/pay", request, PaymentResponse.class);
+    }
+
+    // Fallback method must have the same signature + Throwable
+    public PaymentResponse fallbackPayment(OrderRequest request, Throwable t) {
+        return new PaymentResponse("FAILED", "Payment service is currently unavailable");
+    }
+}</pre></div>
+                
+                <h3>Circuit States:</h3>
+                <ul>
+                    <li><strong>Closed:</strong> Everything is fine. Requests pass through.</li>
+                    <li><strong>Open:</strong> Failure threshold reached. Requests are blocked immediately.</li>
+                    <li><strong>Half-Open:</strong> After a timeout, allows a few test requests to check if the downstream service has recovered.</li>
+                </ul>
+            </div>
+
+            <div class="section" id="saga">
+                <h2 class="section-title">4. Distributed Transactions (Saga Pattern)</h2>
+                <p>A standard database transaction (ACID) cannot span multiple microservices. Instead, use the Saga pattern.</p>
+                <ul>
+                    <li>A Saga is a sequence of local transactions.</li>
+                    <li>If one step fails, the Saga executes <strong>Compensating Transactions</strong> to undo the previous steps.</li>
+                </ul>
+                <h3>Example: E-commerce Order</h3>
+                <ol>
+                    <li>Order Service creates Order (Status: PENDING).</li>
+                    <li>Inventory Service reserves stock. (If fails, abort Saga).</li>
+                    <li>Payment Service processes payment. (If fails, execute Compensation: Un-reserve stock in Inventory Service).</li>
+                    <li>Order Service updates Order (Status: APPROVED).</li>
+                </ol>
+                <p><em>Implementation: Usually orchestrated using message brokers (Kafka/RabbitMQ) or orchestration engines like Camunda.</em></p>
+            </div>
+
+            <div class="section" id="tracing">
+                <h2 class="section-title">5. Distributed Tracing</h2>
+                <p>When a request spans 5 different microservices, debugging an error is impossible without tracing.</p>
+                <ul>
+                    <li><strong>Trace ID:</strong> A unique ID assigned to a request when it hits the API Gateway. Passed along to every downstream service via HTTP Headers.</li>
+                    <li><strong>Span ID:</strong> A unique ID for a specific operation/service within the overall Trace.</li>
+                </ul>
+                <p>Tools: <strong>Spring Boot 3 uses Micrometer Tracing</strong> (previously Spring Cloud Sleuth). View traces in Zipkin or Jaeger.</p>
+            </div>
         </main>
     </div>
 

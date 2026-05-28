@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Design Mastery - Cheat Sheet</title>
+    <title>System Design - Cheat Sheet</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/styles.css">
 
     <!-- SEO & Metadata -->
     <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
-    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
-    <meta property="og:title" content="System Design Mastery - Cheat Sheet">
+    <meta name="keywords" content="System Design, CAP Theorem, Load Balancing, Sharding, Message Queues, Kafka, Cheat Sheet">
+    <meta property="og:title" content="System Design - Cheat Sheet">
     <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
     <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
     <meta property="og:type" content="website">
@@ -29,7 +29,6 @@
     <div class="app-container">
         
         <aside class="sidebar">
-            
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="Search topics...">
                 <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
@@ -37,41 +36,92 @@
             <nav class="toc-nav" id="tocNav">
                 <h3>📋 Table of Contents</h3>
                 <ul>
-                    <li><a href="#cap">1. CAP Theorem</a></li>
-                    <li><a href="#scaling">2. Scaling Strategies</a></li>
-                    <li><a href="#sharding">3. Database Sharding</a></li>
-                    
+                    <li><a href="#cap-theorem">1. CAP Theorem</a></li>
+                    <li><a href="#load-balancing">2. Load Balancing</a></li>
+                    <li><a href="#databases">3. Database Scaling</a></li>
+                    <li><a href="#message-queues">4. Message Queues</a></li>
+                    <li><a href="#api-design">5. API Design</a></li>
                 </ul>
             </nav>
         </aside>
 
         <main class="main-content" id="mainContent">
             <div class="header">
-                <h1>System Design Mastery</h1>
+                <h1>System Design</h1>
                 <p class="author">Author: Naresh Kumar Sanda</p>
-                <p style="color: var(--text-muted);">Load Balancing, CAP Theorem, Sharding, and Event-Driven Patterns.</p>
+                <p style="color: var(--text-muted);">CAP Theorem, Load Balancing, Sharding, and Message Queues.</p>
             </div>
 
-            
-            <div class="section" id="cap">
+            <div class="section" id="cap-theorem">
                 <h2 class="section-title">1. CAP Theorem</h2>
-                <div class="highlight-box">A distributed system can only provide TWO of the following three guarantees:</div><ul><li><strong>Consistency (C):</strong> Every read receives the most recent write.</li><li><strong>Availability (A):</strong> Every request receives a response (even if stale).</li><li><strong>Partition Tolerance (P):</strong> System continues to operate despite network failures.</li></ul><p><em>(Note: Network partitions (P) are unavoidable, so you must choose between CP or AP).</em></p>
+                <p>In a distributed data store, you can only guarantee two out of the following three guarantees simultaneously:</p>
+                <ul>
+                    <li><strong>Consistency:</strong> Every read receives the most recent write or an error. (All nodes see the same data at the same time).</li>
+                    <li><strong>Availability:</strong> Every request receives a non-error response, without the guarantee that it contains the most recent write.</li>
+                    <li><strong>Partition Tolerance:</strong> The system continues to operate despite an arbitrary number of messages being dropped/delayed between nodes.</li>
+                </ul>
+                <p><em>Note: Because network partitions (P) are unavoidable in distributed systems, you usually have to choose between CP (Consistency over Availability) or AP (Availability over Consistency).</em></p>
             </div>
-        
-            <div class="section" id="scaling">
-                <h2 class="section-title">2. Scaling Strategies</h2>
-                <table><thead><tr><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><strong>Vertical (Scale Up)</strong></td><td>Adding more RAM/CPU to a single server. Limited ceiling, has single point of failure.</td></tr><tr><td><strong>Horizontal (Scale Out)</strong></td><td>Adding more servers and putting a Load Balancer in front. Infinite scaling.</td></tr></tbody></table>
-            </div>
-        
-            <div class="section" id="sharding">
-                <h2 class="section-title">3. Database Sharding</h2>
-                <p>Splitting a massive database table across multiple servers. <strong>Consistent Hashing</strong> is used to determine which shard a specific user's data belongs to, minimizing data movement when adding new shards.</p>
-            </div>
-        
 
-        
-        
+            <div class="section" id="load-balancing">
+                <h2 class="section-title">2. Load Balancing</h2>
+                <p>Distributes incoming network traffic across a group of backend servers (Server Farm).</p>
                 
+                <h3>Algorithms</h3>
+                <ul>
+                    <li><strong>Round Robin:</strong> Distributes requests sequentially across the group of servers.</li>
+                    <li><strong>Least Connections:</strong> Sends the request to the server with the fewest active connections. Good for long-running connections like WebSockets.</li>
+                    <li><strong>IP Hash:</strong> Uses the client's IP address to determine which server receives the request. Useful for maintaining session persistence (Sticky Sessions).</li>
+                </ul>
+
+                <h3>L4 vs L7 Load Balancing</h3>
+                <ul>
+                    <li><strong>Layer 4 (Transport):</strong> Balances based on IP address and TCP/UDP port. Fast, but blind to the actual content (HTTP headers/URL).</li>
+                    <li><strong>Layer 7 (Application):</strong> Balances based on the HTTP request (URL path, cookies, headers). Slower, but allows smart routing (e.g., <code>/api</code> to backend, <code>/images</code> to CDN).</li>
+                </ul>
+            </div>
+
+            <div class="section" id="databases">
+                <h2 class="section-title">3. Database Scaling</h2>
+                
+                <h3>Replication (Read Scaling)</h3>
+                <p>Master-Slave architecture. All writes go to the Master, which replicates data to Slaves. Reads can be distributed among Slaves. <em>Issue: Replication lag.</em></p>
+
+                <h3>Sharding (Write Scaling)</h3>
+                <p>Partitioning data across multiple databases (shards).</p>
+                <ul>
+                    <li><strong>Key-Based (Hash) Sharding:</strong> Hash the ID (e.g., `user_id % num_servers`). Ensures even distribution, but adding/removing servers requires massive data re-shuffling.</li>
+                    <li><strong>Consistent Hashing:</strong> Solves the re-shuffling problem. Servers and keys are mapped to a conceptual "hash ring". Adding a node only redistributes keys from the immediate neighbor.</li>
+                    <li><strong>Directory-Based Sharding:</strong> Maintain a lookup table mapping a key to a specific database node. Flexible but adds a single point of failure.</li>
+                </ul>
+            </div>
+
+            <div class="section" id="message-queues">
+                <h2 class="section-title">4. Message Queues (Pub/Sub)</h2>
+                <p>Used to decouple services, smooth out traffic spikes (buffering), and execute heavy tasks asynchronously.</p>
+                
+                <table style="width: 100%;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 25%;"><strong>RabbitMQ / SQS</strong></td>
+                            <td>"Smart broker, dumb consumer". The broker tracks which messages were read (ACKs) and deletes them. Good for traditional task queuing.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Apache Kafka</strong></td>
+                            <td>"Dumb broker, smart consumer". Messages are stored in an append-only log and persist for a configured time. Consumers keep track of their own "offset" (where they are in the log). Good for massive event streaming and replayability.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section" id="api-design">
+                <h2 class="section-title">5. API Design Patterns</h2>
+                <ul>
+                    <li><strong>REST:</strong> Resource-oriented (Nouns). Standard HTTP verbs (GET, POST, PUT, DELETE). Stateless.</li>
+                    <li><strong>GraphQL:</strong> Client dictates exactly what data it wants. Prevents Over-fetching and Under-fetching. Uses a single <code>POST /graphql</code> endpoint.</li>
+                    <li><strong>gRPC:</strong> Uses Protocol Buffers (binary). Highly compressed and extremely fast. Excellent for internal microservice-to-microservice communication. Not natively supported by web browsers.</li>
+                </ul>
+            </div>
         </main>
     </div>
 

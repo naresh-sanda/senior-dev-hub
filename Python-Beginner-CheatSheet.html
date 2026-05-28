@@ -9,7 +9,7 @@
 
     <!-- SEO & Metadata -->
     <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
-    <meta name="keywords" content="Python, Beginner, Fundamentals, Cheat Sheet, Senior Developer">
+    <meta name="keywords" content="Python, Beginner, Data Types, Control Flow, Functions, OOP, Cheat Sheet">
     <meta property="og:title" content="Python Beginner - Cheat Sheet">
     <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
     <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
@@ -29,7 +29,6 @@
     <div class="app-container">
         
         <aside class="sidebar">
-            
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="Search topics...">
                 <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
@@ -37,100 +36,145 @@
             <nav class="toc-nav" id="tocNav">
                 <h3>📋 Table of Contents</h3>
                 <ul>
-                    <li><a href="#variables">1. Variables & Types</a></li>
+                    <li><a href="#data-types">1. Data Types & Structures</a></li>
                     <li><a href="#control-flow">2. Control Flow</a></li>
-                    <li><a href="#data-structures">3. Data Structures</a></li>
-                    <li><a href="#functions">4. Functions</a></li>
+                    <li><a href="#functions">3. Functions & Scope</a></li>
+                    <li><a href="#oop">4. Object-Oriented Programming</a></li>
+                    <li><a href="#exceptions">5. Exception Handling</a></li>
+                    <li><a href="#file-io">6. File I/O</a></li>
                 </ul>
             </nav>
         </aside>
 
         <main class="main-content" id="mainContent">
             <div class="header">
-                <h1>Python Beginner</h1>
+                <h1>Python for Beginners</h1>
                 <p class="author">Author: Naresh Kumar Sanda</p>
-                <p style="color: var(--text-muted);">Master the fundamentals of Python programming.</p>
+                <p style="color: var(--text-muted);">The fundamentals of Python programming in one place.</p>
             </div>
 
-            <div class="section" id="variables">
-                <h2 class="section-title">1. Variables & Types</h2>
-                <div class="code-block python"><pre>
-# Python is dynamically typed
-name = "Alice"       # string
-age = 30             # integer
-height = 5.6         # float
-is_developer = True  # boolean
+            <div class="section" id="data-types">
+                <h2 class="section-title">1. Data Types & Structures</h2>
+                <div class="code-block python"><pre># Basic Types
+x = 10          # int
+y = 3.14        # float
+name = "Alice"  # str
+is_active = True # bool
 
-# Check type
-print(type(age))     # &lt;class 'int'&gt;
-</pre></div>
-            </div>
-
-            <div class="section" id="control-flow">
-                <h2 class="section-title">2. Control Flow</h2>
-                <div class="code-block python"><pre>
-# If-Else Statement
-if age >= 18:
-    print("Adult")
-elif age > 12:
-    print("Teen")
-else:
-    print("Child")
-
-# For Loop
-for i in range(5):
-    print(i) # 0, 1, 2, 3, 4
-
-# While Loop
-count = 0
-while count < 3:
-    print(count)
-    count += 1
-</pre></div>
-            </div>
-
-            <div class="section" id="data-structures">
-                <h2 class="section-title">3. Data Structures</h2>
-                <div class="code-block python"><pre>
-# Lists (Mutable)
+# Lists (Mutable, Ordered)
 fruits = ["apple", "banana", "cherry"]
 fruits.append("orange")
 print(fruits[0]) # "apple"
 
-# Dictionaries (Key-Value)
-person = {"name": "Bob", "age": 25}
-person["city"] = "New York"
-print(person["name"]) # "Bob"
-
-# Sets (Unique items)
-unique_numbers = {1, 2, 3, 3, 2}
-print(unique_numbers) # {1, 2, 3}
-
-# Tuples (Immutable)
+# Tuples (Immutable, Ordered)
 coordinates = (10, 20)
-</pre></div>
+
+# Sets (Mutable, Unordered, Unique elements)
+unique_numbers = {1, 2, 3, 3} # Becomes {1, 2, 3}
+
+# Dictionaries (Key-Value pairs)
+person = {
+    "name": "Bob",
+    "age": 25
+}
+print(person["name"]) # "Bob"</pre></div>
+            </div>
+
+            <div class="section" id="control-flow">
+                <h2 class="section-title">2. Control Flow</h2>
+                <div class="code-block python"><pre># If-Elif-Else
+age = 20
+if age < 18:
+    print("Minor")
+elif age == 18:
+    print("Just became an adult")
+else:
+    print("Adult")
+
+# For Loops
+for item in fruits:
+    print(item)
+
+# For Loop with range (start, stop, step)
+for i in range(0, 10, 2):
+    print(i) # Prints 0, 2, 4, 6, 8
+
+# While Loops
+count = 0
+while count < 5:
+    print(count)
+    count += 1</pre></div>
             </div>
 
             <div class="section" id="functions">
-                <h2 class="section-title">4. Functions</h2>
-                <div class="code-block python"><pre>
-# Define a function
-def greet(name):
-    return f"Hello, {name}!"
+                <h2 class="section-title">3. Functions & Scope</h2>
+                <div class="code-block python"><pre># Defining a function
+def greet(name, greeting="Hello"):
+    return f"{greeting}, {name}!"
 
-# Call the function
-message = greet("Alice")
-print(message) # "Hello, Alice!"
+print(greet("Alice")) # "Hello, Alice!"
+print(greet("Bob", "Hi")) # "Hi, Bob!"
 
-# Default parameters
-def power(base, exp=2):
-    return base ** exp
+# *args for variable positional arguments
+def sum_all(*args):
+    return sum(args)
 
-print(power(3))    # 9 (3^2)
-print(power(3, 3)) # 27 (3^3)
-</pre></div>
+# **kwargs for variable keyword arguments
+def print_info(**kwargs):
+    for key, value in kwargs.items():
+        print(f"{key}: {value}")
+
+print_info(name="Charlie", age=30)</pre></div>
             </div>
 
+            <div class="section" id="oop">
+                <h2 class="section-title">4. Object-Oriented Programming</h2>
+                <div class="code-block python"><pre>class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def speak(self):
+        return "Some generic sound"
+
+# Inheritance
+class Dog(Animal):
+    def __init__(self, name, breed):
+        super().__init__(name) # Call parent constructor
+        self.breed = breed
+
+    # Method Overriding
+    def speak(self):
+        return "Woof!"
+
+my_dog = Dog("Rex", "German Shepherd")
+print(my_dog.speak()) # "Woof!"</pre></div>
+            </div>
+
+            <div class="section" id="exceptions">
+                <h2 class="section-title">5. Exception Handling</h2>
+                <div class="code-block python"><pre>try:
+    result = 10 / 0
+except ZeroDivisionError as e:
+    print(f"Error: Cannot divide by zero. ({e})")
+except Exception as e:
+    print(f"A general error occurred: {e}")
+finally:
+    print("This runs no matter what.")</pre></div>
+            </div>
+
+            <div class="section" id="file-io">
+                <h2 class="section-title">6. File I/O</h2>
+                <p>Always use the <code>with</code> statement so the file is automatically closed, even if an exception occurs.</p>
+                <div class="code-block python"><pre># Writing to a file
+with open("data.txt", "w") as file:
+    file.write("Hello, World!\n")
+    file.write("Python is great.")
+
+# Reading from a file
+with open("data.txt", "r") as file:
+    contents = file.read()
+    print(contents)</pre></div>
+            </div>
         </main>
     </div>
 

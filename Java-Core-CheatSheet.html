@@ -9,7 +9,7 @@
 
     <!-- SEO & Metadata -->
     <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
-    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta name="keywords" content="Java, Core, Streams, JVM, Garbage Collection, CompletableFuture, Cheat Sheet">
     <meta property="og:title" content="Java Core Mastery - Cheat Sheet">
     <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
     <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
@@ -29,7 +29,6 @@
     <div class="app-container">
         
         <aside class="sidebar">
-            
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="Search topics...">
                 <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
@@ -37,10 +36,11 @@
             <nav class="toc-nav" id="tocNav">
                 <h3>📋 Table of Contents</h3>
                 <ul>
-                    <li><a href="#streams">1. Advanced Streams API</a></li>
-                    <li><a href="#concurrency">2. Concurrency & Threads</a></li>
-                    <li><a href="#memory">3. JVM Memory Model</a></li>
-                    
+                    <li><a href="#jvm">1. JVM Memory Model</a></li>
+                    <li><a href="#gc">2. Garbage Collection</a></li>
+                    <li><a href="#streams">3. Advanced Streams API</a></li>
+                    <li><a href="#concurrency">4. CompletableFuture & Concurrency</a></li>
+                    <li><a href="#virtual-threads">5. Java 21+ Virtual Threads</a></li>
                 </ul>
             </nav>
         </aside>
@@ -49,33 +49,97 @@
             <div class="header">
                 <h1>Java Core Mastery</h1>
                 <p class="author">Author: Naresh Kumar Sanda</p>
-                <p style="color: var(--text-muted);">Advanced Streams, Concurrency, and JVM Memory Model for Senior Interviews.</p>
+                <p style="color: var(--text-muted);">JVM Internals, Streams API, and advanced concurrency.</p>
             </div>
 
-            
+            <div class="section" id="jvm">
+                <h2 class="section-title">1. JVM Memory Model</h2>
+                <table style="width: 100%;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 25%;"><strong>Heap Memory</strong></td>
+                            <td>Shared among all threads. Stores all instantiated objects (e.g., <code>new MyObject()</code>). Subject to Garbage Collection. Divided into Young Gen, Old Gen.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Stack Memory</strong></td>
+                            <td>Thread-specific. Stores local variables, method call frames, and object <em>references</em> (pointing to the Heap). Fast, LIFO, auto-cleared when methods exit.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Metaspace</strong></td>
+                            <td>Replaced PermGen (Java 8+). Uses native memory to store class metadata, static variables, and constants.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section" id="gc">
+                <h2 class="section-title">2. Garbage Collection (GC)</h2>
+                <p>GC automatically reclaims Heap memory used by objects that are no longer reachable.</p>
+                <ul>
+                    <li><strong>G1GC (Garbage First):</strong> Default since Java 9. Divides the heap into regions and prioritizes regions with the most garbage. Balances throughput and latency.</li>
+                    <li><strong>ZGC / Shenandoah:</strong> Ultra-low latency collectors. Pause times do not increase with heap size (usually &lt;1ms pauses).</li>
+                    <li><strong>GC Roots:</strong> The starting points for GC tracing (Local variables on the stack, static variables, active threads).</li>
+                </ul>
+            </div>
+
             <div class="section" id="streams">
-                <h2 class="section-title">1. Advanced Streams API</h2>
-                <h3 class="subsection-title">Grouping & Partitioning</h3><div class="code-block java"><pre>Map<String, List<Employee>> byDept = employees.stream().collect(Collectors.groupingBy(Employee::getDepartment));
-Map<Boolean, List<Employee>> isManager = employees.stream().collect(Collectors.partitioningBy(Employee::isManager));</pre></div>
-            </div>
-        
-            <div class="section" id="concurrency">
-                <h2 class="section-title">2. Concurrency & Threads</h2>
-                <h3 class="subsection-title">CompletableFuture (Non-Blocking)</h3><div class="code-block java"><pre>CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> fetchUserData())
-    .thenApply(user -> user.toUpperCase())
-    .exceptionally(ex -> "Error");
-</pre></div><div class="highlight-box"><strong>Virtual Threads (Java 21)</strong>: Lightweight threads managed by the JVM. Use <code>Executors.newVirtualThreadPerTaskExecutor()</code> to handle millions of I/O bound tasks efficiently without OS thread limits.</div>
-            </div>
-        
-            <div class="section" id="memory">
-                <h2 class="section-title">3. JVM Memory Model</h2>
-                <p><strong>Heap:</strong> Objects and JRE classes (Shared across threads). Includes Eden Space, Survivor Spaces, and Tenured Generation.</p><p><strong>Stack:</strong> Local variables and method calls (One per thread).</p><p><strong>Metaspace:</strong> Class definitions and static variables (Off-heap).</p>
-            </div>
-        
+                <h2 class="section-title">3. Advanced Streams API</h2>
+                <div class="code-block java"><pre>List&lt;Employee&gt; employees = getEmployees();
 
-        
-        
-                
+// 1. Grouping and mapping
+Map&lt;String, List&lt;String&gt;&gt; namesByDept = employees.stream()
+    .collect(Collectors.groupingBy(
+        Employee::getDepartment,
+        Collectors.mapping(Employee::getName, Collectors.toList())
+    ));
+
+// 2. Partitioning (true/false)
+Map&lt;Boolean, List&lt;Employee&gt;&gt; highlyPaid = employees.stream()
+    .collect(Collectors.partitioningBy(e -&gt; e.getSalary() &gt; 100000));
+
+// 3. FlatMap (Flattening nested lists)
+List&lt;String&gt; allSkills = employees.stream()
+    .flatMap(e -&gt; e.getSkills().stream())
+    .distinct()
+    .collect(Collectors.toList());</pre></div>
+            </div>
+
+            <div class="section" id="concurrency">
+                <h2 class="section-title">4. CompletableFuture & Concurrency</h2>
+                <p>Use <code>CompletableFuture</code> for non-blocking, asynchronous programming.</p>
+                <div class="code-block java"><pre>CompletableFuture&lt;User&gt; userFuture = CompletableFuture.supplyAsync(() -&gt; fetchUser(id));
+CompletableFuture&lt;Order&gt; orderFuture = CompletableFuture.supplyAsync(() -&gt; fetchOrder(id));
+
+// Combine results of two independent futures
+CompletableFuture&lt;Response&gt; combined = userFuture.thenCombine(orderFuture, (user, order) -&gt; {
+    return new Response(user, order);
+});
+
+// Exception handling
+combined.exceptionally(ex -&gt; {
+    log.error("Failed to fetch data", ex);
+    return new Response(null, null); // Return fallback
+});</pre></div>
+            </div>
+
+            <div class="section" id="virtual-threads">
+                <h2 class="section-title">5. Java 21+ Virtual Threads (Project Loom)</h2>
+                <p>Traditional OS threads are expensive. Virtual threads are lightweight threads managed by the JVM, allowing you to run millions of concurrent tasks using a simple "thread-per-request" model without callbacks or reactive frameworks.</p>
+                <div class="code-block java"><pre>// Start a Virtual Thread
+Thread.startVirtualThread(() -&gt; {
+    System.out.println("Running in a virtual thread!");
+});
+
+// Using an ExecutorService for Virtual Threads
+try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+    IntStream.range(0, 10_000).forEach(i -&gt; {
+        executor.submit(() -&gt; {
+            Thread.sleep(Duration.ofSeconds(1)); // Does NOT block an OS thread
+            return i;
+        });
+    });
+} // Blocks until all virtual threads finish</pre></div>
+            </div>
         </main>
     </div>
 

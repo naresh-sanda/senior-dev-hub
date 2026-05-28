@@ -9,7 +9,7 @@
 
     <!-- SEO & Metadata -->
     <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
-    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta name="keywords" content="Database Performance, EXPLAIN, B-Tree, Connection Pooling, HikariCP, N+1, Cheat Sheet">
     <meta property="og:title" content="App & DB Performance - Cheat Sheet">
     <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
     <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
@@ -29,7 +29,6 @@
     <div class="app-container">
         
         <aside class="sidebar">
-            
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="Search topics...">
                 <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
@@ -37,10 +36,10 @@
             <nav class="toc-nav" id="tocNav">
                 <h3>📋 Table of Contents</h3>
                 <ul>
-                    <li><a href="#explain">1. Using EXPLAIN</a></li>
-                    <li><a href="#indexes">2. B-Tree Indexes</a></li>
-                    <li><a href="#hikaricp">3. HikariCP (Connection Pooling)</a></li>
-                    
+                    <li><a href="#indexes">1. Database Indexes</a></li>
+                    <li><a href="#explain">2. Query EXPLAIN Plans</a></li>
+                    <li><a href="#pooling">3. Connection Pooling (HikariCP)</a></li>
+                    <li><a href="#app-level">4. Application-Level Tuning</a></li>
                 </ul>
             </nav>
         </aside>
@@ -49,32 +48,65 @@
             <div class="header">
                 <h1>App & DB Performance</h1>
                 <p class="author">Author: Naresh Kumar Sanda</p>
-                <p style="color: var(--text-muted);">Query EXPLAIN plans, Indexes, and HikariCP Tuning.</p>
+                <p style="color: var(--text-muted);">Indexes, EXPLAIN plans, Connection Pools, and Thread Dumps.</p>
             </div>
 
-            
-            <div class="section" id="explain">
-                <h2 class="section-title">1. Using EXPLAIN</h2>
-                <div class="highlight-box">Prefix your slow query with <code>EXPLAIN</code> to see exactly how MySQL executes it. Look closely at the <strong>type</strong> column. If it says <code>ALL</code>, MySQL is doing a Full Table Scan (terrible). If it says <code>ref</code> or <code>eq_ref</code>, it's using an index (good!).</div><div class="code-block sql"><pre>EXPLAIN SELECT * FROM users WHERE email = 'test@test.com';</pre></div>
-            </div>
-        
             <div class="section" id="indexes">
-                <h2 class="section-title">2. B-Tree Indexes</h2>
-                <p>Indexes are separate data structures (B-Trees) that keep a sorted copy of a column, pointing back to the main table rows. They make <code>SELECT</code> extremely fast, but slow down <code>INSERT/UPDATE</code> (because the tree must be re-sorted).</p><div class="code-block sql"><pre>-- Composite Index (Order matters!)
-CREATE INDEX idx_last_first ON users(last_name, first_name);
--- This index works for "WHERE last_name='Smith'"
--- It DOES NOT work for "WHERE first_name='John'"</pre></div>
-            </div>
-        
-            <div class="section" id="hikaricp">
-                <h2 class="section-title">3. HikariCP (Connection Pooling)</h2>
-                <div class="important-box">Opening a new DB connection for every request takes hundreds of milliseconds (TCP handshake, SSL). A Connection Pool keeps a pool of connections permanently open and reuses them!</div><p><strong>Golden Rule:</strong> The optimal pool size is usually much smaller than you think: <code>Connections = ((core_count * 2) + effective_spindle_count)</code>. Usually around 10-20 connections per app instance is perfect.</p>
-            </div>
-        
-
-        
-        
+                <h2 class="section-title">1. Database Indexes</h2>
+                <p>Indexes drastically speed up <code>SELECT</code> queries but slow down <code>INSERT</code>, <code>UPDATE</code>, and <code>DELETE</code> operations because the index must be updated alongside the data.</p>
                 
+                <h3>B-Tree Indexes (Default)</h3>
+                <p>Stores data in a balanced tree structure. Excellent for exact matches, ranges (<code>&lt;</code>, <code>&gt;</code>, <code>BETWEEN</code>), and sorting (<code>ORDER BY</code>).</p>
+                
+                <h3>Hash Indexes</h3>
+                <p>Only useful for exact matches (<code>=</code>). Cannot be used for range queries or sorting.</p>
+                
+                <h3>Composite Indexes</h3>
+                <p>An index on multiple columns (e.g., <code>INDEX(last_name, first_name)</code>). <strong>Rule of thumb:</strong> The order matters! It works like a phone book. It can speed up queries filtering by <code>last_name</code>, or <code>last_name</code> AND <code>first_name</code>, but it is USELESS for queries filtering ONLY by <code>first_name</code>.</p>
+            </div>
+
+            <div class="section" id="explain">
+                <h2 class="section-title">2. Query EXPLAIN Plans</h2>
+                <p>Prefixing a query with <code>EXPLAIN</code> (or <code>EXPLAIN ANALYZE</code> in PostgreSQL/MySQL) shows how the DB engine executes the query.</p>
+                
+                <table style="width: 100%;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 25%;"><strong>Index Scan / Index Seek</strong></td>
+                            <td>✅ The DB found a relevant index and used it to find the rows quickly. This is what you want.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Full Table Scan / Seq Scan</strong></td>
+                            <td>❌ The DB had to read every single row in the table. Terrible for large tables. Indicates a missing index.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Filesort</strong></td>
+                            <td>❌ (MySQL) The DB had to write data to a temporary file on disk to sort it because the index wasn't sufficient. Very slow.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section" id="pooling">
+                <h2 class="section-title">3. Connection Pooling (HikariCP)</h2>
+                <p>Opening a database connection involves network handshakes and authentication, which is extremely slow. A Connection Pool keeps a set of connections open and reuses them.</p>
+                
+                <h3>HikariCP Tuning (Spring Boot Default)</h3>
+                <ul>
+                    <li><code>maximumPoolSize</code>: How many connections can be open at once? <em>Surprisingly, smaller is often better.</em> A formula from PostgreSQL experts: <code>connections = ((core_count * 2) + effective_spindle_count)</code>. Usually, 10-20 is plenty for a single microservice node.</li>
+                    <li><code>minimumIdle</code>: HikariCP recommends leaving this same as maximumPoolSize for fixed-size pools to avoid sudden connection drops/creates.</li>
+                    <li><code>connectionTimeout</code>: How long a thread waits for a connection before throwing an exception (default 30s).</li>
+                </ul>
+            </div>
+
+            <div class="section" id="app-level">
+                <h2 class="section-title">4. Application-Level Tuning</h2>
+                <ul>
+                    <li><strong>N+1 Query Problem:</strong> Mentioned in the JPA cheat sheet, but it's the #1 cause of ORM slowness. Always use JOIN FETCH or EntityGraphs to eagerly fetch required relations.</li>
+                    <li><strong>Thread Dumps:</strong> If your Java application freezes (but CPU is low), take a thread dump (<code>jstack &lt;pid&gt;</code>). Look for threads in the <code>BLOCKED</code> state. This often indicates a thread waiting on a database connection pool that is exhausted, or a synchronized block bottleneck.</li>
+                    <li><strong>Async Processing:</strong> Do not block HTTP threads for slow operations (like sending an email). Delegate to an ExecutorService, Virtual Threads, or a Message Queue (Kafka/RabbitMQ).</li>
+                </ul>
+            </div>
         </main>
     </div>
 

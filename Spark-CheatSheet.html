@@ -9,7 +9,7 @@
 
     <!-- SEO & Metadata -->
     <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
-    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta name="keywords" content="Apache Spark, Big Data, RDD, DataFrame, Spark Architecture, Cheat Sheet">
     <meta property="og:title" content="Apache Spark - Cheat Sheet">
     <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
     <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
@@ -29,7 +29,6 @@
     <div class="app-container">
         
         <aside class="sidebar">
-            
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="Search topics...">
                 <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
@@ -37,47 +36,79 @@
             <nav class="toc-nav" id="tocNav">
                 <h3>📋 Table of Contents</h3>
                 <ul>
-                    <li><a href="#architecture">1. Spark Architecture</a></li>
-                    <li><a href="#trans-actions">2. Transformations vs Actions</a></li>
-                    <li><a href="#dataframes">3. PySpark DataFrames</a></li>
-                    
+                    <li><a href="#handbook">➡️ See PySpark Handbook</a></li>
+                    <li><a href="#architecture">1. Cluster Architecture</a></li>
+                    <li><a href="#rdd-vs-df">2. RDD vs DataFrame vs Dataset</a></li>
+                    <li><a href="#execution">3. Catalyst Optimizer & Tungsten</a></li>
+                    <li><a href="#shuffles">4. Managing Shuffles</a></li>
                 </ul>
             </nav>
         </aside>
 
         <main class="main-content" id="mainContent">
             <div class="header">
-                <h1>Apache Spark</h1>
+                <h1>Apache Spark Core</h1>
                 <p class="author">Author: Naresh Kumar Sanda</p>
-                <p style="color: var(--text-muted);">RDDs, DataFrames, Transformations vs Actions.</p>
+                <p style="color: var(--text-muted);">Architecture, Execution Engines, and Data Structures.</p>
             </div>
 
-            
+            <div class="section" id="handbook" style="background-color: rgba(64,169,255,0.1); padding: 15px; border-left: 4px solid #1890ff; border-radius: 4px; margin-bottom: 20px;">
+                <h3 style="margin-top: 0; color: #1890ff;">Looking for Code Examples?</h3>
+                <p style="margin-bottom: 0;">For a complete, code-heavy guide to transformations, joins, UDFs, streaming, and optimization using Python, please see the comprehensive <a href="PySpark-Handbook.html" style="font-weight: bold; color: #1890ff; text-decoration: underline;">PySpark Handbook</a>.</p>
+            </div>
+
             <div class="section" id="architecture">
-                <h2 class="section-title">1. Spark Architecture</h2>
-                <p><strong>Driver:</strong> Runs the <code>main()</code> method, creates SparkContext, and schedules tasks.</p><p><strong>Executors:</strong> Worker nodes that execute the tasks and store data in memory or disk.</p>
+                <h2 class="section-title">1. Cluster Architecture</h2>
+                <ul>
+                    <li><strong>Driver Node:</strong> Runs the `main()` method of the application. It creates the <code>SparkSession</code>, translates user code into actual jobs, builds the Directed Acyclic Graph (DAG), and schedules tasks across workers.</li>
+                    <li><strong>Cluster Manager:</strong> Allocates physical resources (CPU/Memory) across applications. Examples: YARN, Mesos, Kubernetes, or Spark Standalone.</li>
+                    <li><strong>Worker Node / Executors:</strong> Processes that run on worker nodes. They execute the tasks sent by the Driver and hold data in memory or disk across them.</li>
+                </ul>
             </div>
-        
-            <div class="section" id="trans-actions">
-                <h2 class="section-title">2. Transformations vs Actions</h2>
-                <table><thead><tr><th>Concept</th><th>Behavior</th><th>Examples</th></tr></thead><tbody><tr><td><strong>Transformations</strong></td><td>Lazy evaluation. Builds the DAG but doesn't execute anything yet.</td><td><code>map()</code>, <code>filter()</code>, <code>join()</code>, <code>groupBy()</code></td></tr><tr><td><strong>Actions</strong></td><td>Triggers actual execution and returns a result to the driver or writes to storage.</td><td><code>count()</code>, <code>collect()</code>, <code>save()</code>, <code>show()</code></td></tr></tbody></table>
-            </div>
-        
-            <div class="section" id="dataframes">
-                <h2 class="section-title">3. PySpark DataFrames</h2>
-                <div class="code-block python"><pre>df = spark.read.csv("data.csv", header=True, inferSchema=True)
 
-# Filter and Aggregate
-result = df.filter(df.age > 30) \
-           .groupBy("department") \
-           .agg(F.avg("salary").alias("avg_salary"))
-result.show()</pre></div>
-            </div>
-        
-
-        
-        
+            <div class="section" id="rdd-vs-df">
+                <h2 class="section-title">2. RDD vs DataFrame vs Dataset</h2>
                 
+                <table style="width: 100%;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 25%;"><strong>RDD (Resilient Distributed Dataset)</strong></td>
+                            <td>The low-level, fundamental data structure. Distributed collection of Java/Python objects. Hard to optimize because Spark doesn't understand the structure of the data inside the object. Usually avoided in modern Spark code.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DataFrame</strong></td>
+                            <td>An RDD organized into named columns (like a relational DB table). High performance because Spark knows the exact schema and can optimize execution plans. Untyped at compile-time (errors happen at runtime).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dataset (Java/Scala only)</strong></td>
+                            <td>Provides the benefits of RDDs (compile-time type safety) and DataFrames (schema-based performance optimization). Not available in Python because Python is dynamically typed.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section" id="execution">
+                <h2 class="section-title">3. Catalyst Optimizer & Tungsten</h2>
+                <p>These two engines are why DataFrames are significantly faster than raw RDDs.</p>
+                <ul>
+                    <li><strong>Catalyst Optimizer:</strong> An extensible query optimizer. It takes your code, converts it into an Unresolved Logical Plan, applies schema checks to make a Logical Plan, optimizes it (e.g., pushing filters down to the database before joining), and generates multiple Physical Plans to choose the cheapest one.</li>
+                    <li><strong>Project Tungsten:</strong> Focuses on hardware optimization (CPU & Memory). It manages memory explicitly (avoiding Java Garbage Collection overhead), uses binary processing, and generates optimized bytecode at runtime (Whole-Stage Code Generation).</li>
+                </ul>
+            </div>
+
+            <div class="section" id="shuffles">
+                <h2 class="section-title">4. Managing Shuffles</h2>
+                <p>A "Shuffle" occurs when data needs to be redistributed across the cluster's network. It involves writing data to disk, sending it over the network, and reading it back. It is the most expensive operation in Spark.</p>
+                
+                <h3>Operations that trigger Shuffles:</h3>
+                <ul>
+                    <li><code>groupByKey()</code>, <code>reduceByKey()</code>, <code>agg()</code></li>
+                    <li><code>join()</code> (unless one side is a Broadcast Join)</li>
+                    <li><code>repartition()</code> (but NOT <code>coalesce()</code>)</li>
+                    <li><code>distinct()</code></li>
+                </ul>
+                <p><strong>Optimization:</strong> Use <code>spark.sql.shuffle.partitions</code> to tune the number of partitions created during a shuffle. The default is 200, which is often too high for small datasets and too low for massive datasets. Aim for ~128MB per partition.</p>
+            </div>
         </main>
     </div>
 

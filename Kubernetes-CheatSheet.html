@@ -9,7 +9,7 @@
 
     <!-- SEO & Metadata -->
     <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
-    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta name="keywords" content="Kubernetes, K8s, DevOps, Deployments, Pods, Services, Cheat Sheet, Senior Developer">
     <meta property="og:title" content="Kubernetes (K8s) - Cheat Sheet">
     <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
     <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
@@ -29,7 +29,6 @@
     <div class="app-container">
         
         <aside class="sidebar">
-            
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="Search topics...">
                 <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
@@ -37,10 +36,11 @@
             <nav class="toc-nav" id="tocNav">
                 <h3>📋 Table of Contents</h3>
                 <ul>
-                    <li><a href="#objects">1. Core Objects</a></li>
-                    <li><a href="#deployment">2. Deployment YAML</a></li>
-                    <li><a href="#kubectl">3. Kubectl Commands</a></li>
-                    
+                    <li><a href="#architecture">1. K8s Architecture</a></li>
+                    <li><a href="#workloads">2. Workloads (Pods & Deployments)</a></li>
+                    <li><a href="#services">3. Services & Networking</a></li>
+                    <li><a href="#config">4. ConfigMaps & Secrets</a></li>
+                    <li><a href="#kubectl">5. Essential kubectl Commands</a></li>
                 </ul>
             </nav>
         </aside>
@@ -49,50 +49,144 @@
             <div class="header">
                 <h1>Kubernetes (K8s)</h1>
                 <p class="author">Author: Naresh Kumar Sanda</p>
-                <p style="color: var(--text-muted);">Pods, Deployments, Services, and Ingress routing.</p>
+                <p style="color: var(--text-muted);">Master orchestration: Pods, Deployments, Services, and Configuration.</p>
             </div>
 
-            
-            <div class="section" id="objects">
-                <h2 class="section-title">1. Core Objects</h2>
-                <table><thead><tr><th>Object</th><th>Description</th></tr></thead><tbody><tr><td><strong>Pod</strong></td><td>Smallest deployable unit. Usually contains one container.</td></tr><tr><td><strong>Deployment</strong></td><td>Manages Pods. Ensures X replicas are always running. Handles rolling updates.</td></tr><tr><td><strong>Service</strong></td><td>Stable IP address that load-balances traffic across multiple ephemeral Pods.</td></tr><tr><td><strong>Ingress</strong></td><td>API Gateway that routes external HTTP traffic to internal Services based on URL paths.</td></tr></tbody></table>
+            <div class="section" id="architecture">
+                <h2 class="section-title">1. K8s Architecture</h2>
+                <table style="width: 100%;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 25%;"><strong>Control Plane (Master)</strong></td>
+                            <td>Manages the cluster. Components: <code>kube-apiserver</code> (front-end REST API), <code>etcd</code> (key-value store for cluster state), <code>kube-scheduler</code> (assigns pods to nodes), <code>kube-controller-manager</code> (handles node failures, replication).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Worker Node</strong></td>
+                            <td>Runs the applications. Components: <code>kubelet</code> (agent ensuring containers run), <code>kube-proxy</code> (network routing), and a Container Runtime (containerd, docker).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pod</strong></td>
+                            <td>The smallest deployable unit. Usually contains one container, but can hold multiple tightly coupled containers (e.g., sidecars) sharing the same network/storage.</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-        
-            <div class="section" id="deployment">
-                <h2 class="section-title">2. Deployment YAML</h2>
+
+            <div class="section" id="workloads">
+                <h2 class="section-title">2. Workloads</h2>
+                
+                <h3>Deployment</h3>
+                <p>Manages stateless applications. Ensures a specified number of Pod replicas are running. Enables rolling updates and rollbacks.</p>
                 <div class="code-block yaml"><pre>apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: myapp-deployment
+  name: nginx-deployment
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: myapp
+      app: nginx
   template:
     metadata:
       labels:
-        app: myapp
+        app: nginx
     spec:
       containers:
-      - name: myapp
-        image: myapp:latest
+      - name: nginx
+        image: nginx:1.14.2
         ports:
-        - containerPort: 8080</pre></div>
-            </div>
-        
-            <div class="section" id="kubectl">
-                <h2 class="section-title">3. Kubectl Commands</h2>
-                <div class="code-block bash"><pre>kubectl apply -f deployment.yaml  # Deploy
-kubectl get pods                  # View running pods
-kubectl logs &lt;pod-name&gt;           # Check logs
-kubectl scale deployment myapp --replicas=5</pre></div>
-            </div>
-        
-
-        
-        
+        - containerPort: 80</pre></div>
                 
+                <h3>StatefulSet vs DaemonSet</h3>
+                <ul>
+                    <li><strong>StatefulSet:</strong> Used for stateful apps (databases). Provides stable, unique network identifiers and persistent storage for each Pod. Pods are created sequentially.</li>
+                    <li><strong>DaemonSet:</strong> Ensures that ALL (or some) Nodes run a copy of a specific Pod. Usually used for logs collection (Fluentd) or node monitoring.</li>
+                </ul>
+            </div>
+
+            <div class="section" id="services">
+                <h2 class="section-title">3. Services & Networking</h2>
+                <p>Pods are ephemeral; their IP addresses change when they are recreated. A <strong>Service</strong> provides a stable IP address and DNS name to access Pods.</p>
+                
+                <table style="width: 100%;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 25%;"><strong>ClusterIP</strong></td>
+                            <td>(Default) Exposes the Service on a cluster-internal IP. Only reachable from within the cluster.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>NodePort</strong></td>
+                            <td>Exposes the Service on each Node's IP at a static port (between 30000-32767). Reachable from outside the cluster.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>LoadBalancer</strong></td>
+                            <td>Provisions a cloud provider's external load balancer (AWS ALB, GCP TCP Load Balancer) pointing to the NodePorts.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ingress</strong></td>
+                            <td>Not a service type, but an API object that manages external HTTP/HTTPS access to Services. Provides path-based routing, SSL termination, and virtual hosting.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section" id="config">
+                <h2 class="section-title">4. ConfigMaps & Secrets</h2>
+                <p>Configuration should be decoupled from image contents to make applications portable.</p>
+                
+                <div class="code-block yaml"><pre>apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  DB_HOST: "mysql-service.default.svc.cluster.local"
+  APP_ENV: "production"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-credentials
+type: Opaque
+data:
+  # Values MUST be base64 encoded!
+  password: cGFzc3dvcmQxMjM=</pre></div>
+                <p><em>Injecting them into a Pod:</em></p>
+                <div class="code-block yaml"><pre>containers:
+  - name: myapp
+    image: myapp:1.0
+    env:
+      - name: DB_HOST
+        valueFrom:
+          configMapKeyRef:
+            name: app-config
+            key: DB_HOST
+      - name: DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: db-credentials
+            key: password</pre></div>
+            </div>
+
+            <div class="section" id="kubectl">
+                <h2 class="section-title">5. Essential kubectl Commands</h2>
+                <div class="code-block bash"><pre># Context and Namespaces
+kubectl config current-context         # Show current cluster
+kubectl get namespaces                 # List all namespaces
+kubectl config set-context --current --namespace=my-namespace # Change default namespace
+
+# Managing Resources
+kubectl apply -f manifest.yaml         # Create or update resources
+kubectl delete -f manifest.yaml        # Delete resources
+kubectl get pods -w                    # List pods and watch (-w) for changes
+kubectl get svc,deploy,pods            # List multiple resource types
+kubectl describe pod &lt;pod-name&gt;        # Detailed information (great for debugging CrashLoopBackOff)
+
+# Debugging
+kubectl logs &lt;pod-name&gt; -f             # Tail logs
+kubectl logs &lt;pod-name&gt; -c &lt;container&gt; # Tail logs for specific container in a multi-container pod
+kubectl exec -it &lt;pod-name&gt; -- /bin/sh # Open an interactive shell in a pod
+kubectl port-forward svc/my-svc 8080:80 # Forward local port 8080 to service port 80</pre></div>
+            </div>
         </main>
     </div>
 

@@ -9,7 +9,7 @@
 
     <!-- SEO & Metadata -->
     <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
-    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta name="keywords" content="CI/CD, DevOps, Jenkins, GitHub Actions, Deployment, Blue Green, Canary, Cheat Sheet">
     <meta property="og:title" content="CI/CD Pipelines - Cheat Sheet">
     <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
     <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
@@ -29,7 +29,6 @@
     <div class="app-container">
         
         <aside class="sidebar">
-            
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="Search topics...">
                 <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
@@ -37,10 +36,11 @@
             <nav class="toc-nav" id="tocNav">
                 <h3>📋 Table of Contents</h3>
                 <ul>
-                    <li><a href="#definitions">1. CI vs CD</a></li>
-                    <li><a href="#githubactions">2. GitHub Actions (Sample)</a></li>
-                    <li><a href="#deployments">3. Deployment Strategies</a></li>
-                    
+                    <li><a href="#core-concepts">1. Core Concepts</a></li>
+                    <li><a href="#deployment-strategies">2. Deployment Strategies</a></li>
+                    <li><a href="#github-actions">3. GitHub Actions Example</a></li>
+                    <li><a href="#jenkins">4. Jenkinsfile Example</a></li>
+                    <li><a href="#best-practices">5. Pipeline Best Practices</a></li>
                 </ul>
             </nav>
         </aside>
@@ -49,43 +49,127 @@
             <div class="header">
                 <h1>CI/CD Pipelines</h1>
                 <p class="author">Author: Naresh Kumar Sanda</p>
-                <p style="color: var(--text-muted);">End-to-end automation from Git to Production.</p>
+                <p style="color: var(--text-muted);">Continuous Integration, Delivery, and modern deployment strategies.</p>
             </div>
 
-            
-            <div class="section" id="definitions">
-                <h2 class="section-title">1. CI vs CD</h2>
-                <table><thead><tr><th>Phase</th><th>Meaning</th><th>Actions</th></tr></thead><tbody><tr><td><strong>CI</strong></td><td>Continuous Integration</td><td>Code push -> Compile -> Run Unit Tests -> Build Docker Image -> Push to Registry.</td></tr><tr><td><strong>CD</strong></td><td>Continuous Deployment</td><td>Pull Docker Image -> Deploy to Staging -> Run E2E Tests -> Deploy to Prod.</td></tr></tbody></table>
+            <div class="section" id="core-concepts">
+                <h2 class="section-title">1. Core Concepts</h2>
+                <table style="width: 100%;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 25%;"><strong>Continuous Integration (CI)</strong></td>
+                            <td>The practice of merging all developer working copies to a shared mainline several times a day. Triggers automated build and unit tests to ensure the branch isn't broken.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Continuous Delivery (CD)</strong></td>
+                            <td>An extension of CI. Ensures the codebase is always in a deployable state. Involves packaging the application (e.g., Docker image) and pushing it to an artifact repository, then optionally deploying to a staging environment. <em>Requires manual approval to go to Production.</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Continuous Deployment (CD)</strong></td>
+                            <td>Goes one step further: every change that passes all stages of your production pipeline is automatically released to customers. No human intervention.</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-        
-            <div class="section" id="githubactions">
-                <h2 class="section-title">2. GitHub Actions (Sample)</h2>
-                <div class="code-block yaml"><pre>name: Java CI/CD
-on: [push]
+
+            <div class="section" id="deployment-strategies">
+                <h2 class="section-title">2. Deployment Strategies</h2>
+                
+                <h3>Blue/Green Deployment</h3>
+                <p>Run two identical production environments (Blue and Green). At any time, only one environment is live. When a new release is ready, you deploy to the idle environment, test it, and then switch the router (load balancer) to point to the new environment.</p>
+                <ul>
+                    <li><strong>Pros:</strong> Zero downtime, instant rollback by switching the router back.</li>
+                    <li><strong>Cons:</strong> Requires double the infrastructure resources.</li>
+                </ul>
+
+                <h3>Canary Release</h3>
+                <p>Deploy the new version to a small subset of servers or route a small percentage of user traffic (e.g., 5%) to the new version. Monitor for errors. If stable, gradually roll out to 100%.</p>
+                <ul>
+                    <li><strong>Pros:</strong> Reduces risk. If there's a critical bug, only 5% of users are affected.</li>
+                    <li><strong>Cons:</strong> Complex to orchestrate routing and monitoring.</li>
+                </ul>
+
+                <h3>Rolling Update (Default in K8s)</h3>
+                <p>Gradually replace old instances with new ones, one by one. K8s will wait for the new Pod's readiness probe to pass before killing an old Pod.</p>
+            </div>
+
+            <div class="section" id="github-actions">
+                <h2 class="section-title">3. GitHub Actions Example</h2>
+                <p>GitHub Actions uses YAML files located in <code>.github/workflows/</code> to define CI/CD pipelines.</p>
+                <div class="code-block yaml"><pre>name: CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-    - name: Build with Maven
-      run: mvn clean package
-    - name: Build & Push Docker Image
-      run: docker build -t myapp:latest .</pre></div>
-            </div>
+      - name: Checkout code
+        uses: actions/checkout@v3
         
-            <div class="section" id="deployments">
-                <h2 class="section-title">3. Deployment Strategies</h2>
-                <ul><li><strong>Rolling Update:</strong> Replace pods one by one. Zero downtime, but you have old and new code running simultaneously for a minute.</li><li><strong>Blue/Green:</strong> Spin up a duplicate Prod environment (Green). Test it. Once perfect, instantly switch the router traffic from Blue to Green. Easy rollback.</li><li><strong>Canary:</strong> Route 5% of user traffic to the new version. Monitor for errors. Gradually scale to 100%.</li></ul>
-            </div>
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          
+      - name: Build with Maven
+        run: mvn clean package
         
+      - name: Build and Push Docker Image
+        if: github.event_name == 'push'
+        run: |
+          docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PAT }}
+          docker build -t myorg/myapp:${{ github.sha }} .
+          docker push myorg/myapp:${{ github.sha }}</pre></div>
+            </div>
 
-        
-        
-                
+            <div class="section" id="jenkins">
+                <h2 class="section-title">4. Jenkinsfile Example (Declarative)</h2>
+                <div class="code-block groovy"><pre>pipeline {
+    agent any
+    tools {
+        maven 'Maven 3.8'
+        jdk 'JDK 17'
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+        stage('Build & Push Image') {
+            when { branch 'main' }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh 'docker build -t myapp:${GIT_COMMIT} .'
+                    sh 'echo $PASS | docker login -u $USER --password-stdin'
+                    sh 'docker push myapp:${GIT_COMMIT}'
+                }
+            }
+        }
+    }
+}</pre></div>
+            </div>
+
+            <div class="section" id="best-practices">
+                <h2 class="section-title">5. Pipeline Best Practices</h2>
+                <ul>
+                    <li><strong>Build Once, Deploy Many:</strong> Never recompile code for different environments (dev/stage/prod). Build a single artifact (like a Docker image), and inject environment-specific configuration at runtime.</li>
+                    <li><strong>Fail Fast:</strong> Put the fastest tests (unit tests, static analysis, linting) at the very beginning of the pipeline. Don't waste time spinning up integration databases if the code doesn't even compile.</li>
+                    <li><strong>Immutable Infrastructure:</strong> Do not SSH into servers to tweak configurations. If a change is needed, modify the codebase (Terraform/Docker) and trigger the pipeline to replace the old server.</li>
+                    <li><strong>Automate Rollbacks:</strong> Ensure database migrations are backwards compatible so you can easily revert to the previous application version if something goes wrong.</li>
+                </ul>
+            </div>
         </main>
     </div>
 

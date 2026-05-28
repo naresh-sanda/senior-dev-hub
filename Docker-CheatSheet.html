@@ -9,7 +9,7 @@
 
     <!-- SEO & Metadata -->
     <meta name="description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
-    <meta name="keywords" content="Java, Python, System Design, DSA, Kubernetes, Microservices, Cheat Sheet, Senior Developer">
+    <meta name="keywords" content="Docker, Containers, DevOps, Cheat Sheet, Senior Developer, Docker Compose">
     <meta property="og:title" content="Docker Containerization - Cheat Sheet">
     <meta property="og:description" content="Premium interactive cheat sheets for Senior Engineers, covering Java, Python, DSA, System Design, and DevOps. By Naresh Kumar Sanda.">
     <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
@@ -29,7 +29,6 @@
     <div class="app-container">
         
         <aside class="sidebar">
-            
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="Search topics...">
                 <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
@@ -37,10 +36,12 @@
             <nav class="toc-nav" id="tocNav">
                 <h3>📋 Table of Contents</h3>
                 <ul>
-                    <li><a href="#concepts">1. Images vs Containers</a></li>
-                    <li><a href="#dockerfile">2. The Dockerfile</a></li>
-                    <li><a href="#commands">3. Essential CLI Commands</a></li>
-                    
+                    <li><a href="#concepts">1. Core Concepts</a></li>
+                    <li><a href="#dockerfile">2. Writing Dockerfiles</a></li>
+                    <li><a href="#multistage">3. Multi-Stage Builds</a></li>
+                    <li><a href="#networking">4. Networking & Volumes</a></li>
+                    <li><a href="#compose">5. Docker Compose</a></li>
+                    <li><a href="#commands">6. Essential CLI Commands</a></li>
                 </ul>
             </nav>
         </aside>
@@ -49,36 +50,162 @@
             <div class="header">
                 <h1>Docker Containerization</h1>
                 <p class="author">Author: Naresh Kumar Sanda</p>
-                <p style="color: var(--text-muted);">Images vs Containers, Dockerfiles, and Docker Compose.</p>
+                <p style="color: var(--text-muted);">From basic containers to multi-stage builds and Docker Compose.</p>
             </div>
 
-            
             <div class="section" id="concepts">
-                <h2 class="section-title">1. Images vs Containers</h2>
-                <p>An <strong>Image</strong> is a read-only template (like a Class in Java). A <strong>Container</strong> is a runnable instance of an image (like an Object in Java).</p>
+                <h2 class="section-title">1. Core Concepts</h2>
+                <table style="width: 100%;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 25%;"><strong>Image</strong></td>
+                            <td>A read-only template containing the application code, libraries, dependencies, and tools. (Think: Java Class)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Container</strong></td>
+                            <td>A runnable, isolated instance of an image. (Think: Java Object)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Volume</strong></td>
+                            <td>Persistent storage mechanism. Data inside a container is lost when it stops; volumes persist data safely outside the container lifecycle.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Registry</strong></td>
+                            <td>A repository for Docker Images (e.g., Docker Hub, AWS ECR, GCP GCR).</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         
             <div class="section" id="dockerfile">
-                <h2 class="section-title">2. The Dockerfile</h2>
-                <div class="code-block docker"><pre>FROM openjdk:17-jdk-slim
+                <h2 class="section-title">2. Writing Dockerfiles</h2>
+                <p>The <code>Dockerfile</code> is the recipe to build your image.</p>
+                <div class="code-block docker"><pre># Use a lightweight base image
+FROM openjdk:17-jdk-slim
+
+# Set metadata
+LABEL maintainer="nsanda@example.com"
+LABEL version="1.0"
+
+# Create a non-root user for security
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+# Set working directory
 WORKDIR /app
-COPY target/myapp.jar app.jar
+
+# Copy dependency files first to leverage layer caching
+COPY pom.xml mvnw ./
+COPY .mvn .mvn/
+RUN ./mvnw dependency:go-offline
+
+# Copy the rest of the application
+COPY src ./src
+
+# Build the application
+RUN ./mvnw package -DskipTests
+
+# Run as non-root
+USER appuser
+
+# Expose port
+EXPOSE 8080
+
+# The command to run when container starts
+ENTRYPOINT ["java", "-jar", "target/myapp.jar"]</pre></div>
+            </div>
+
+            <div class="section" id="multistage">
+                <h2 class="section-title">3. Multi-Stage Builds</h2>
+                <p>Multi-stage builds are crucial for creating small, secure production images by discarding build tools (like Maven/Gradle) and keeping only the final compiled artifact.</p>
+                <div class="code-block docker"><pre># --- Stage 1: Build ---
+FROM maven:3.8-eclipse-temurin-17 AS builder
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# --- Stage 2: Runtime ---
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+
+# Only copy the built artifact from the builder stage
+COPY --from=builder /app/target/myapp.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]</pre></div>
             </div>
-        
-            <div class="section" id="commands">
-                <h2 class="section-title">3. Essential CLI Commands</h2>
-                <div class="code-block bash"><pre>docker build -t myapp:latest .   # Build image
-docker run -p 8080:8080 myapp    # Run container mapping port 8080
-docker ps                        # List running containers
-docker exec -it &lt;id&gt; /bin/sh     # SSH into a container</pre></div>
+
+            <div class="section" id="networking">
+                <h2 class="section-title">4. Networking & Volumes</h2>
+                
+                <h3>Network Types</h3>
+                <ul>
+                    <li><strong>Bridge (default):</strong> Isolated network where containers can talk to each other via IP address.</li>
+                    <li><strong>Host:</strong> Removes network isolation between the container and Docker host (Linux only). Container uses host's network directly.</li>
+                    <li><strong>None:</strong> Container has no external networking.</li>
+                </ul>
+                
+                <h3>Volumes</h3>
+                <div class="code-block bash"><pre># Create a named volume
+docker volume create pgdata
+
+# Run PostgreSQL using the volume to persist database data
+docker run -d --name mydb \
+  -v pgdata:/var/lib/postgresql/data \
+  -e POSTGRES_PASSWORD=secret postgres:14</pre></div>
+            </div>
+
+            <div class="section" id="compose">
+                <h2 class="section-title">5. Docker Compose</h2>
+                <p>Define and run multi-container applications using a YAML file.</p>
+                <div class="code-block yaml"><pre>version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=db
+      - DB_USER=postgres
+    depends_on:
+      - db
+    networks:
+      - app_network
+
+  db:
+    image: postgres:14
+    environment:
+      - POSTGRES_PASSWORD=secret
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+volumes:
+  db_data:
+
+networks:
+  app_network:
+    driver: bridge</pre></div>
             </div>
         
+            <div class="section" id="commands">
+                <h2 class="section-title">6. Essential CLI Commands</h2>
+                <div class="code-block bash"><pre># Building & Running
+docker build -t myapp:1.0 .         # Build image in current dir
+docker run -d -p 80:8080 myapp:1.0  # Run in detached mode (-d), map host port 80 to container 8080
 
-        
-        
-                
+# Inspection & Debugging
+docker ps                           # List running containers (-a for all)
+docker logs -f &lt;container_id&gt;       # Follow container logs
+docker exec -it &lt;id&gt; /bin/sh        # Open a shell inside running container
+docker inspect &lt;id&gt;                 # View low-level details (IP, volumes, etc.)
+
+# Cleanup
+docker rm -f &lt;container_id&gt;         # Force remove a container
+docker rmi &lt;image_id&gt;               # Remove an image
+docker system prune -a --volumes    # DANGER: Removes ALL unused containers, networks, images, and volumes</pre></div>
+            </div>
         </main>
     </div>
 
