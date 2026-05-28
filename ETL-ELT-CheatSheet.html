@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETL & ELT Pipelines - Cheat Sheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Comprehensive cheat sheet on ETL vs ELT, Data Pipelines, Architectures, and key Data Engineering terminology. By Naresh Kumar Sanda.">
+    <meta name="keywords" content="ETL, ELT, Data Pipeline, Data Engineering, Lakehouse, CDC, Streaming, Batch, Cheat Sheet">
+    <meta property="og:title" content="ETL & ELT Pipelines - Cheat Sheet">
+    <meta property="og:description" content="Comprehensive cheat sheet on ETL vs ELT, Data Pipelines, Architectures, and key Data Engineering terminology. By Naresh Kumar Sanda.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/username/repo/main/assets/ns_logo.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="assets/ns_logo.png">
+</head>
+<body>
+
+    <header class="global-navbar">
+        <a href="index.html" class="brand-logo">
+            <img src="assets/ns_logo.png" alt="NS Logo" class="brand-image" >
+            <div>Naresh Sanda</div>
+        </a>
+        <div class="header-subtitle">Senior Developer Hub</div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search topics...">
+                <a href="index.html" style="display:block; margin-top:15px; text-decoration:none; color:var(--accent-mysql); font-weight:bold; font-size:13px;">← Back to Portal</a>
+            </div>
+            <nav class="toc-nav" id="tocNav">
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#etl-vs-elt">1. ETL vs ELT</a></li>
+                    <li><a href="#storage-architectures">2. Storage Architectures</a></li>
+                    <li><a href="#processing-architectures">3. Processing Architectures</a></li>
+                    <li><a href="#pipeline-concepts">4. Core Pipeline Concepts</a></li>
+                    <li><a href="#data-modeling">5. Data Modeling</a></li>
+                    <li><a href="#best-practices">6. Best Practices</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <div class="header">
+                <h1>ETL & ELT Data Pipelines</h1>
+                <p class="author">Author: Naresh Kumar Sanda</p>
+                <p style="color: var(--text-muted);">A comprehensive guide to Data Engineering architectures, flow, and terminology.</p>
+            </div>
+
+            <div class="section" id="etl-vs-elt">
+                <h2 class="section-title">1. ETL vs ELT</h2>
+                <p>Data integration paradigms have shifted as cloud data warehouses became immensely powerful.</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Concept</th>
+                            <th>ETL (Extract, Transform, Load)</th>
+                            <th>ELT (Extract, Load, Transform)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Flow</strong></td>
+                            <td>Source -> Processing Engine (Spark/Python) -> Destination</td>
+                            <td>Source -> Destination Storage -> Transformed inside Destination via SQL</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Compute Heavy</strong></td>
+                            <td>Middle tier (e.g., Apache Spark, AWS Glue, DataStage)</td>
+                            <td>Destination tier (e.g., Snowflake, BigQuery, Redshift)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Best Used For</strong></td>
+                            <td>Legacy systems, strict compliance rules before landing data, complex programmatic logic.</td>
+                            <td>Modern cloud stacks, agile data teams, leveraging SQL for transformations (dbt).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data Loss Risk</strong></td>
+                            <td>If transformation fails, raw data might not be persisted.</td>
+                            <td>Raw data is safely landed first. Easy to re-run transformations.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section" id="storage-architectures">
+                <h2 class="section-title">2. Data Storage Architectures</h2>
+                
+                <div class="concept-card">
+                    <h4>Data Warehouse</h4>
+                    <p>Highly structured, schema-on-write repository. Optimized for complex analytical queries (OLAP) using SQL. Examples: Snowflake, Amazon Redshift, Google BigQuery.</p>
+                </div>
+                
+                <div class="concept-card">
+                    <h4>Data Lake</h4>
+                    <p>Schema-on-read repository storing raw data in its native format (structured, semi-structured, unstructured). Highly scalable and cheap. Examples: Amazon S3, Azure Data Lake (ADLS), Google Cloud Storage (GCS).</p>
+                </div>
+
+                <div class="concept-card">
+                    <h4>Data Lakehouse</h4>
+                    <p>Combines the flexibility and cheap storage of a Data Lake with the ACID transactions and governance of a Data Warehouse. Powered by open table formats. Examples: Databricks (Delta Lake), Apache Iceberg, Apache Hudi.</p>
+                </div>
+            </div>
+
+            <div class="section" id="processing-architectures">
+                <h2 class="section-title">3. Data Processing Architectures</h2>
+                
+                <h3>Lambda Architecture</h3>
+                <p>Designed to handle massive quantities of data by taking advantage of both batch and stream-processing methods.</p>
+                <ul>
+                    <li><strong>Batch Layer:</strong> Manages the master dataset (immutable, append-only) and pre-computes batch views. Highly accurate but high latency.</li>
+                    <li><strong>Speed Layer (Stream):</strong> Processes recent data in real-time to provide low-latency views. Less accurate (may miss late arrivals).</li>
+                    <li><strong>Serving Layer:</strong> Merges results from the Batch and Speed layers to answer user queries.</li>
+                    <li><em>Drawback:</em> You have to maintain two separate codebases (one for batch, one for streaming).</li>
+                </ul>
+
+                <h3>Kappa Architecture</h3>
+                <p>An alternative to Lambda that removes the batch layer entirely.</p>
+                <ul>
+                    <li>Treats everything as a stream. Data is an immutable stream of events (e.g., in Apache Kafka).</li>
+                    <li>If you need to recompute historical data, you simply replay the stream from the beginning using the same codebase.</li>
+                    <li><em>Drawback:</em> Requires robust and expensive streaming infrastructure.</li>
+                </ul>
+            </div>
+
+            <div class="section" id="pipeline-concepts">
+                <h2 class="section-title">4. Core Pipeline Concepts & Terminology</h2>
+                
+                <table style="width: 100%;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 25%;"><strong>DAG (Directed Acyclic Graph)</strong></td>
+                            <td>A conceptual representation of a pipeline's tasks and dependencies. "Directed" means data flows in one direction; "Acyclic" means no infinite loops. Used by orchestrators like Airflow and Dagster.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Idempotency</strong></td>
+                            <td>A pipeline is idempotent if running it once has the exact same effect as running it multiple times. Crucial for handling failures and retries without duplicating data.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CDC (Change Data Capture)</strong></td>
+                            <td>A technique to identify and capture changes made to data in a database (Inserts, Updates, Deletes) and deliver those changes in real-time to a downstream system (e.g., using Debezium).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SCD (Slowly Changing Dimensions)</strong></td>
+                            <td>Techniques for managing how historical data is updated. <br><em>Type 1:</em> Overwrite old data. <br><em>Type 2:</em> Add a new row with effective/expiration dates (keeps history).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Backfilling</strong></td>
+                            <td>Processing historical data that was missed or needs to be re-processed due to a bug fix or new logic deployment.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data Lineage</strong></td>
+                            <td>Tracking data as it flows from its origin to its destination, detailing transformations along the way. Essential for debugging and compliance.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section" id="data-modeling">
+                <h2 class="section-title">5. Data Modeling Strategies</h2>
+                
+                <h3>Star Schema (Kimball)</h3>
+                <p>The standard for data warehouses. Denormalized for fast reads.</p>
+                <ul>
+                    <li><strong>Fact Tables:</strong> Contain measurable, quantitative data (e.g., `sales_amount`, `discount`). Usually massive and append-only.</li>
+                    <li><strong>Dimension Tables:</strong> Contain descriptive attributes related to the facts (e.g., `customer_name`, `store_location`). Smaller and joined to facts.</li>
+                </ul>
+
+                <h3>Medallion Architecture (Databricks)</h3>
+                <p>Standard data flow design in a Lakehouse.</p>
+                <ul>
+                    <li>🥉 <strong>Bronze (Raw):</strong> Raw, unvalidated data directly from sources. Append-only.</li>
+                    <li>🥈 <strong>Silver (Cleaned):</strong> Filtered, cleaned, augmented, and normalized data. Ready for ad-hoc querying.</li>
+                    <li>🥇 <strong>Gold (Curated):</strong> Business-level aggregates. Highly refined data ready for BI dashboards and Machine Learning.</li>
+                </ul>
+            </div>
+
+            <div class="section" id="best-practices">
+                <h2 class="section-title">6. Pipeline Best Practices</h2>
+                <div class="code-block python">
+<pre># 1. Fail Fast, Fail Loud
+# Validate data contracts at the boundaries (e.g., using Great Expectations).
+# Do not let corrupt data silently pollute the data lake.
+
+# 2. Separate Compute and Storage
+# Rely on architectures where scaling storage (S3) doesn't force you 
+# to pay for idle compute, and vice versa.
+
+# 3. Parameterize Everything
+# Never hardcode dates. Pass execution dates at runtime so pipelines 
+# can be easily backfilled.
+def extract(execution_date):
+    path = f"s3://raw-data/{execution_date.year}/{execution_date.month}/"
+    return spark.read.parquet(path)
+
+# 4. Use Dead Letter Queues (DLQ)
+# When a record fails parsing, don't crash the pipeline. Route the bad 
+# record to a DLQ for manual inspection, and process the rest.</pre>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="assets/scripts.js"></script>
+
+    <footer class="global-footer">
+        <div class="footer-brand">
+            <img src="assets/ns_logo.png" alt="NS Logo">
+            Naresh Sanda
+        </div>
+        <div>&copy; 2026 Senior Developer Hub. All rights reserved.</div>
+    </footer>
+</body>
+</html>
